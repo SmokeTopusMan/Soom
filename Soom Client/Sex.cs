@@ -4,7 +4,6 @@
     {
         Male,
         Female,
-        NotChecked,
-        Other
+        NotChecked
     }
 }
