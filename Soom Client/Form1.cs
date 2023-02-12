@@ -85,22 +85,5 @@ namespace Soom_Client
                 MessageBox.Show("Select Your Sex!");
             return false;
         }
-        /*
-private void getInfo()
-{
-Thread log = new Thread(new ThreadStart(() => loginClick.IsInfo(this.info)));
-Thread reg = new Thread(new ThreadStart(() => registerClick.IsInfo(this.info)));
-reg.Start();
-log.Start();
-while (log.IsAlive || reg.IsAlive) 
-{
-if (!log.IsAlive)
- reg.Abort();
-else if(!reg.IsAlive)
- log.Abort();
-}
-MessageBox.Show("Yay Works!");
-}
-*/
     }
 }
