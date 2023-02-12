@@ -1,0 +1,25 @@
+Things to do for the project:
+
+1) https://www.youtube.com/watch?v=BWqpTpo1kfw&t=1023s
+	watch the video and chnage the Soom repository according to it.
+	in addition learn how to connect the repository to visual studio.
+	
+
+2) Ways to switch between screens:
+
+	a) inside Form1.cs:	
+		this.Hide();
+		var form2 = new Form2();
+		form2.Closed += (s, args) => this.Close(); 
+		form2.Show();
+		
+		https://stackoverflow.com/questions/5548746/c-sharp-open-a-new-form-then-close-the-current-form
+	
+	b) inside program.cs:
+		Form1 form1 = new From1();
+		Application.Run(form1);
+		if (form1.HasInfo())
+			Application.Run(new Form2);
+			
+		
+		* HasInfo() is a function inside Form1 that returns true if userInfo != "" and false otherwise.
