@@ -1,0 +1,13 @@
+C:\Users\USER\source\repos\Soom Client\Soom Client\bin\Debug\Soom Client.exe.config
+C:\Users\USER\source\repos\Soom Client\Soom Client\bin\Debug\Soom Client.exe
+C:\Users\USER\source\repos\Soom Client\Soom Client\bin\Debug\Soom Client.pdb
+C:\Users\USER\source\repos\Soom Client\Soom Client\obj\Debug\Soom Client.csproj.AssemblyReference.cache
+C:\Users\USER\source\repos\Soom Client\Soom Client\obj\Debug\Soom Client.csproj.SuggestedBindingRedirects.cache
+C:\Users\USER\source\repos\Soom Client\Soom Client\obj\Debug\Soom_Client.Form1.resources
+C:\Users\USER\source\repos\Soom Client\Soom Client\obj\Debug\Soom_Client.Properties.Resources.resources
+C:\Users\USER\source\repos\Soom Client\Soom Client\obj\Debug\Soom Client.csproj.GenerateResource.cache
+C:\Users\USER\source\repos\Soom Client\Soom Client\obj\Debug\Soom Client.csproj.CoreCompileInputs.cache
+C:\Users\USER\source\repos\Soom Client\Soom Client\obj\Debug\Soom Client.exe
+C:\Users\USER\source\repos\Soom Client\Soom Client\obj\Debug\Soom Client.pdb
+C:\Users\USER\source\repos\Soom Client\Soom Client\obj\Debug\Soom_Client.LoginClick.resources
+C:\Users\USER\source\repos\Soom Client\Soom Client\obj\Debug\Soom_Client.RegisterClick.resources
