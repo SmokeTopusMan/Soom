@@ -16,7 +16,10 @@ namespace Soom_Client
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            OpeningScreen form1 = new OpeningScreen();
+            Application.Run(form1);
+            if (form1.HasUserInfo())
+                Application.Run(new MainScreen());
         }
     }
 }
