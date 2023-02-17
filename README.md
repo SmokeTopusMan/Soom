@@ -1,2 +1,2 @@
 # Soom-Repo
-A repository of the Soom app.
+A repository for the Soom app.
