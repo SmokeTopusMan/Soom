@@ -98,7 +98,7 @@
             // 
             // loginClick
             // 
-            this.loginClick.Location = new System.Drawing.Point(233, 173);
+            this.loginClick.Location = new System.Drawing.Point(237, 193);
             this.loginClick.Name = "loginClick";
             this.loginClick.Size = new System.Drawing.Size(519, 218);
             this.loginClick.TabIndex = 13;
@@ -113,7 +113,7 @@
             this.submitBtn.UseVisualStyleBackColor = true;
             this.submitBtn.Click += new System.EventHandler(this.submitBtn_Click);
             // 
-            // Form1
+            // OpenningScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -125,7 +125,7 @@
             this.Controls.Add(this.registerClick);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.title);
-            this.Name = "Form1";
+            this.Name = "OpenningScreen";
             this.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.Text = "Form1";
             this.panel1.ResumeLayout(false);

@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,8 +16,10 @@ namespace Soom_Client
     public partial class OpenningScreen : Form
     {
         private string _userInfo;
-        public OpenningScreen()
+        private Socket _socket;
+        public OpenningScreen(Socket sock)
         {
+            _socket = sock;
             InitializeComponent();
             registerClick.Hide();
             loginClick.Hide();
@@ -39,14 +42,14 @@ namespace Soom_Client
             registerClick.Hide();
         }
 
-        private void submitBtn_Click(object sender, EventArgs e)
+        private void submitBtn_Click(object sender, EventArgs e) //Future: add here the try and catch for the socket loop and find a way to stop the current form.
         {
             if (loginClick.Visible)
             {
                 if (LogInfoCheck())
                 {
                     loginClick.ClearBoxes();
-                    this._userInfo += $"LOG#{loginClick.UserName}#{loginClick.Password}";
+                    this._userInfo += $"LOG#{loginClick.UserName}#{loginClick.Password}"; //ToDo: Change to the decided message protocol (with or without 3 bytes of data length before #).
 
                 }
             }
@@ -55,7 +58,7 @@ namespace Soom_Client
                 if (RegInfoCheck())
                 {
                     registerClick.ClearBoxes();
-                    this._userInfo += $"REG#{registerClick.UserName}#{registerClick.Password}#{registerClick.Age}#{registerClick.Sex}";
+                    this._userInfo += $"REG#{registerClick.UserName}#{registerClick.Password}#{registerClick.Age}#{registerClick.Sex}"; //ToDo: Change to the decided message protocol (with or without 3 bytes of data length before #).
                     if (registerClick.Bio != "")
                         this._userInfo += $"#{registerClick.Bio}";
                 }

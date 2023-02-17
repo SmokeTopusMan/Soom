@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Text;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Soom_Client
 {
@@ -14,12 +19,15 @@ namespace Soom_Client
         [STAThread]
         static void Main()
         {
+            Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Parse("10.0.0.15"), 13000);  //Needs a Test: try to connect the server from a different computer.
+            sock.Connect(iPEndPoint);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            OpenningScreen openningScreen = new OpenningScreen();
+            OpenningScreen openningScreen = new OpenningScreen(sock);
             Application.Run(openningScreen);
             if (openningScreen.HasUserInfo())
-                Application.Run(new MainScreen());
+                Application.Run(new MainScreen(sock));
         }
     }
 }
