@@ -9,6 +9,7 @@ using System.Threading;
 
 namespace Soom_server
 {
+    /*
     internal class User
     {
         public string _name { get; set; }
@@ -20,5 +21,16 @@ namespace Soom_server
             _socket = socket;
         }
     }
+    */
 
+    struct User
+    {
+        public string Name { get; set; }
+        public string Password { get; set; }
+        public Socket Socket { get; set; }
+        public int Id { get; set; }
+        public bool Connected { get; set; }
+
+        public User(int Id, Socket socket) => (this.Id, this.Socket, Connected, Name, Password) = (Id, socket, true, "", "");
+    }
 }

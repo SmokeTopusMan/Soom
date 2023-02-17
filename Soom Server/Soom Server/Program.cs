@@ -25,8 +25,10 @@ namespace Soom_server
             while (true)
             {
                 clientSock = Server._serverSocket.Accept();
+                Console.WriteLine("Client was accepted");
                 Server.ClientJoined();
-                Thread clientThread = new Thread(new ThreadStart(() => Server.HandleClient(clientSock, Server._clientsNum))); // if doesnt work: 1. before the loop do Program p = new Program; 2. replace after the => to p.HandleClient(sock, server._clientNum); 3. make the func HandleClient in Program
+                Thread clientThread = new Thread(new ThreadStart(() => Server.HandleClient(new User(Server._clientsNum, clientSock)))); //Useful: if doesnt work: 1. before the loop do Program p = new Program; 2. replace after the => to p.HandleClient(sock, server._clientNum); 3. make the func HandleClient in Program
+                clientThread.Start();
                 Server.AddThread(clientThread);
             }
         }
