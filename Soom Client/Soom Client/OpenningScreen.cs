@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -48,9 +49,19 @@ namespace Soom_Client
             {
                 if (LogInfoCheck())
                 {
+                    int length = loginClick.UserName.Length + loginClick.Password.Length + 1;
+                    this._userInfo += $"LOG{length.ToString("000")}{loginClick.UserName}#{loginClick.Password}"; //ToDo: Change to the decided message protocol (with or without 3 bytes of data length before #).
                     loginClick.ClearBoxes();
-                    this._userInfo += $"LOG#{loginClick.UserName}#{loginClick.Password}"; //ToDo: Change to the decided message protocol (with or without 3 bytes of data length before #).
+                    try
+                    {
+                        byte[] data = new byte[1024];
+                        data = Encoding.UTF8.GetBytes(this._userInfo);
+                        _socket.Send(data);
+                    }
+                    catch
+                    {
 
+                    }
                 }
             }
             else
