@@ -20,11 +20,22 @@ namespace Soom_Client
         {
             InitializeComponent();
         }
+
+        #region ClearFunctions
         public void ClearBoxes()
         {
             usernameLogTextBox.Text = "";
             passLogTextBox.Text = "";
         }
+        public void ClearPassword()
+        {
+            passLogTextBox.Text = "";
+        }
+        public void ClearUsername()
+        {
+            usernameLogTextBox.Text = "";
+        }
+        #endregion
 
         private void usernameLogTextBox_KeyPress(object sender, KeyPressEventArgs e)
         {

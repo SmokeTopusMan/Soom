@@ -43,22 +43,22 @@ namespace Soom_Client
             registerClick.Hide();
         }
 
-        private void submitBtn_Click(object sender, EventArgs e) //Future: add here the try and catch for the socket loop and find a way to stop the current form.
+        private void submitBtn_Click(object sender, EventArgs e) //Future: find a way to stop the current form.
         {
             if (loginClick.Visible)
             {
                 if (LogInfoCheck())
                 {
                     int length = loginClick.UserName.Length + loginClick.Password.Length + 1;
-                    this._userInfo += $"LOG{length.ToString("000")}{loginClick.UserName}#{loginClick.Password}"; //ToDo: Change to the decided message protocol (with or without 3 bytes of data length before #).
+                    this._userInfo += $"LOG{length.ToString("00")}{loginClick.UserName}#{loginClick.Password}";
                     loginClick.ClearBoxes();
                     try
                     {
-                        byte[] data = new byte[1024];
-                        data = Encoding.UTF8.GetBytes(this._userInfo);
+                        byte[] data = new byte[length + 3];
+                        data = Encoding.UTF8.GetBytes(this._userInfo); //Future: Test if i can do it without the variable data: _socket.Send(Encoding.UTF8.GetBytes(this._userInfo)); and changed the regiter as well
                         _socket.Send(data);
                     }
-                    catch
+                    catch // ToDo: catch the sock error and close the app
                     {
 
                     }
@@ -68,31 +68,69 @@ namespace Soom_Client
             {
                 if (RegInfoCheck())
                 {
-                    registerClick.ClearBoxes();
-                    this._userInfo += $"REG#{registerClick.UserName}#{registerClick.Password}#{registerClick.Age}#{registerClick.Sex}"; //ToDo: Change to the decided message protocol (with or without 3 bytes of data length before #).
+                    int length = registerClick.UserName.Length + registerClick.Password.Length + registerClick.Age.Length + registerClick.Sex.ToString().Length + 3;
                     if (registerClick.Bio != "")
-                        this._userInfo += $"#{registerClick.Bio}";
+                    {
+                        length += registerClick.Bio.Length + 1; 
+                        this._userInfo += $"REG{length.ToString("0000")}{registerClick.UserName}#{registerClick.Password}#{registerClick.Age}#{registerClick.Sex}#{registerClick.Bio}";
+                    }
+                    else
+                        this._userInfo += $"REG{length.ToString("0000")}{registerClick.UserName}#{registerClick.Password}#{registerClick.Age}#{registerClick.Sex}";
+
+                    registerClick.ClearBoxes();
+
+                    try
+                    {
+                        byte[] data = new byte[length + 3];
+                        data = Encoding.UTF8.GetBytes(this._userInfo);
+                        _socket.Send(data);
+                    }
+                    catch // ToDo: catch the sock error and close the app
+                    {
+
+                    }
                 }
             }
+            this._userInfo = null;
         }
         private bool LogInfoCheck()
         {
-            if (loginClick.UserName != "" && loginClick.Password != "")
+            if (loginClick.UserName != "" && loginClick.Password != "" && loginClick.Password.Length >= 8 && loginClick.UserName.Length >= 4)
                 return true;
             if (loginClick.UserName == "")
                 MessageBox.Show("Fill Your Username!");
+            else if (loginClick.UserName.Length < 4)
+            {
+                MessageBox.Show("Write At Least 4 Characters In The Username Box!");
+                loginClick.ClearUsername();
+            }
             if (loginClick.Password == "")
                 MessageBox.Show("Fill Your Password!");
+            else if (loginClick.Password.Length < 8)
+            {
+                MessageBox.Show("Write At Least 8 Characters In The Password Box!");
+                loginClick.ClearPassword();
+            }
             return false;
         }
         private bool RegInfoCheck()
         {
-            if (registerClick.UserName != "" && registerClick.Password != "" && registerClick.Age != "" && registerClick.Sex != Sex.NotChecked)
+            if (registerClick.UserName != "" && registerClick.Password != "" && registerClick.Age != "" && registerClick.Sex != Sex.NotChecked && registerClick.Password.Length >= 8 && registerClick.UserName.Length >= 4)
                 return true;
             if (registerClick.UserName == "")
                 MessageBox.Show("Fill Your Username!");
+            else if(registerClick.UserName.Length < 4)
+            {
+                MessageBox.Show("Write At Least 4 Characters In The Username Box!");
+                registerClick.ClearUsername();
+            }
             if (registerClick.Password == "")
                 MessageBox.Show("Fill Your Password!");
+            else if (registerClick.Password.Length < 8)
+            {
+                MessageBox.Show("Write At Least 8 Characters In The Password Box!");
+                registerClick.ClearPassword();
+            }
             if (registerClick.Age == "")
                 MessageBox.Show("Fill Your Age!");
             if (registerClick.Sex == Sex.NotChecked)

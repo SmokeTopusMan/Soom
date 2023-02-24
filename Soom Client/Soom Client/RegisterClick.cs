@@ -51,7 +51,7 @@ namespace Soom_Client
                 femaleCheckBox.Checked = false;
         }
 
-        #region InfoTerms
+        #region KeyPressTerms
         private void usernameRegTextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == '#' || e.KeyChar == ' ')
@@ -74,6 +74,7 @@ namespace Soom_Client
         }
         #endregion
 
+        #region ClearFunctions
         public void ClearBoxes()
         {
             usernameRegTextBox.Text = "";
@@ -83,5 +84,14 @@ namespace Soom_Client
             maleCheckBox.Checked = false;
             bioTextBox.Text = "";
         }
+        public void ClearPassword()
+        {
+            passRegTextBox.Text = "";
+        }
+        public void ClearUsername()
+        {
+            usernameRegTextBox.Text = "";
+        }
+        #endregion
     }
 }

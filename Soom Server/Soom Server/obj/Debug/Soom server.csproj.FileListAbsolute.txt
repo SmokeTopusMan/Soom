@@ -14,3 +14,11 @@ C:\Users\USER\Source\Repos\Soom-Repo\Soom Server\Soom server\obj\Debug\Soom Serv
 C:\Users\USER\Source\Repos\Soom-Repo\Soom Server\Soom server\obj\Debug\Soom Server.csproj.CoreCompileInputs.cache
 C:\Users\USER\Source\Repos\Soom-Repo\Soom Server\Soom server\obj\Debug\Soom server.exe
 C:\Users\USER\Source\Repos\Soom-Repo\Soom Server\Soom server\obj\Debug\Soom server.pdb
+C:\Users\USER\source\repos\Soom\Soom Server\Soom server\bin\Debug\Soom server.exe.config
+C:\Users\USER\source\repos\Soom\Soom Server\Soom server\bin\Debug\Soom server.exe
+C:\Users\USER\source\repos\Soom\Soom Server\Soom server\bin\Debug\Soom server.pdb
+C:\Users\USER\source\repos\Soom\Soom Server\Soom server\obj\Debug\Soom Server.csproj.AssemblyReference.cache
+C:\Users\USER\source\repos\Soom\Soom Server\Soom server\obj\Debug\Soom Server.csproj.SuggestedBindingRedirects.cache
+C:\Users\USER\source\repos\Soom\Soom Server\Soom server\obj\Debug\Soom Server.csproj.CoreCompileInputs.cache
+C:\Users\USER\source\repos\Soom\Soom Server\Soom server\obj\Debug\Soom server.exe
+C:\Users\USER\source\repos\Soom\Soom Server\Soom server\obj\Debug\Soom server.pdb

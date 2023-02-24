@@ -8,6 +8,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Data.SqlClient;
 using System.Data;
+using System.Runtime.CompilerServices;
 
 namespace Soom_server
 {
@@ -30,10 +31,6 @@ namespace Soom_server
         public static void ClientJoined(int clientNum = 0)
         {
             _clientsNum++;
-            if (clientNum != 0)
-            {
-                Console.WriteLine("client '{0}' has joined", clientNum);
-            }
         }
         private static void ClientLeft()
         {
@@ -45,13 +42,13 @@ namespace Soom_server
 
         public static void HandleClient(User user)
         {
-            Console.WriteLine("Client Number '{0}' Has Connected To The Server!", user.Id);
+            Log("JOIN", user.Id);
             while (user.Connected)
             {
                 try
                 {
-                    byte[] buffer = new byte[1024];
-                    int bytes_recieved = user.Socket.Receive(buffer, 3, SocketFlags.None);  //Useful: Socket.Recieve (sync and async) returns the number of bytes recieved and put them in the buffer.
+                    byte[] buffer = new byte[3];
+                    int bytes_recieved = user.Socket.Receive(buffer, 3, SocketFlags.None);  //Useful: Change the flag to Partial
                     if (bytes_recieved < 3)
                     {
                         SendErrors(user.Socket, Errors.CommandIsCorrupted);
@@ -60,9 +57,15 @@ namespace Soom_server
                     {
                         string command = Encoding.UTF8.GetString(buffer);
                         if (command == "LOG")
+                        {
+                            Log("LOG", user.Id);
                             Login(user.Socket);
+                        }
                         else if (command == "REG")
+                        {
+                            Log("REG", user.Id);
                             Register(user.Socket);
+                        }
                     }
                 }
                 catch
@@ -79,11 +82,20 @@ namespace Soom_server
             catch { user.Socket.Close(); }
             user.Connected = false;
             ClientLeft();
-            Console.WriteLine("Client '{0}' has been disconneted", user.Id);
+            Log("LEFT", user.Id);
         }
 
-        private static string GetData(Socket sock) //ToDo: Finish the function and decide of the protocol of the message.
+        private static string GetData(Socket sock, string command) //ToDo: Finish the function and decide of the protocol of the message.
         {
+            if (command == "LOG")
+            {
+                byte[] num = new byte[2];
+                sock.Receive(num, 2, SocketFlags.None); //Useful: Change the flag to Partial
+                int length = int.Parse(Encoding.UTF8.GetString(num));
+                num = new byte[length];
+                sock.Receive(num, length, SocketFlags.None);
+                return Encoding.UTF8.GetString(num);
+            }
             return "";
         }
         private static void SendErrors(Socket clientSock, Errors error) //ToDo: Finish the SendErrors Function.
@@ -92,11 +104,23 @@ namespace Soom_server
         }
         private static void Login(Socket clientSock) //ToDo: Finish the Login Function (Use GetData).
         {
-
+            string[] userInfo;
+            userInfo = GetData(clientSock, "LOG").Split('#');
         }
         private static void Register(Socket clientSock) //ToDo: Finish the regiter function (Use GetData).
         {
 
+        }
+        private static void Log(string command, int id = -1)
+        {
+            if(command == "JOIN")
+                Console.WriteLine($"Server => Server: Client '{id}' Has Been Connected!");
+            else if(command == "LEFT")
+                Console.WriteLine($"Server => Server: Client '{id}' Has Been Disconnected!");
+            else if(command == "LOG")
+                Console.WriteLine($"Client => Server: Client '{id}' Sent Login Request!");
+            else if (command == "REG")
+                Console.WriteLine($"Client => Server: Client '{id}' Sent Register Request!");
         }
     }
 }

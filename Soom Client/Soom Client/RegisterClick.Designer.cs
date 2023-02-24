@@ -47,7 +47,7 @@
             // 
             this.usernameRegTextBox.Location = new System.Drawing.Point(114, 42);
             this.usernameRegTextBox.Margin = new System.Windows.Forms.Padding(5, 15, 45, 15);
-            this.usernameRegTextBox.MaxLength = 50;
+            this.usernameRegTextBox.MaxLength = 35;
             this.usernameRegTextBox.Name = "usernameRegTextBox";
             this.usernameRegTextBox.Size = new System.Drawing.Size(202, 20);
             this.usernameRegTextBox.TabIndex = 25;
@@ -77,7 +77,7 @@
             // 
             this.passRegTextBox.Location = new System.Drawing.Point(112, 92);
             this.passRegTextBox.Margin = new System.Windows.Forms.Padding(5, 15, 15, 15);
-            this.passRegTextBox.MaxLength = 50;
+            this.passRegTextBox.MaxLength = 35;
             this.passRegTextBox.Name = "passRegTextBox";
             this.passRegTextBox.Size = new System.Drawing.Size(202, 20);
             this.passRegTextBox.TabIndex = 28;

@@ -38,7 +38,7 @@
             // 
             this.usernameLogTextBox.Location = new System.Drawing.Point(199, 60);
             this.usernameLogTextBox.Margin = new System.Windows.Forms.Padding(5, 15, 45, 15);
-            this.usernameLogTextBox.MaxLength = 50;
+            this.usernameLogTextBox.MaxLength = 35;
             this.usernameLogTextBox.Name = "usernameLogTextBox";
             this.usernameLogTextBox.Size = new System.Drawing.Size(202, 20);
             this.usernameLogTextBox.TabIndex = 14;
@@ -68,7 +68,7 @@
             // 
             this.passLogTextBox.Location = new System.Drawing.Point(199, 86);
             this.passLogTextBox.Margin = new System.Windows.Forms.Padding(5, 15, 15, 15);
-            this.passLogTextBox.MaxLength = 50;
+            this.passLogTextBox.MaxLength = 35;
             this.passLogTextBox.Name = "passLogTextBox";
             this.passLogTextBox.Size = new System.Drawing.Size(202, 20);
             this.passLogTextBox.TabIndex = 17;
