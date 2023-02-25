@@ -22,9 +22,9 @@ namespace Soom_Client
             get
             {
                 if (maleCheckBox.Checked)
-                    return Sex.Male;
+                    return Sex.M;
                 else if (femaleCheckBox.Checked)
-                    return Sex.Female;
+                    return Sex.F;
                 else
                     return Sex.NotChecked;
             }
@@ -45,6 +45,7 @@ namespace Soom_Client
             if (femaleCheckBox.Checked)
                 maleCheckBox.Checked = false;
         }
+
         private void maleCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (maleCheckBox.Checked)
@@ -69,7 +70,7 @@ namespace Soom_Client
         }
         private void bioTextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (e.KeyChar == '#' || e.KeyChar == ' ')
+            if (e.KeyChar == '#')
                 e.Handled = true;
         }
         #endregion
@@ -93,5 +94,6 @@ namespace Soom_Client
             usernameRegTextBox.Text = "";
         }
         #endregion
+
     }
 }

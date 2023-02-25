@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using System.Data.SqlClient;
-using System.Data;
 using System.Runtime.CompilerServices;
 
 namespace Soom_server
@@ -19,7 +17,6 @@ namespace Soom_server
         public static int _clientsNum = 0;
         public static string _ip = "10.0.0.15";
         public static int _port = 13000;
-        public static SqlConnection _db = new SqlConnection(@"Data Source=PC\SQLEXPRESS;Initial Catalog=SoomDB;Integrated Security=true");
         private static List<Thread> _threads = new List<Thread>();
         #endregion
 
@@ -28,7 +25,7 @@ namespace Soom_server
             
             _threads.Add(thread);
         }
-        public static void ClientJoined(int clientNum = 0)
+        public static void ClientJoined()
         {
             _clientsNum++;
         }
@@ -59,16 +56,16 @@ namespace Soom_server
                         if (command == "LOG")
                         {
                             Log("LOG", user.Id);
-                            Login(user.Socket);
+                            Login(user);
                         }
                         else if (command == "REG")
                         {
                             Log("REG", user.Id);
-                            Register(user.Socket);
+                            Register(user);
                         }
                     }
                 }
-                catch
+                catch (SocketException)
                 {
                     Console.WriteLine("Something caused the server to close the connection with client '{0}'", user.Id);
                     break;
@@ -85,42 +82,71 @@ namespace Soom_server
             Log("LEFT", user.Id);
         }
 
-        private static string GetData(Socket sock, string command) //ToDo: Finish the function and decide of the protocol of the message.
+        private static string GetData(Socket sock, string command)
         {
             if (command == "LOG")
             {
-                byte[] num = new byte[2];
-                sock.Receive(num, 2, SocketFlags.None); //Useful: Change the flag to Partial
-                int length = int.Parse(Encoding.UTF8.GetString(num));
-                num = new byte[length];
-                sock.Receive(num, length, SocketFlags.None);
-                return Encoding.UTF8.GetString(num);
+                byte[] userInfo = new byte[2];
+                sock.Receive(userInfo, 2, SocketFlags.None);
+                int length = int.Parse(Encoding.UTF8.GetString(userInfo));
+                userInfo = new byte[length];
+                sock.Receive(userInfo, length, SocketFlags.None);
+                return Encoding.UTF8.GetString(userInfo);
             }
-            return "";
+            else if(command == "REG")
+            {
+                byte[] userInfo = new byte[4];
+                sock.Receive(userInfo, 4, SocketFlags.None);
+                int length = int.Parse(Encoding.UTF8.GetString(userInfo));
+                userInfo = new byte[length];
+                sock.Receive(userInfo, length, SocketFlags.None);
+                return Encoding.UTF8.GetString(userInfo);
+            }
+            return null;
         }
         private static void SendErrors(Socket clientSock, Errors error) //ToDo: Finish the SendErrors Function.
         {
+            if (error == Errors.GeneralError)
+            {
+                clientSock.Send(Encoding.UTF8.GetBytes($"NO0"));
+                throw new SocketException();
+            }
+            else if (error == Errors.CommandIsCorrupted) clientSock.Send(Encoding.UTF8.GetBytes($"NO1"));
+            else if (error == Errors.UsernameIsTaken) clientSock.Send(Encoding.UTF8.GetBytes($"NO2"));
+            else if (error == Errors.UserNotExist) clientSock.Send(Encoding.UTF8.GetBytes($"NO3"));
+        }
+        private static void Login(User user)
+        {
+            string[]  userInfo = GetData(user.Socket, "LOG").Split('#');
+            user = new User(user, userInfo[0], userInfo[1]);
+            Errors err = DataBaseAccess.LoginUser(user);
+            if (err == Errors.None) user.Socket.Send(Encoding.UTF8.GetBytes("OK"));
+            else { SendErrors(user.Socket, err); Log("NOLOG", user.Id); } 
+        }
+        private static void Register(User user)
+        {
+            string[] userInfo = GetData(user.Socket, "REG").Split('#');
+            try
+            {
+                user = new User(user, userInfo[0], userInfo[1], int.Parse(userInfo[2]), char.Parse(userInfo[3]), userInfo[4]);
+            }
+            catch(IndexOutOfRangeException)
+            {
+                user = new User(user, userInfo[0], userInfo[1], int.Parse(userInfo[2]), char.Parse(userInfo[3]));
+            }
+            Errors err = DataBaseAccess.RegiterUser(user);
+            if (err == Errors.None) user.Socket.Send(Encoding.UTF8.GetBytes("OK"));
+            else { SendErrors(user.Socket, err); Log("NOREG", user.Id); }
 
         }
-        private static void Login(Socket clientSock) //ToDo: Finish the Login Function (Use GetData).
+        private static void Log(string command, int id)
         {
-            string[] userInfo;
-            userInfo = GetData(clientSock, "LOG").Split('#');
-        }
-        private static void Register(Socket clientSock) //ToDo: Finish the regiter function (Use GetData).
-        {
-
-        }
-        private static void Log(string command, int id = -1)
-        {
-            if(command == "JOIN")
-                Console.WriteLine($"Server => Server: Client '{id}' Has Been Connected!");
-            else if(command == "LEFT")
-                Console.WriteLine($"Server => Server: Client '{id}' Has Been Disconnected!");
-            else if(command == "LOG")
-                Console.WriteLine($"Client => Server: Client '{id}' Sent Login Request!");
-            else if (command == "REG")
-                Console.WriteLine($"Client => Server: Client '{id}' Sent Register Request!");
+            if(command == "JOIN") Console.WriteLine($"Server => Server: Client '{id}' Has Been Connected!");
+            else if(command == "LEFT") Console.WriteLine($"Server => Server: Client '{id}' Has Been Disconnected!");
+            else if(command == "LOG") Console.WriteLine($"Client => Server: Client '{id}' Sent Login Request!");
+            else if (command == "REG") Console.WriteLine($"Client => Server: Client '{id}' Sent Register Request!");
+            else if( command == "NOLOG") Console.WriteLine($"Server => Client: Client's '{id} Login Request Failed!'");
+            else if (command == "NOREG") Console.WriteLine($"Server => Client: Client's '{id} Registration Request Failed! ");
         }
     }
 }

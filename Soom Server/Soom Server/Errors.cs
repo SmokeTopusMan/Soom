@@ -2,6 +2,10 @@
 {
     public enum Errors
     {
-        CommandIsCorrupted
+        GeneralError,
+        CommandIsCorrupted,
+        UsernameIsTaken,
+        UserNotExist,
+        None,
     }
 }

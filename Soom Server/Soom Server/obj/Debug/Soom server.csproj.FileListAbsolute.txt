@@ -22,4 +22,9 @@ C:\Users\USER\source\repos\Soom\Soom Server\Soom server\obj\Debug\Soom Server.cs
 C:\Users\USER\source\repos\Soom\Soom Server\Soom server\obj\Debug\Soom Server.csproj.CoreCompileInputs.cache
 C:\Users\USER\source\repos\Soom\Soom Server\Soom server\obj\Debug\Soom server.exe
 C:\Users\USER\source\repos\Soom\Soom Server\Soom server\obj\Debug\Soom server.pdb
-C:\Users\USER\source\repos\Soom\Soom Server\Soom server\bin\Debug\SoomDB
+C:\Users\USER\source\repos\Soom\Soom Server\Soom server\bin\Debug\Dapper.dll
+C:\Users\USER\source\repos\Soom\Soom Server\Soom server\bin\Debug\System.Data.SQLite.dll
+C:\Users\USER\source\repos\Soom\Soom Server\Soom server\bin\Debug\Dapper.xml
+C:\Users\USER\source\repos\Soom\Soom Server\Soom server\bin\Debug\System.Data.SQLite.xml
+C:\Users\USER\source\repos\Soom\Soom Server\Soom server\obj\Debug\Soom Server.csproj.CopyComplete
+C:\Users\USER\source\repos\Soom\Soom Server\Soom server\bin\Debug\SoomDB.db

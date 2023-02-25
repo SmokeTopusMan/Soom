@@ -123,6 +123,7 @@
             this.maleCheckBox.TabIndex = 11;
             this.maleCheckBox.Text = "Male";
             this.maleCheckBox.UseVisualStyleBackColor = false;
+            this.maleCheckBox.CheckedChanged += new System.EventHandler(this.maleCheckBox_CheckedChanged);
             // 
             // femaleCheckBox
             // 
@@ -134,6 +135,7 @@
             this.femaleCheckBox.TabIndex = 10;
             this.femaleCheckBox.Text = "Female";
             this.femaleCheckBox.UseVisualStyleBackColor = false;
+            this.femaleCheckBox.CheckedChanged += new System.EventHandler(this.femaleCheckBox_CheckedChanged);
             // 
             // label4
             // 

@@ -45,53 +45,64 @@ namespace Soom_Client
 
         private void submitBtn_Click(object sender, EventArgs e) //Future: find a way to stop the current form.
         {
-            if (loginClick.Visible)
+            try
             {
-                if (LogInfoCheck())
+                int length = 0;
+                byte[] data;
+                if (loginClick.Visible)
                 {
-                    int length = loginClick.UserName.Length + loginClick.Password.Length + 1;
-                    this._userInfo += $"LOG{length.ToString("00")}{loginClick.UserName}#{loginClick.Password}";
-                    loginClick.ClearBoxes();
-                    try
+                    
+                    if (LogInfoCheck())
                     {
-                        byte[] data = new byte[length + 3];
-                        data = Encoding.UTF8.GetBytes(this._userInfo); //Future: Test if i can do it without the variable data: _socket.Send(Encoding.UTF8.GetBytes(this._userInfo)); and changed the regiter as well
-                        _socket.Send(data);
-                    }
-                    catch // ToDo: catch the sock error and close the app
-                    {
-
+                        length += loginClick.UserName.Length + loginClick.Password.Length + 1;
+                        this._userInfo += $"LOG{length.ToString("00")}{loginClick.UserName}#{loginClick.Password}";
+                        loginClick.ClearBoxes();
                     }
                 }
-            }
-            else
-            {
-                if (RegInfoCheck())
+                else
                 {
-                    int length = registerClick.UserName.Length + registerClick.Password.Length + registerClick.Age.Length + registerClick.Sex.ToString().Length + 3;
-                    if (registerClick.Bio != "")
+                    if (RegInfoCheck())
                     {
-                        length += registerClick.Bio.Length + 1; 
-                        this._userInfo += $"REG{length.ToString("0000")}{registerClick.UserName}#{registerClick.Password}#{registerClick.Age}#{registerClick.Sex}#{registerClick.Bio}";
+                        length += registerClick.UserName.Length + registerClick.Password.Length + registerClick.Age.Length + registerClick.Sex.ToString().Length + 3;
+                        if (registerClick.Bio != "")
+                        {
+                            length += registerClick.Bio.Length + 1;
+                            this._userInfo += $"REG{length.ToString("0000")}{registerClick.UserName}#{registerClick.Password}#{registerClick.Age}#{registerClick.Sex}#{registerClick.Bio}";
+                        }
+                        else
+                            this._userInfo += $"REG{length.ToString("0000")}{registerClick.UserName}#{registerClick.Password}#{registerClick.Age}#{registerClick.Sex}";
+                        registerClick.ClearBoxes(); 
+                    }
+                }
+                if (this._userInfo != null)
+                {
+                    data = new byte[length + 3];
+                    data = Encoding.UTF8.GetBytes(this._userInfo); //Future: Test if i can do it without the variable data: _socket.Send(Encoding.UTF8.GetBytes(this._userInfo)); and changed the regiter as well
+                    _socket.Send(data);
+                    data = new byte[2];
+                    _socket.Receive(data, 2, SocketFlags.None);
+                    if (data == new byte[2])
+                    {
+                        throw new SocketException();
+                    }
+                    else if (Encoding.UTF8.GetString(data) == "OK")
+                    {
+                        this.Close();
                     }
                     else
-                        this._userInfo += $"REG{length.ToString("0000")}{registerClick.UserName}#{registerClick.Password}#{registerClick.Age}#{registerClick.Sex}";
-
-                    registerClick.ClearBoxes();
-
-                    try
                     {
-                        byte[] data = new byte[length + 3];
-                        data = Encoding.UTF8.GetBytes(this._userInfo);
-                        _socket.Send(data);
+                        this._userInfo = null;
                     }
-                    catch // ToDo: catch the sock error and close the app
-                    {
 
-                    }
                 }
             }
-            this._userInfo = null;
+            catch(SocketException)
+            {
+                this._userInfo = null;
+                this._socket.Close();
+                MessageBox.Show("The Server is Having Some Technical Difficulties...\r\n Try Again Later <3");
+                this.Close();
+            }
         }
         private bool LogInfoCheck()
         {
