@@ -23,7 +23,7 @@ namespace Soom_server
     }
     */
 
-    struct User
+    public struct User
     {
         public string Name { get; set; }
         public string Password { get; set; }

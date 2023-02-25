@@ -22,3 +22,4 @@ C:\Users\USER\source\repos\Soom\Soom Server\Soom server\obj\Debug\Soom Server.cs
 C:\Users\USER\source\repos\Soom\Soom Server\Soom server\obj\Debug\Soom Server.csproj.CoreCompileInputs.cache
 C:\Users\USER\source\repos\Soom\Soom Server\Soom server\obj\Debug\Soom server.exe
 C:\Users\USER\source\repos\Soom\Soom Server\Soom server\obj\Debug\Soom server.pdb
+C:\Users\USER\source\repos\Soom\Soom Server\Soom server\bin\Debug\SoomDB
