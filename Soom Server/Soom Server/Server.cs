@@ -15,7 +15,7 @@ namespace Soom_server
         #region ServerSettings
         public static Socket _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp); // The socket is set to InterNetwork
         public static int _clientsNum = 0;
-        public static string _ip = "10.0.0.15";
+        public static string _ip = "127.0.0.1";
         public static int _port = 13000;
         private static List<Thread> _threads = new List<Thread>();
         #endregion
@@ -67,7 +67,6 @@ namespace Soom_server
                 }
                 catch (SocketException)
                 {
-                    Console.WriteLine("Something caused the server to close the connection with client '{0}'", user.Id);
                     break;
                 }
             }
