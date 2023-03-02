@@ -20,7 +20,7 @@ namespace Soom_Client
         static void Main()
         {
             Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Parse("10.0.0.15"), 13000);  //Needs a Test: try to connect the server from a different computer.
+            IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 13000);  //Needs a Test: try to connect the server from a different computer.
             try
             {
                 sock.Connect(iPEndPoint);
