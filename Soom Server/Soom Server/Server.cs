@@ -15,7 +15,7 @@ namespace Soom_server
         #region ServerSettings
         public static Socket _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp); // The socket is set to InterNetwork
         public static int _clientsNum = 0;
-        public static string _ip = "127.0.0.1";
+        public static string _ip { get { return GetLocalIPAddress(); } private set { } }
         public static int _port = 13000;
         private static List<Thread> _threads = new List<Thread>();
         #endregion
@@ -146,6 +146,18 @@ namespace Soom_server
             else if (command == "REG") Console.WriteLine($"Client => Server: Client '{id}' Sent Register Request!");
             else if( command == "NOLOG") Console.WriteLine($"Server => Client: Client's '{id} Login Request Failed!'");
             else if (command == "NOREG") Console.WriteLine($"Server => Client: Client's '{id} Registration Request Failed! ");
+        }
+        private static string GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            return null;
         }
     }
 }
