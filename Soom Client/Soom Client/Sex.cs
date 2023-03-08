@@ -5,6 +5,5 @@
         M,
         F,
         NotChecked,
-        Other
     }
 }

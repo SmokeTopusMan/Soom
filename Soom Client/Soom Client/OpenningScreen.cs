@@ -51,7 +51,6 @@ namespace Soom_Client
                 byte[] data;
                 if (loginClick.Visible)
                 {
-                    
                     if (LogInfoCheck())
                     {
                         length += loginClick.UserName.Length + loginClick.Password.Length + 1;
@@ -63,14 +62,8 @@ namespace Soom_Client
                 {
                     if (RegInfoCheck())
                     {
-                        length += registerClick.UserName.Length + registerClick.Password.Length + registerClick.Age.Length + registerClick.Sex.ToString().Length + 3;
-                        if (registerClick.Bio != "")
-                        {
-                            length += registerClick.Bio.Length + 1;
-                            this._userInfo += $"REG{length.ToString("0000")}{registerClick.UserName}#{registerClick.Password}#{registerClick.Age}#{registerClick.Sex}#{registerClick.Bio}";
-                        }
-                        else
-                            this._userInfo += $"REG{length.ToString("0000")}{registerClick.UserName}#{registerClick.Password}#{registerClick.Age}#{registerClick.Sex}";
+                        length += registerClick.UserName.Length + registerClick.Password.Length + registerClick.Age.Length + registerClick.Sex.ToString().Length + registerClick.Bio.Length + 4;
+                        this._userInfo += $"REG{length.ToString("0000")}{registerClick.UserName}#{registerClick.Password}#{registerClick.Age}#{registerClick.Sex}#{registerClick.Bio}";
                         registerClick.ClearBoxes(); 
                     }
                 }
