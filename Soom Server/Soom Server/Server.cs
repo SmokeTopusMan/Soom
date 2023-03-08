@@ -144,8 +144,8 @@ namespace Soom_server
             else if(command == "LEFT") Console.WriteLine($"Server => Server: Client '{id}' Has Been Disconnected!");
             else if(command == "LOG") Console.WriteLine($"Client => Server: Client '{id}' Sent Login Request!");
             else if (command == "REG") Console.WriteLine($"Client => Server: Client '{id}' Sent Register Request!");
-            else if( command == "NOLOG") Console.WriteLine($"Server => Client: Client's '{id} Login Request Failed!'");
-            else if (command == "NOREG") Console.WriteLine($"Server => Client: Client's '{id} Registration Request Failed! ");
+            else if( command == "NOLOG") Console.WriteLine($"Server => Client: Client's '{id} Login Request Has Failed!'");
+            else if (command == "NOREG") Console.WriteLine($"Server => Client: Client's '{id} Registration Request  Has Failed! ");
         }
         private static string GetLocalIPAddress()
         {
