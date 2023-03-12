@@ -14,7 +14,7 @@ namespace Soom_server
     {
         #region ServerSettings
         public static Socket _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp); // The socket is set to InterNetwork
-        public static int _clientsNum = 0;
+        public static int ClientsNum = 0;
         public static string _ip { get { return GetLocalIPAddress(); } private set { } }
         public static int _port = 13000;
         private static List<Thread> _threads = new List<Thread>();
@@ -27,12 +27,12 @@ namespace Soom_server
         }
         public static void ClientJoined()
         {
-            _clientsNum++;
+            ClientsNum++;
         }
         private static void ClientLeft()
         {
-            if (_clientsNum > 0)
-                _clientsNum--;
+            if (ClientsNum > 0)
+                ClientsNum--;
             else
                 throw new Exception("!********!- Cant Decrement since the server has 0 clients online -!********!");
         }
@@ -46,23 +46,36 @@ namespace Soom_server
                 {
                     byte[] buffer = new byte[3];
                     int bytes_recieved = user.Socket.Receive(buffer, 3, SocketFlags.None);  //Useful: Change the flag to Partial
-                    if (bytes_recieved < 3)
+                    if (bytes_recieved == 0)
+                        throw new SocketException();
+                    while(bytes_recieved < 3 && bytes_recieved != 0)
                     {
-                        SendErrors(user.Socket, Errors.CommandIsCorrupted);
+                        try
+                        {
+                            user.Socket.ReceiveTimeout = 2000;
+                            bytes_recieved += user.Socket.Receive(buffer, 3 - bytes_recieved, SocketFlags.None);
+                            if (bytes_recieved == 0)
+                                throw new Exception("Client has disconnected");
+                        }
+                        catch (SocketException)
+                        {
+                            throw new SocketException();
+                        }
+                        catch (Exception)
+                        {
+                            SendErrors(user.Socket, Errors.CommandIsCorrupted);
+                        }
                     }
-                    else
+                    string command = Encoding.UTF8.GetString(buffer);
+                    if (command == "LOG")
                     {
-                        string command = Encoding.UTF8.GetString(buffer);
-                        if (command == "LOG")
-                        {
-                            Log("LOG", user.Id);
-                            Login(user);
-                        }
-                        else if (command == "REG")
-                        {
-                            Log("REG", user.Id);
-                            Register(user);
-                        }
+                        Log("LOG", user.Id);
+                        Login(user);
+                    }
+                    else if (command == "REG")
+                    {
+                        Log("REG", user.Id);
+                        Register(user);
                     }
                 }
                 catch (SocketException)

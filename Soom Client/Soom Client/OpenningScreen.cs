@@ -71,6 +71,7 @@ namespace Soom_Client
                 if (this._userInfo != null)
                 {
                     data = Encoding.UTF8.GetBytes(this._userInfo); //Future: Test if i can do it without the variable data: _socket.Send(Encoding.UTF8.GetBytes(this._userInfo)); and changed the regiter as well
+                    _socket.Send(new byte[2]);
                     _socket.Send(data);
                     data = new byte[3];
                     int bytes = _socket.Receive(data, 3, SocketFlags.None);
@@ -80,6 +81,8 @@ namespace Soom_Client
                     {
                         this.Close();
                     }
+                    else if (sData == "BYE")
+                        throw new SocketException();
                     else
                     {
                         this._userInfo = null;
