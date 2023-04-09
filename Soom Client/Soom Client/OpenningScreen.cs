@@ -48,30 +48,29 @@ namespace Soom_Client
         {
             try
             {
-                int length = 0;
                 byte[] data;
                 if (loginClick.Visible)
                 {
                     if (LogInfoCheck())
                     {
-                        length += loginClick.UserName.Length + loginClick.Password.Length + 1;
-                        this._userInfo += $"LOG{length.ToString("00")}{loginClick.UserName}#{loginClick.Password}";
+                        this._userInfo += $"{loginClick.UserName}#{loginClick.Password}";
                         loginClick.ClearBoxes();
+                        data = PrepareDataViaProtocol("LOG");
                     }
+                    else data = null;
                 }
                 else
                 {
                     if (RegInfoCheck())
                     {
-                        length += registerClick.UserName.Length + registerClick.Password.Length + registerClick.Age.Length + registerClick.Sex.ToString().Length + registerClick.Bio.Length + 4;
-                        this._userInfo += $"REG{length.ToString("0000")}{registerClick.UserName}#{registerClick.Password}#{registerClick.Age}#{registerClick.Sex}#{registerClick.Bio}";
-                        registerClick.ClearBoxes(); 
+                        this._userInfo += $"{registerClick.UserName}#{registerClick.Password}#{registerClick.Age}#{registerClick.Sex}#{registerClick.Bio}";
+                        registerClick.ClearBoxes();
+                        data = PrepareDataViaProtocol("REG");
                     }
+                    else data = null;
                 }
                 if (this._userInfo != null)
                 {
-                    data = Encoding.UTF8.GetBytes(this._userInfo); //Future: Test if i can do it without the variable data: _socket.Send(Encoding.UTF8.GetBytes(this._userInfo)); and changed the regiter as well
-                    _socket.Send(new byte[2]);
                     _socket.Send(data);
                     data = new byte[3];
                     int bytes = _socket.Receive(data, 3, SocketFlags.None);
@@ -156,6 +155,14 @@ namespace Soom_Client
             else if (err == ServerErrors.UserNotExist) MessageBox.Show("The User Does Not Exist!\r\nPlease Try Again And Check The Your Data.");
             else if (err == ServerErrors.UsernameIsTaken) MessageBox.Show("This Username is Already Taken!\r\nPlease Think of Anouther Name.");
             else if (err == ServerErrors.CommandIsCorrupted) MessageBox.Show("Please Try Again To Do Your Action!");
+        }
+        private Byte[] PrepareDataViaProtocol(string command)
+        {
+            if (command == "REG")
+            {
+                return Encoding.UTF8.GetBytes(command + (this._userInfo.Length + 4).ToString("0000") + this._userInfo);
+            }
+            return Encoding.UTF8.GetBytes(command + (this._userInfo.Length + 1).ToString("00") + this._userInfo);
         }
     }
 }

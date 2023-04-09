@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Security.Cryptography.X509Certificates;
+using System.Runtime.InteropServices;
 
 namespace Soom_Client
 {
@@ -20,7 +21,7 @@ namespace Soom_Client
         static void Main()
         {
             Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Parse("192.168.4.86"), 13000);
+            IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Parse("10.0.0.15"), 13000);
             try
             {
                 sock.Connect(iPEndPoint);
