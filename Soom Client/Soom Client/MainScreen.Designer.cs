@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainScreen));
             this.settingsWheel = new System.Windows.Forms.Button();
             this.title = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -66,9 +67,9 @@
             this.ClientSize = new System.Drawing.Size(874, 511);
             this.Controls.Add(this.title);
             this.Controls.Add(this.settingsWheel);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainScreen";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "MainScreen";
             this.ResumeLayout(false);
             this.PerformLayout();
 

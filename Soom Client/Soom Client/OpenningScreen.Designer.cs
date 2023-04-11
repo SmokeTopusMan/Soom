@@ -28,13 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OpenningScreen));
             this.title = new System.Windows.Forms.Label();
             this.register = new System.Windows.Forms.Button();
             this.login = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.registerClick = new Soom_Client.RegisterClick();
-            this.loginClick = new Soom_Client.LoginClick();
             this.submitBtn = new System.Windows.Forms.Button();
+            this.loginClick = new Soom_Client.LoginClick();
+            this.registerClick = new Soom_Client.RegisterClick();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -89,20 +90,6 @@
             this.panel1.Size = new System.Drawing.Size(170, 461);
             this.panel1.TabIndex = 5;
             // 
-            // registerClick
-            // 
-            this.registerClick.Location = new System.Drawing.Point(200, 137);
-            this.registerClick.Name = "registerClick";
-            this.registerClick.Size = new System.Drawing.Size(622, 312);
-            this.registerClick.TabIndex = 10;
-            // 
-            // loginClick
-            // 
-            this.loginClick.Location = new System.Drawing.Point(237, 193);
-            this.loginClick.Name = "loginClick";
-            this.loginClick.Size = new System.Drawing.Size(519, 218);
-            this.loginClick.TabIndex = 13;
-            // 
             // submitBtn
             // 
             this.submitBtn.Location = new System.Drawing.Point(482, 388);
@@ -112,6 +99,20 @@
             this.submitBtn.Text = "Submit";
             this.submitBtn.UseVisualStyleBackColor = true;
             this.submitBtn.Click += new System.EventHandler(this.submitBtn_Click);
+            // 
+            // loginClick
+            // 
+            this.loginClick.Location = new System.Drawing.Point(237, 193);
+            this.loginClick.Name = "loginClick";
+            this.loginClick.Size = new System.Drawing.Size(519, 218);
+            this.loginClick.TabIndex = 13;
+            // 
+            // registerClick
+            // 
+            this.registerClick.Location = new System.Drawing.Point(200, 137);
+            this.registerClick.Name = "registerClick";
+            this.registerClick.Size = new System.Drawing.Size(622, 312);
+            this.registerClick.TabIndex = 10;
             // 
             // OpenningScreen
             // 
@@ -125,9 +126,9 @@
             this.Controls.Add(this.registerClick);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.title);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "OpenningScreen";
             this.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.Text = "Form1";
             this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
 
