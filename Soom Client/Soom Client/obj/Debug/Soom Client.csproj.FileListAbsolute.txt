@@ -50,3 +50,4 @@ C:\Users\soran\source\repos\Soom\Soom Client\Soom Client\obj\Debug\Soom Client.c
 C:\Users\soran\source\repos\Soom\Soom Client\Soom Client\obj\Debug\Soom Client.csproj.CoreCompileInputs.cache
 C:\Users\soran\source\repos\Soom\Soom Client\Soom Client\obj\Debug\Soom Client.exe
 C:\Users\soran\source\repos\Soom\Soom Client\Soom Client\obj\Debug\Soom Client.pdb
+C:\Users\USER\Source\Repos\Soom\Soom Client\Soom Client\obj\Debug\Soom_Client.MainScreen.resources

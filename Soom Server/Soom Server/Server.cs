@@ -129,7 +129,7 @@ namespace Soom_server
         }
         private static void Login(User user)
         {
-            string[]  userInfo = GetData(user.Socket, "LOG").Split('#');
+            string[] userInfo = GetData(user.Socket, "LOG").Split('#');
             user = new User(user, userInfo[0], userInfo[1]);
             Errors err = DataBaseAccess.LoginUser(user);
             if (err == Errors.None) user.Socket.Send(Encoding.UTF8.GetBytes("OK"));

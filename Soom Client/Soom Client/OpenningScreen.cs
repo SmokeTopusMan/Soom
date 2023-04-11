@@ -76,19 +76,22 @@ namespace Soom_Client
                     int bytes = _socket.Receive(data, 3, SocketFlags.None);
                     string sData = Encoding.UTF8.GetString(data);
                     sData = sData.Replace("\0", string.Empty);
-                    if (bytes == 2 && sData == "OK")
+                    if (sData.Length > 0)
                     {
-                        this.Close();
+                        if (bytes == 2 && sData == "OK")
+                        {
+                            this.Close();
+                        }
+                        else if (sData == "BYE")
+                            throw new SocketException();
+                        else
+                        {
+                            this._userInfo = null;
+                            int errNum = int.Parse(sData[2].ToString());
+                            ServerErrorsHandler((ServerErrors)errNum);
+                        }
                     }
-                    else if (sData == "BYE")
-                        throw new SocketException();
-                    else
-                    {
-                        this._userInfo = null;
-                        int errNum = int.Parse(sData[2].ToString());
-                        ServerErrorsHandler((ServerErrors)errNum);
-                    }
-
+                    else throw new SocketException();
                 }
             }
             catch(SocketException)
@@ -160,9 +163,9 @@ namespace Soom_Client
         {
             if (command == "REG")
             {
-                return Encoding.UTF8.GetBytes(command + (this._userInfo.Length + 4).ToString("0000") + this._userInfo);
+                return Encoding.UTF8.GetBytes(command + (this._userInfo.Length).ToString("0000") + this._userInfo);
             }
-            return Encoding.UTF8.GetBytes(command + (this._userInfo.Length + 1).ToString("00") + this._userInfo);
+            return Encoding.UTF8.GetBytes(command + (this._userInfo.Length).ToString("00") + this._userInfo);
         }
     }
 }
