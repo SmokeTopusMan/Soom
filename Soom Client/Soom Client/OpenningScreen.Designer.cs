@@ -54,6 +54,7 @@
             // register
             // 
             this.register.BackColor = System.Drawing.Color.Yellow;
+            this.register.Cursor = System.Windows.Forms.Cursors.Hand;
             this.register.Font = new System.Drawing.Font("Bernard MT Condensed", 14F);
             this.register.ForeColor = System.Drawing.Color.DarkCyan;
             this.register.Location = new System.Drawing.Point(40, 109);
@@ -68,6 +69,7 @@
             // login
             // 
             this.login.BackColor = System.Drawing.Color.Yellow;
+            this.login.Cursor = System.Windows.Forms.Cursors.Hand;
             this.login.Font = new System.Drawing.Font("Bernard MT Condensed", 14F);
             this.login.ForeColor = System.Drawing.Color.DarkCyan;
             this.login.Location = new System.Drawing.Point(40, 312);
@@ -92,6 +94,7 @@
             // 
             // submitBtn
             // 
+            this.submitBtn.Cursor = System.Windows.Forms.Cursors.Hand;
             this.submitBtn.Location = new System.Drawing.Point(482, 388);
             this.submitBtn.Name = "submitBtn";
             this.submitBtn.Size = new System.Drawing.Size(75, 23);

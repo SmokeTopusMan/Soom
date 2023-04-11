@@ -63,6 +63,16 @@ namespace Soom_Client.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap HoverredSettingsGear {
+            get {
+                object obj = ResourceManager.GetObject("HoverredSettingsGear", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap SettingsGear {
             get {
                 object obj = ResourceManager.GetObject("SettingsGear", resourceCulture);

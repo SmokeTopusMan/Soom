@@ -112,5 +112,8 @@
   <ItemGroup>
     <None Include="Resources\SettingsGear.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\HoverredSettingsGear.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
