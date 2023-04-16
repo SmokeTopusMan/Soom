@@ -59,29 +59,35 @@
     <Compile Include="OpenningScreen.Designer.cs">
       <DependentUpon>OpenningScreen.cs</DependentUpon>
     </Compile>
-    <Compile Include="LoginClick.cs">
+    <Compile Include="LoginPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="LoginClick.Designer.cs">
-      <DependentUpon>LoginClick.cs</DependentUpon>
+    <Compile Include="LoginPanel.Designer.cs">
+      <DependentUpon>LoginPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RegisterClick.cs">
+    <Compile Include="RegisterPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="RegisterClick.Designer.cs">
-      <DependentUpon>RegisterClick.cs</DependentUpon>
+    <Compile Include="RegisterPanel.Designer.cs">
+      <DependentUpon>RegisterPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="Sex.cs" />
+    <Compile Include="SettingsPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SettingsPanel.Designer.cs">
+      <DependentUpon>SettingsPanel.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="MainScreen.resx">
       <DependentUpon>MainScreen.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="OpenningScreen.resx">
       <DependentUpon>OpenningScreen.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="LoginClick.resx">
-      <DependentUpon>LoginClick.cs</DependentUpon>
+    <EmbeddedResource Include="LoginPanel.resx">
+      <DependentUpon>LoginPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -93,8 +99,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="RegisterClick.resx">
-      <DependentUpon>RegisterClick.cs</DependentUpon>
+    <EmbeddedResource Include="RegisterPanel.resx">
+      <DependentUpon>RegisterPanel.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

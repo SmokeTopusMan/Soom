@@ -34,8 +34,8 @@
             this.login = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.submitBtn = new System.Windows.Forms.Button();
-            this.loginClick = new Soom_Client.LoginClick();
-            this.registerClick = new Soom_Client.RegisterClick();
+            this.loginClick = new Soom_Client.LoginPanel();
+            this.registerClick = new Soom_Client.RegisterPanel();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -142,8 +142,8 @@
         private System.Windows.Forms.Button register;
         private System.Windows.Forms.Button login;
         private System.Windows.Forms.Panel panel1;
-        private RegisterClick registerClick;
-        private LoginClick loginClick;
+        private RegisterPanel registerClick;
+        private LoginPanel loginClick;
         private System.Windows.Forms.Button submitBtn;
     }
 }
