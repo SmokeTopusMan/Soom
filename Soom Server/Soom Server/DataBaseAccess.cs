@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Soom_server
 {
-    public class DataBaseAccess
+    public static class DataBaseAccess
     {
         public static Errors RegiterUser(User user) //ToDo: Add a GeneralError by comparing the username to all the usernames in the DB and then put 
         {
@@ -53,6 +53,14 @@ namespace Soom_server
                 {
                     return Errors.GeneralError;
                 }
+            }
+        }
+        public static User GetUser(string username)
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                var output = cnn.Query<User>($"SELECT Username, Password, Age, Sex, Bio FROM UsersInfo WHERE Username = '{username}'");
+                return (User)output.ToList()[0];
             }
         }
 

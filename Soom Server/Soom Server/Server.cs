@@ -132,7 +132,11 @@ namespace Soom_server
             string[] userInfo = GetData(user.Socket, "LOG").Split('#');
             user = new User(user, userInfo[0], userInfo[1]);
             Errors err = DataBaseAccess.LoginUser(user);
-            if (err == Errors.None) user.Socket.Send(Encoding.UTF8.GetBytes("OK"));
+            if (err == Errors.None)
+            {
+                user.Socket.Send(Encoding.UTF8.GetBytes("OK"));
+                //ToDo: Continue Here the send of user information to the client so he can open the main screen
+            }
             else { SendErrors(user.Socket, err); Log("NOLOG", user.Id); } 
         }
         private static void Register(User user)
@@ -140,11 +144,11 @@ namespace Soom_server
             string[] userInfo = GetData(user.Socket, "REG").Split('#');
             try
             {
-                user = new User(user, userInfo[0], userInfo[1], int.Parse(userInfo[2]), char.Parse(userInfo[3]), userInfo[4]);
+                user = new User(user, userInfo[0], userInfo[1], int.Parse(userInfo[2]), userInfo[3], userInfo[4]);
             }
             catch(IndexOutOfRangeException)
             {
-                user = new User(user, userInfo[0], userInfo[1], int.Parse(userInfo[2]), char.Parse(userInfo[3]));
+                user = new User(user, userInfo[0], userInfo[1], int.Parse(userInfo[2]), userInfo[3]);
             }
             Errors err = DataBaseAccess.RegiterUser(user);
             if (err == Errors.None) user.Socket.Send(Encoding.UTF8.GetBytes("OK"));

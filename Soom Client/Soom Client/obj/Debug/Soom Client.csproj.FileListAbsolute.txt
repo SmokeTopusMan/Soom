@@ -27,9 +27,7 @@ C:\Users\USER\Source\Repos\Soom-Repo\Soom Client\Soom Client\obj\Debug\Soom Clie
 C:\Users\USER\Source\Repos\Soom\Soom Client\Soom Client\obj\Debug\Soom Client.csproj.AssemblyReference.cache
 C:\Users\USER\Source\Repos\Soom\Soom Client\Soom Client\obj\Debug\Soom Client.csproj.SuggestedBindingRedirects.cache
 C:\Users\USER\Source\Repos\Soom\Soom Client\Soom Client\obj\Debug\Soom_Client.OpenningScreen.resources
-C:\Users\USER\Source\Repos\Soom\Soom Client\Soom Client\obj\Debug\Soom_Client.LoginClick.resources
 C:\Users\USER\Source\Repos\Soom\Soom Client\Soom Client\obj\Debug\Soom_Client.Properties.Resources.resources
-C:\Users\USER\Source\Repos\Soom\Soom Client\Soom Client\obj\Debug\Soom_Client.RegisterClick.resources
 C:\Users\USER\Source\Repos\Soom\Soom Client\Soom Client\obj\Debug\Soom Client.csproj.GenerateResource.cache
 C:\Users\USER\Source\Repos\Soom\Soom Client\Soom Client\obj\Debug\Soom Client.csproj.CoreCompileInputs.cache
 C:\Users\USER\Source\Repos\Soom\Soom Client\Soom Client\obj\Debug\Soom Client.exe
@@ -51,3 +49,6 @@ C:\Users\soran\source\repos\Soom\Soom Client\Soom Client\obj\Debug\Soom Client.c
 C:\Users\soran\source\repos\Soom\Soom Client\Soom Client\obj\Debug\Soom Client.exe
 C:\Users\soran\source\repos\Soom\Soom Client\Soom Client\obj\Debug\Soom Client.pdb
 C:\Users\USER\Source\Repos\Soom\Soom Client\Soom Client\obj\Debug\Soom_Client.MainScreen.resources
+C:\Users\USER\Source\Repos\Soom\Soom Client\Soom Client\obj\Debug\Soom_Client.LoginPanel.resources
+C:\Users\USER\Source\Repos\Soom\Soom Client\Soom Client\obj\Debug\Soom_Client.RegisterPanel.resources
+C:\Users\USER\Source\Repos\Soom\Soom Client\Soom Client\obj\Debug\Soom_Client.SettingsPanel.resources

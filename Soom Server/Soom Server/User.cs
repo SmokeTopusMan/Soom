@@ -14,8 +14,8 @@ namespace Soom_server
         #region Properties
         public string Username { get; private set; }
         public string Password { get; private set; }
-        public int Age { get; set; }
-        public char Sex { get; set; }
+        public Int64 Age { get; set; }
+        public string Sex { get; set; }
         public string Bio { get; set; }
         public Socket Socket { get; set; }
         public int Id { get; set; }
@@ -23,60 +23,49 @@ namespace Soom_server
         #endregion
 
         #region CTors
-
-        public User(Socket socket, int id)
+        public User(string username, string password, Int64 age, string sex, string bio)
+        {
+            Username = username;
+            Password = password;
+            Age = age;
+            Sex = sex;
+            Bio = bio;
+        }
+        public User(string username, string password)
+        {
+            Username = username;
+            Password = password; //ToDo: Sort this User's constructors
+        }
+            public User(Socket socket, int id)
         {
             Socket = socket;
             Id = id;
             Connected = true;
         }
-        public User(string username, string password)
+
+        public User(User user, string username, string password, Int64 age, string sex, string bio) : this(username, password, age, sex, bio)
         {
-            Username = username;
-            Password = password;
+            Socket = user.Socket;
+            Id = user.Id;
+            Connected = user.Connected;
         }
-        public User(string username, string password, int age = 0, char sex = '\0', string bio = "")
+        public User(User user, string username, string password, Int64 age, string sex) : this(username, password, age, sex, "")
         {
-            Username = username;
-            Password = CreateSha256(CreateMD5(password) + username);
-            if(Age != age)
-                Age = age;
-            if (Sex != sex)
-                Sex = sex;
-            if (Bio != bio)
-                Bio = bio;
+            Socket = user.Socket;
+            Id = user.Id;
+            Connected = user.Connected;
         }
-        public User(User user, string username, string password, int age = 0, char sex = '\0', string bio = "") : this(username, password, age, sex, bio)
+        public User(User user, string username, string password) : this(username, password, 0, "", "")
         {
             Socket = user.Socket;
             Id = user.Id;
             Connected = user.Connected;
         }
         #endregion
-        private static string CreateSha256(string input)
+
+        public override string ToString()
         {
-            var crypt = new System.Security.Cryptography.SHA256Managed();
-            var hash = new StringBuilder();
-            byte[] crypto = crypt.ComputeHash(Encoding.UTF8.GetBytes(input));
-            foreach (byte theByte in crypto)
-            {
-                hash.Append(theByte.ToString("x2"));
-            }
-            return hash.ToString();
-        }
-        private static string CreateMD5(string input)
-        {
-            using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
-            {
-                byte[] inputBytes = Encoding.UTF8.GetBytes(input);
-                byte[] hashBytes = md5.ComputeHash(inputBytes);
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < hashBytes.Length; i++)
-                {
-                    sb.Append(hashBytes[i].ToString("x2"));
-                }
-                return sb.ToString();
-            }
+            return $"{Username}#{Password}#{Age}#{Sex}#{Bio}";
         }
     }
 }

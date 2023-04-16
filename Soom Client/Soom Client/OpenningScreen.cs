@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 
 namespace Soom_Client
@@ -53,8 +54,8 @@ namespace Soom_Client
                 {
                     if (LogInfoCheck())
                     {
-                        this._userInfo += $"{loginClick.UserName}#{loginClick.Password}";
-                        loginClick.ClearBoxes();
+                        this._userInfo += $"{loginClick.UserName}#{Encryption.CreateSha256(Encryption.CreateMD5(loginClick.Password) + loginClick.UserName)}";
+                        loginClick.ClearBoxes(); //ToDo: Think on the protocol. currently not working.
                         data = PrepareDataViaProtocol("LOG");
                     }
                     else data = null;
@@ -63,7 +64,7 @@ namespace Soom_Client
                 {
                     if (RegInfoCheck())
                     {
-                        this._userInfo += $"{registerClick.UserName}#{registerClick.Password}#{registerClick.Age}#{registerClick.Sex}#{registerClick.Bio}";
+                        this._userInfo += $"{registerClick.UserName}#{Encryption.CreateSha256(Encryption.CreateMD5(registerClick.Password) + registerClick.UserName)}#{registerClick.Age}#{registerClick.Sex}#{registerClick.Bio}";
                         registerClick.ClearBoxes();
                         data = PrepareDataViaProtocol("REG");
                     }
@@ -73,22 +74,36 @@ namespace Soom_Client
                 {
                     _socket.Send(data);
                     data = new byte[3];
-                    int bytes = _socket.Receive(data, 3, SocketFlags.None);
+                    int bytes = _socket.Receive(data, 2, SocketFlags.None);
                     string sData = Encoding.UTF8.GetString(data);
                     sData = sData.Replace("\0", string.Empty);
                     if (sData.Length > 0)
                     {
-                        if (bytes == 2 && sData == "OK")
+                        if (bytes == 2 && sData == "OK") //ToDo: need to check if log request. If it is, then get the rest of the info and put it in the MainScreen class.
                         {
+                            if (_userInfo.Count(c => c == '#') == 1)
+                            {
+                                _socket.Receive(data, 2, SocketFlags.None);
+                                int length = int.Parse(Encoding.UTF8.GetString(data).Substring(0,2));
+                                data = new byte[length];
+                                _socket.Receive(data, length, SocketFlags.None);
+                                _userInfo = Encoding.UTF8.GetString(data);
+                                _socket.Send(Encoding.UTF8.GetBytes("OK"));
+                            }
                             this.Close();
                         }
-                        else if (sData == "BYE")
-                            throw new SocketException();
                         else
                         {
-                            this._userInfo = null;
-                            int errNum = int.Parse(sData[2].ToString());
-                            ServerErrorsHandler((ServerErrors)errNum);
+                            _socket.Receive(data, 1, SocketFlags.None);
+                            sData += Encoding.UTF8.GetString(data)[0];
+                            if (sData == "BYE")
+                                throw new SocketException();
+                            else
+                            {
+                                this._userInfo = null;
+                                int errNum = int.Parse(sData[2].ToString());
+                                ServerErrorsHandler((ServerErrors)errNum);
+                            }
                         }
                     }
                     else throw new SocketException();
