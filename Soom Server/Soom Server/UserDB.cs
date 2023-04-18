@@ -10,10 +10,10 @@ namespace Soom_server
     {
         public string Username { get; private set; }
         public string Password { get; private set; }
-        public Int64 Age { get; set; }
+        public long Age { get; set; }
         public string Sex { get; set; }
         public string Bio { get; set; }
-        public Int64 Points { get; set; }
+        public long Points { get; set; }
 
         public UserDB(string username, string password, long age, string sex, string bio, long points)
         {
@@ -23,6 +23,16 @@ namespace Soom_server
             Sex = sex;
             Bio = bio;
             Points = points;
+        }
+
+        public UserDB(string username, string password, long age, string sex) : this(username, password)
+        {
+            Age = age;
+            Sex = sex;
+        }
+        public UserDB(string username, string password, long age, string sex, string bio) : this(username, password, age, sex)
+        {
+            Bio = bio;
         }
         public UserDB(string username, string password)
         {

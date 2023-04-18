@@ -14,12 +14,12 @@ namespace Soom_server
 {
     public static class DataBaseAccess
     {
-        public static void RegiterUser(User user) //ToDo: Add a GeneralError by comparing the username to all the usernames in the DB and then put 
+        public static void RegiterUser(UserDB user) //ToDo: Add a GeneralError by comparing the username to all the usernames in the DB and then put 
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
-                List<User> users = GetAllUsers("REG");
-                foreach (User item in users)
+                List<UserDB> users = GetAllUsers("REG");
+                foreach (UserDB item in users)
                 {
                     if (item.Username == user.Username)
                     {
@@ -29,14 +29,12 @@ namespace Soom_server
                 cnn.Execute("INSERT INTO UsersInfo (Username, Password, Age, Sex, Bio) VALUES (@Username, @Password, @Age, @Sex, @Bio)", user);
             }
         }
-
-        public static void LoginUser(User user)
+        public static void LoginUser(UserDB user)
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
-                    var output = cnn.Query<User>("SELECT Username, Password FROM UsersInfo");
-                    var users = output.ToList();
-                    foreach (User item in users)
+                List<UserDB> users = GetAllUsers("LOG");
+                foreach (UserDB item in users)
                     {
                         if (item.Username == user.Username)
                         {
@@ -47,35 +45,37 @@ namespace Soom_server
                     throw new UsernameNotExistException();
             }
         }
-        public static User GetUser(string username)
+        public static UserDB GetUser(string username)
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
-                var output = cnn.Query<User>($"SELECT Username, Password, Age, Sex, Bio, Points FROM UsersInfo WHERE Username = '{username}'");
-                return (User)output.ToList()[0];
+                var output = cnn.Query<UserDB>($"SELECT Username, Password, Age, Sex, Bio, Points FROM UsersInfo WHERE Username = '{username}'");
+                return (UserDB)output.ToList()[0];
             }
         }
-
-        private static string LoadConnectionString(string connectionString = "Default")
-        {
-            return ConfigurationManager.ConnectionStrings[connectionString].ConnectionString;
-        }
-        public static List<User> GetAllUsers(string command = null)
+        public static List<UserDB> GetAllUsers(string command = null)
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
                 if (command == "REG")
                 {
-                    var output = cnn.Query<User>("SELECT Username FROM UsersInfo");
+                    var output = cnn.Query<UserDB>("SELECT Username FROM UsersInfo");
                     return output.ToList();
                 }
                 else if (command == "LOG")
                 {
-                    var output = cnn.Query<User>("SELECT Username, Password FROM UsersInfo");
+                    var output = cnn.Query<UserDB>("SELECT Username, Password FROM UsersInfo");
                     return output.ToList();
                 }
-                return cnn.Query<User>("SELECT Username, Password, Age, Sex, Bio, Points FROM UsersInfo").ToList();
+                return cnn.Query<UserDB>("SELECT Username, Password, Age, Sex, Bio, Points FROM UsersInfo").ToList();
             }
         }
+
+        #region Get Connection String
+        private static string LoadConnectionString(string connectionString = "Default")
+        {
+            return ConfigurationManager.ConnectionStrings[connectionString].ConnectionString;
+        }
+        #endregion
     }
 }

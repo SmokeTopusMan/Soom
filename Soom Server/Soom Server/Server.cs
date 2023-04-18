@@ -131,10 +131,10 @@ namespace Soom_server
         private static void Login(User user)
         {
             string[] userInfo = GetData(user.Socket, "LOG").Split('#');
-            user = new User(user, userInfo[0], userInfo[1]);
+            UserDB userDB = new UserDB(userInfo[0], userInfo[1]);
             try
             {
-                DataBaseAccess.LoginUser(user);
+                DataBaseAccess.LoginUser(userDB);
                 user.Socket.Send(Encoding.UTF8.GetBytes("OK"));
                 //ToDo: Continue Here the send of user information to the client so he can open the main screen
             }
@@ -150,18 +150,20 @@ namespace Soom_server
         private static void Register(User user)
         {
             string[] userInfo = GetData(user.Socket, "REG").Split('#');
+            UserDB userDetails;
             try
             {
-                user = new User(user, userInfo[0], userInfo[1], int.Parse(userInfo[2]), userInfo[3], userInfo[4]);
+                userDetails = new UserDB(userInfo[0], userInfo[1], int.Parse(userInfo[2]), userInfo[3], userInfo[4]);
             }
             catch(IndexOutOfRangeException)
             {
-                user = new User(user, userInfo[0], userInfo[1], int.Parse(userInfo[2]), userInfo[3]);
+                userDetails = new UserDB(userInfo[0], userInfo[1], int.Parse(userInfo[2]), userInfo[3]);
             }
             try
             {
-                DataBaseAccess.RegiterUser(user);
+                DataBaseAccess.RegiterUser(userDetails);
                 user.Socket.Send(Encoding.UTF8.GetBytes("OK"));
+                //ToDo: continue the protocol here!
             }
             catch (UsernameTakenException)
             {
