@@ -8,58 +8,50 @@ using System.Linq;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Soom_server
 {
     public static class DataBaseAccess
     {
-        public static Errors RegiterUser(User user) //ToDo: Add a GeneralError by comparing the username to all the usernames in the DB and then put 
+        public static void RegiterUser(User user) //ToDo: Add a GeneralError by comparing the username to all the usernames in the DB and then put 
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
-                try
+                List<User> users = GetAllUsers("REG");
+                foreach (User item in users)
                 {
-                    cnn.Execute("INSERT INTO UsersInfo (Username, Password, Age, Sex, Bio) VALUES (@Username, @Password, @Age, @Sex, @Bio)", user);
-                    return Errors.None;
+                    if (item.Username == user.Username)
+                    {
+                        throw new UsernameTakenException();
+                    }
                 }
-                catch (SQLiteException)
-                {
-                    Console.WriteLine("Registration Failed!");
-                    return Errors.UsernameIsTaken;
-                }
-
+                cnn.Execute("INSERT INTO UsersInfo (Username, Password, Age, Sex, Bio) VALUES (@Username, @Password, @Age, @Sex, @Bio)", user);
             }
         }
 
-        public static Errors LoginUser(User user)
+        public static void LoginUser(User user)
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
-                try
-                {
                     var output = cnn.Query<User>("SELECT Username, Password FROM UsersInfo");
-                    var test = output.ToList();
-                    foreach (User item in test)
+                    var users = output.ToList();
+                    foreach (User item in users)
                     {
                         if (item.Username == user.Username)
                         {
                             if (item.Password == user.Password)
-                                return Errors.None;
+                                return;
                         }
                     }
-                    return Errors.UserNotExist;
-                }
-                catch(SQLiteException) 
-                {
-                    return Errors.GeneralError;
-                }
+                    throw new UsernameNotExistException();
             }
         }
         public static User GetUser(string username)
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
-                var output = cnn.Query<User>($"SELECT Username, Password, Age, Sex, Bio FROM UsersInfo WHERE Username = '{username}'");
+                var output = cnn.Query<User>($"SELECT Username, Password, Age, Sex, Bio, Points FROM UsersInfo WHERE Username = '{username}'");
                 return (User)output.ToList()[0];
             }
         }
@@ -67,6 +59,23 @@ namespace Soom_server
         private static string LoadConnectionString(string connectionString = "Default")
         {
             return ConfigurationManager.ConnectionStrings[connectionString].ConnectionString;
+        }
+        public static List<User> GetAllUsers(string command = null)
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                if (command == "REG")
+                {
+                    var output = cnn.Query<User>("SELECT Username FROM UsersInfo");
+                    return output.ToList();
+                }
+                else if (command == "LOG")
+                {
+                    var output = cnn.Query<User>("SELECT Username, Password FROM UsersInfo");
+                    return output.ToList();
+                }
+                return cnn.Query<User>("SELECT Username, Password, Age, Sex, Bio, Points FROM UsersInfo").ToList();
+            }
         }
     }
 }

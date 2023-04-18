@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Runtime.CompilerServices;
+using System.Data.SQLite;
 
 namespace Soom_server
 {
@@ -45,7 +46,7 @@ namespace Soom_server
                 try
                 {
                     byte[] buffer = new byte[3];
-                    int bytes_recieved = user.Socket.Receive(buffer, 3, SocketFlags.None);  //Useful: Change the flag to Partial
+                    int bytes_recieved = user.Socket.Receive(buffer, 3, SocketFlags.None);
                     if (bytes_recieved == 0)
                         throw new SocketException();
                     while(bytes_recieved < 3 && bytes_recieved != 0)
@@ -116,7 +117,7 @@ namespace Soom_server
             }
             return null;
         }
-        private static void SendErrors(Socket clientSock, Errors error) //ToDo: Finish the SendErrors Function.
+        private static void SendErrors(Socket clientSock, Errors error)
         {
             if (error == Errors.GeneralError)
             {
@@ -131,13 +132,20 @@ namespace Soom_server
         {
             string[] userInfo = GetData(user.Socket, "LOG").Split('#');
             user = new User(user, userInfo[0], userInfo[1]);
-            Errors err = DataBaseAccess.LoginUser(user);
-            if (err == Errors.None)
+            try
             {
+                DataBaseAccess.LoginUser(user);
                 user.Socket.Send(Encoding.UTF8.GetBytes("OK"));
                 //ToDo: Continue Here the send of user information to the client so he can open the main screen
             }
-            else { SendErrors(user.Socket, err); Log("NOLOG", user.Id); } 
+            catch (UsernameNotExistException)
+            {
+                SendErrors(user.Socket, Errors.UserNotExist); Log("NOLOG", user.Id, Errors.UserNotExist);
+            }
+            catch (SQLiteException)
+            {
+                SendErrors(user.Socket, Errors.GeneralError); Log("NOLOG", user.Id, Errors.GeneralError);
+            }
         }
         private static void Register(User user)
         {
@@ -150,19 +158,28 @@ namespace Soom_server
             {
                 user = new User(user, userInfo[0], userInfo[1], int.Parse(userInfo[2]), userInfo[3]);
             }
-            Errors err = DataBaseAccess.RegiterUser(user);
-            if (err == Errors.None) user.Socket.Send(Encoding.UTF8.GetBytes("OK"));
-            else { SendErrors(user.Socket, err); Log("NOREG", user.Id); }
-
+            try
+            {
+                DataBaseAccess.RegiterUser(user);
+                user.Socket.Send(Encoding.UTF8.GetBytes("OK"));
+            }
+            catch (UsernameTakenException)
+            {
+                SendErrors(user.Socket, Errors.UsernameIsTaken); Log("NOREG", user.Id, Errors.UsernameIsTaken);
+            }
+            catch (SQLiteException)
+            {
+                SendErrors(user.Socket, Errors.GeneralError); Log("NOREG", user.Id, Errors.GeneralError);
+            }
         }
-        private static void Log(string command, int id)
+        private static void Log(string command, int id, Errors err = Errors.None)
         {
             if(command == "JOIN") Console.WriteLine($"Server => Server: Client '{id}' Has Been Connected!");
             else if(command == "LEFT") Console.WriteLine($"Server => Server: Client '{id}' Has Been Disconnected!");
             else if(command == "LOG") Console.WriteLine($"Client => Server: Client '{id}' Sent Login Request!");
             else if (command == "REG") Console.WriteLine($"Client => Server: Client '{id}' Sent Register Request!");
-            else if( command == "NOLOG") Console.WriteLine($"Server => Client: Client's '{id} Login Request Has Failed!'");
-            else if (command == "NOREG") Console.WriteLine($"Server => Client: Client's '{id} Registration Request  Has Failed! ");
+            else if( command == "NOLOG") Console.WriteLine($"Server => Client: Client's '{id} Login Request Has Failed', ERROR:{err}");
+            else if (command == "NOREG") Console.WriteLine($"Server => Client: Client's '{id} Registration Request Has Failed', ERROR:{err}");
         }
         private static string GetLocalIPAddress()
         {

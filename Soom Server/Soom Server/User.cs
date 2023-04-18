@@ -17,6 +17,7 @@ namespace Soom_server
         public Int64 Age { get; set; }
         public string Sex { get; set; }
         public string Bio { get; set; }
+        public Int64 Points { get; set; }
         public Socket Socket { get; set; }
         public int Id { get; set; }
         public bool Connected { get; set; }
@@ -31,18 +32,21 @@ namespace Soom_server
             Sex = sex;
             Bio = bio;
         }
+        public User(string username)
+        {
+            Username = username;
+        }
         public User(string username, string password)
         {
             Username = username;
             Password = password; //ToDo: Sort this User's constructors
         }
-            public User(Socket socket, int id)
+        public User(Socket socket, int id) 
         {
             Socket = socket;
             Id = id;
             Connected = true;
         }
-
         public User(User user, string username, string password, Int64 age, string sex, string bio) : this(username, password, age, sex, bio)
         {
             Socket = user.Socket;
