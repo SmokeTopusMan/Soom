@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,6 +25,13 @@ namespace Soom_server
             Bio = bio;
             Points = points;
         }
+        public UserDB(long age, string sex, string bio, long points)
+        {
+            Age = age;
+            Sex = sex;
+            Bio = bio;
+            Points = points;
+        }
 
         public UserDB(string username, string password, long age, string sex) : this(username, password)
         {
@@ -42,6 +50,10 @@ namespace Soom_server
         public UserDB(string username)
         {
             Username = username;
+        }
+
+        public UserDB()
+        {
         }
     }
 }

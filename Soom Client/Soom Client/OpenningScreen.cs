@@ -54,8 +54,8 @@ namespace Soom_Client
                 {
                     if (LogInfoCheck())
                     {
-                        this._userInfo += $"{loginClick.UserName}#{Encryption.CreateSha256(Encryption.CreateMD5(loginClick.Password) + loginClick.UserName)}";
-                        loginClick.ClearBoxes(); //ToDo: Think on the protocol. currently not working.
+                        this._userInfo += $"{loginClick.UserName}#{loginClick.Password}";
+                        loginClick.ClearBoxes();
                         data = PrepareDataViaProtocol("LOG");
                     }
                     else data = null;
@@ -64,7 +64,7 @@ namespace Soom_Client
                 {
                     if (RegInfoCheck())
                     {
-                        this._userInfo += $"{registerClick.UserName}#{Encryption.CreateSha256(Encryption.CreateMD5(registerClick.Password) + registerClick.UserName)}#{registerClick.Age}#{registerClick.Sex}#{registerClick.Bio}";
+                        this._userInfo += $"{registerClick.UserName}#{registerClick.Password}#{registerClick.Age}#{registerClick.Sex}#{registerClick.Bio}";
                         registerClick.ClearBoxes();
                         data = PrepareDataViaProtocol("REG");
                     }
@@ -79,16 +79,51 @@ namespace Soom_Client
                     sData = sData.Replace("\0", string.Empty);
                     if (sData.Length > 0)
                     {
-                        if (bytes == 2 && sData == "OK") //ToDo: need to check if log request. If it is, then get the rest of the info and put it in the MainScreen class.
+                        if (bytes == 2 && sData == "OK")
                         {
                             if (_userInfo.Count(c => c == '#') == 1)
                             {
-                                _socket.Receive(data, 2, SocketFlags.None);
-                                int length = int.Parse(Encoding.UTF8.GetString(data).Substring(0,2));
-                                data = new byte[length];
-                                _socket.Receive(data, length, SocketFlags.None);
-                                _userInfo = Encoding.UTF8.GetString(data);
-                                _socket.Send(Encoding.UTF8.GetBytes("OK"));
+                                for(int i = 0; i < 5; i++)
+                                {
+                                    try
+                                    {
+                                        data = new byte[4];
+                                        _socket.Receive(data, 4, SocketFlags.None);
+                                        int length = int.Parse(Encoding.UTF8.GetString(data));
+                                        data = new byte[length];
+                                        _socket.Receive(data, length, SocketFlags.None); // Future: Maybe Put this and the else in a func.
+                                        _userInfo = Encoding.UTF8.GetString(data); //ToDo: need to transfer the data to the MainScreen.
+                                        _socket.Send(Encoding.UTF8.GetBytes("OK"));
+                                        break;
+                                    }
+                                    catch 
+                                    {
+                                        _socket.Send(Encoding.UTF8.GetBytes("NO"));
+                                        continue;   
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                for (int i = 0; i < 5; i++)
+                                {
+                                    try
+                                    {
+                                        data = new byte[1];
+                                        _socket.Receive(data, 1, SocketFlags.None);
+                                        int length = int.Parse(Encoding.UTF8.GetString(data));
+                                        data = new byte[length];
+                                        _socket.Receive(data, length, SocketFlags.None); //ToDo: need to transfer the data to the MainScreen.
+                                        _userInfo = Encoding.UTF8.GetString(data);
+                                        _socket.Send(Encoding.UTF8.GetBytes("OK"));
+                                        break;
+                                    }
+                                    catch
+                                    {
+                                        _socket.Send(Encoding.UTF8.GetBytes("NO"));
+                                        continue;
+                                    }
+                                }
                             }
                             this.Close();
                         }
@@ -176,11 +211,14 @@ namespace Soom_Client
         }
         private Byte[] PrepareDataViaProtocol(string command)
         {
+            string[] temp = this._userInfo.Split('#');
+            temp[1] = Encryption.CreateSha256(Encryption.CreateMD5(temp[1]) + temp[0]);
+            string data = string.Join("#", temp);
             if (command == "REG")
             {
-                return Encoding.UTF8.GetBytes(command + (this._userInfo.Length).ToString("0000") + this._userInfo);
+                return Encoding.UTF8.GetBytes(command + (data.Length).ToString("0000") + data);
             }
-            return Encoding.UTF8.GetBytes(command + (this._userInfo.Length).ToString("00") + this._userInfo);
+            return Encoding.UTF8.GetBytes(command + (data.Length).ToString("00") + data);
         }
     }
 }

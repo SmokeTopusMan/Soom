@@ -14,7 +14,7 @@ namespace Soom_server
 {
     public static class DataBaseAccess
     {
-        public static void RegiterUser(UserDB user) //ToDo: Add a GeneralError by comparing the username to all the usernames in the DB and then put 
+        public static string RegiterUser(UserDB user)
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
@@ -27,22 +27,28 @@ namespace Soom_server
                     }
                 }
                 cnn.Execute("INSERT INTO UsersInfo (Username, Password, Age, Sex, Bio) VALUES (@Username, @Password, @Age, @Sex, @Bio)", user);
+                return string.Join("", cnn.Query<string>($"SELECT Points FROM UsersInfo WHERE Username = '{user.Username}'"));
             }
         }
-        public static void LoginUser(UserDB user)
+        public static string LoginUser(UserDB user)
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
                 List<UserDB> users = GetAllUsers("LOG");
                 foreach (UserDB item in users)
+                {
+                    if (item.Username == user.Username)
                     {
-                        if (item.Username == user.Username)
+                        if (item.Password == user.Password)
                         {
-                            if (item.Password == user.Password)
-                                return;
+                            var temp = cnn.Query<UserDB>($"SELECT Age, Sex, Bio, Points FROM UsersInfo WHERE Username = '{user.Username}'");
+                            List<UserDB> data = temp.ToList();
+                            return $"{data[0].Age}#{data[0].Sex}#{data[0].Bio}#{data[0].Points}";
                         }
                     }
-                    throw new UsernameNotExistException();
+                }
+                throw new UsernameNotExistException();
+
             }
         }
         public static UserDB GetUser(string username)

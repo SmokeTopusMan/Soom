@@ -134,9 +134,18 @@ namespace Soom_server
             UserDB userDB = new UserDB(userInfo[0], userInfo[1]);
             try
             {
-                DataBaseAccess.LoginUser(userDB);
+                string returnedData = DataBaseAccess.LoginUser(userDB);
                 user.Socket.Send(Encoding.UTF8.GetBytes("OK"));
-                //ToDo: Continue Here the send of user information to the client so he can open the main screen
+                for (int i = 0; i < 5; i++)
+                {
+                    returnedData = returnedData.Length.ToString("0000") + returnedData;
+                    user.Socket.Send(Encoding.UTF8.GetBytes(returnedData));
+                    byte[] confirmation = new byte[2];
+                    user.Socket.Receive(confirmation, 2, SocketFlags.None);
+                    if (Encoding.UTF8.GetString(confirmation) == "OK")
+                        return;
+                }
+                SendErrors(user.Socket, Errors.GeneralError);
             }
             catch (UsernameNotExistException)
             {
@@ -161,9 +170,18 @@ namespace Soom_server
             }
             try
             {
-                DataBaseAccess.RegiterUser(userDetails);
+                string returnedData = DataBaseAccess.RegiterUser(userDetails);
                 user.Socket.Send(Encoding.UTF8.GetBytes("OK"));
-                //ToDo: continue the protocol here!
+                for (int i = 0; i < 5; i++)
+                {
+                    returnedData = returnedData.Length.ToString("0") + returnedData;
+                    user.Socket.Send(Encoding.UTF8.GetBytes(returnedData));
+                    byte[] confirmation = new byte[2];
+                    user.Socket.Receive(confirmation, 2, SocketFlags.None);
+                    if (Encoding.UTF8.GetString(confirmation) == "OK")
+                        return;
+                }
+                SendErrors(user.Socket, Errors.GeneralError);
             }
             catch (UsernameTakenException)
             {
