@@ -68,16 +68,7 @@ namespace Soom_server
                         }
                     }
                     string command = Encoding.UTF8.GetString(buffer);
-                    if (command == "LOG")
-                    {
-                        Log("LOG", user.Id);
-                        Login(user);
-                    }
-                    else if (command == "REG")
-                    {
-                        Log("REG", user.Id);
-                        Register(user);
-                    }
+                    HandleCommand(command, user);
                 }
                 catch (SocketException)
                 {
@@ -93,6 +84,20 @@ namespace Soom_server
             user.Connected = false;
             ClientLeft();
             Log("LEFT", user.Id);
+        }
+
+        private static void HandleCommand(string command, User user)
+        {
+            if (command == "LOG")
+            {
+                Log("LOG", user.Id);
+                Login(user);
+            }
+            else if (command == "REG")
+            {
+                Log("REG", user.Id);
+                Register(user);
+            }
         }
 
         private static string GetData(Socket sock, string command)
