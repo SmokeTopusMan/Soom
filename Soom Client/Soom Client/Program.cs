@@ -7,7 +7,6 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using System.Security.Cryptography.X509Certificates;
 using System.Runtime.InteropServices;
 
 namespace Soom_Client
@@ -29,8 +28,8 @@ namespace Soom_Client
                 Application.SetCompatibleTextRenderingDefault(false);
                 OpenningScreen openningScreen = new OpenningScreen(sock);
                 Application.Run(openningScreen);
-                if (openningScreen.HasUserInfo())
-                    Application.Run(new MainScreen(sock));
+                //if (openningScreen.HasUserInfo())
+                    //Application.Run(new MainScreen(sock));
             }
             catch (SocketException)
             {

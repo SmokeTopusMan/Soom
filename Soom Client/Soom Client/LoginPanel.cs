@@ -48,5 +48,10 @@ namespace Soom_Client
             if (e.KeyChar == '#' || e.KeyChar == ' ')
                 e.Handled = true;
         }
+
+        private void LoginPanel_Load(object sender, EventArgs e)
+        {
+            passLogTextBox.PasswordChar = '*';
+        }
     }
 }

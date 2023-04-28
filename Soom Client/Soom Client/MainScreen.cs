@@ -15,10 +15,13 @@ namespace Soom_Client
 {
     public partial class MainScreen : Form
     {
-        private Socket _socket;
-        public MainScreen(Socket socket)
+        public Socket Socket { get; set; }
+        public UserInfo UserInfo { get; set; }
+        
+        public MainScreen(Socket socket, string userInfo)
         {
-            _socket = socket;
+            Socket = socket;
+            UserInfo = ConvertStrToUser(userInfo);
             InitializeComponent();
         }
 
@@ -68,6 +71,19 @@ namespace Soom_Client
         private void settingsWheelButton_Click(object sender, EventArgs e)
         {
             HideAllComponents();
+            SettingsScreen settingsScreen = new SettingsScreen(Socket);
+            settingsScreen.Location = new Point(0, 0);
+            settingsScreen.Name = "settingsScreen";
+            settingsScreen.Size = new Size(this.Size.Width-16, this.Size.Height-39);
+            this.Controls.Add(settingsScreen);
+            
+
+            /*
+            this.registerClick.Location = new System.Drawing.Point(200, 137);
+            this.registerClick.Name = "registerClick";
+            this.registerClick.Size = new System.Drawing.Size(622, 312);
+            this.registerClick.TabIndex = 10;
+            */
 
         }
         private void createMeetingButton_Click(object sender, EventArgs e)
@@ -83,6 +99,15 @@ namespace Soom_Client
             HideAllComponents(settingsWheelButton);
         }
         #endregion
+
+        private UserInfo ConvertStrToUser(string userInfo)
+        {
+            string[] userStrings = userInfo.Split('#');
+            if (userStrings[3] == "M")
+                return new UserInfo(userStrings[0], userStrings[1], int.Parse(userStrings[2]), Sex.Male, userStrings[4], int.Parse(userStrings[5]));
+            else
+                return new UserInfo(userStrings[0], userStrings[1], int.Parse(userStrings[2]), Sex.Female, userStrings[4], int.Parse(userStrings[5]));
+        }
 
         private void HideAllComponents(Component button = null)
         {

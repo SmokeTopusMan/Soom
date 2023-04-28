@@ -2,8 +2,8 @@
 {
     public enum Sex
     {
-        M,
-        F,
+        Male,
+        Female,
         NotChecked,
     }
 }

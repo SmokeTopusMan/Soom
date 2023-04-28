@@ -74,7 +74,7 @@
             this.passLogTextBox.TabIndex = 17;
             this.passLogTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.passLogTextBox_KeyPress);
             // 
-            // LoginClick
+            // LoginPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -82,8 +82,9 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.passLogTextBox);
-            this.Name = "LoginClick";
+            this.Name = "LoginPanel";
             this.Size = new System.Drawing.Size(622, 218);
+            this.Load += new System.EventHandler(this.LoginPanel_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

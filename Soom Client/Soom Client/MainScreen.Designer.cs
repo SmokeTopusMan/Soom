@@ -42,7 +42,7 @@
             this.title.AutoSize = true;
             this.title.Font = new System.Drawing.Font("Matura MT Script Capitals", 50F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.title.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(56)))), ((int)(((byte)(64)))), ((int)(((byte)(181)))));
-            this.title.Location = new System.Drawing.Point(268, 59);
+            this.title.Location = new System.Drawing.Point(248, 59);
             this.title.Name = "title";
             this.title.Size = new System.Drawing.Size(353, 89);
             this.title.TabIndex = 1;
@@ -54,7 +54,7 @@
             this.createMeetingButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.createMeetingButton.Font = new System.Drawing.Font("Microsoft JhengHei Light", 17.3F);
             this.createMeetingButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(110)))), ((int)(((byte)(0)))), ((int)(((byte)(17)))));
-            this.createMeetingButton.Location = new System.Drawing.Point(326, 222);
+            this.createMeetingButton.Location = new System.Drawing.Point(306, 222);
             this.createMeetingButton.Margin = new System.Windows.Forms.Padding(3, 17, 3, 17);
             this.createMeetingButton.Name = "createMeetingButton";
             this.createMeetingButton.Size = new System.Drawing.Size(238, 30);
@@ -70,7 +70,7 @@
             this.joinMeetingButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.joinMeetingButton.Font = new System.Drawing.Font("Microsoft JhengHei Light", 17.3F);
             this.joinMeetingButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(110)))), ((int)(((byte)(0)))), ((int)(((byte)(17)))));
-            this.joinMeetingButton.Location = new System.Drawing.Point(306, 286);
+            this.joinMeetingButton.Location = new System.Drawing.Point(286, 286);
             this.joinMeetingButton.Margin = new System.Windows.Forms.Padding(3, 17, 3, 17);
             this.joinMeetingButton.Name = "joinMeetingButton";
             this.joinMeetingButton.Size = new System.Drawing.Size(277, 30);
@@ -86,7 +86,7 @@
             this.addFriendButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.addFriendButton.Font = new System.Drawing.Font("Microsoft JhengHei Light", 17.3F);
             this.addFriendButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(110)))), ((int)(((byte)(0)))), ((int)(((byte)(17)))));
-            this.addFriendButton.Location = new System.Drawing.Point(378, 350);
+            this.addFriendButton.Location = new System.Drawing.Point(358, 350);
             this.addFriendButton.Margin = new System.Windows.Forms.Padding(3, 17, 3, 17);
             this.addFriendButton.Name = "addFriendButton";
             this.addFriendButton.Size = new System.Drawing.Size(134, 30);
@@ -102,7 +102,7 @@
             this.sponsorLabel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.sponsorLabel.Font = new System.Drawing.Font("Microsoft JhengHei Light", 6F, System.Drawing.FontStyle.Bold);
             this.sponsorLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(110)))), ((int)(((byte)(0)))), ((int)(((byte)(17)))));
-            this.sponsorLabel.Location = new System.Drawing.Point(0, 501);
+            this.sponsorLabel.Location = new System.Drawing.Point(0, 451);
             this.sponsorLabel.Name = "sponsorLabel";
             this.sponsorLabel.Size = new System.Drawing.Size(115, 10);
             this.sponsorLabel.TabIndex = 5;
@@ -131,7 +131,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(184)))), ((int)(((byte)(199)))), ((int)(((byte)(224)))));
-            this.ClientSize = new System.Drawing.Size(874, 511);
+            this.ClientSize = new System.Drawing.Size(834, 461);
             this.Controls.Add(this.sponsorLabel);
             this.Controls.Add(this.addFriendButton);
             this.Controls.Add(this.joinMeetingButton);

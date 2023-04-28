@@ -51,4 +51,4 @@ C:\Users\soran\source\repos\Soom\Soom Client\Soom Client\obj\Debug\Soom Client.p
 C:\Users\USER\Source\Repos\Soom\Soom Client\Soom Client\obj\Debug\Soom_Client.MainScreen.resources
 C:\Users\USER\Source\Repos\Soom\Soom Client\Soom Client\obj\Debug\Soom_Client.LoginPanel.resources
 C:\Users\USER\Source\Repos\Soom\Soom Client\Soom Client\obj\Debug\Soom_Client.RegisterPanel.resources
-C:\Users\USER\Source\Repos\Soom\Soom Client\Soom Client\obj\Debug\Soom_Client.SettingsPanel.resources
+C:\Users\USER\source\repos\Soom\Soom Client\Soom Client\obj\Debug\Soom_Client.SettingsScreen.resources

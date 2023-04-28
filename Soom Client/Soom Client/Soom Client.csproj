@@ -12,6 +12,8 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -35,6 +37,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -74,13 +77,15 @@
     <Compile Include="RegisterPanel.Designer.cs">
       <DependentUpon>RegisterPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="Sex.cs" />
-    <Compile Include="SettingsPanel.cs">
+    <Compile Include="SettingsScreen.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SettingsPanel.Designer.cs">
-      <DependentUpon>SettingsPanel.cs</DependentUpon>
+    <Compile Include="SettingsScreen.Designer.cs">
+      <DependentUpon>SettingsScreen.cs</DependentUpon>
     </Compile>
+    <Compile Include="Sex.cs" />
+    <Compile Include="UserInfo.cs" />
+    <Compile Include="VideoFormat.cs" />
     <EmbeddedResource Include="MainScreen.resx">
       <DependentUpon>MainScreen.cs</DependentUpon>
     </EmbeddedResource>
@@ -103,8 +108,8 @@
     <EmbeddedResource Include="RegisterPanel.resx">
       <DependentUpon>RegisterPanel.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SettingsPanel.resx">
-      <DependentUpon>SettingsPanel.cs</DependentUpon>
+    <EmbeddedResource Include="SettingsScreen.resx">
+      <DependentUpon>SettingsScreen.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -124,6 +129,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\HoverredSettingsGear.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\backButton.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\HoverredbackButton.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

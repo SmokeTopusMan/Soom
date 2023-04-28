@@ -14,6 +14,7 @@ namespace Soom_Client
     public partial class RegisterPanel : UserControl
     {
         #region Properties
+
         public string UserName { get { return usernameRegTextBox.Text; } private set { } }
         public string Password { get { return passRegTextBox.Text; } private set { } }
         public string Age { get { return ageTextBox.Text; } private set { } }
@@ -22,9 +23,9 @@ namespace Soom_Client
             get
             {
                 if (maleCheckBox.Checked)
-                    return Sex.M;
+                    return Sex.Male;
                 else if (femaleCheckBox.Checked)
-                    return Sex.F;
+                    return Sex.Female;
                 else
                     return Sex.NotChecked;
             }
@@ -37,6 +38,7 @@ namespace Soom_Client
         public RegisterPanel()
         {
             InitializeComponent();
+
         }
         #endregion
 

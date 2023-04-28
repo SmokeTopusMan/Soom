@@ -81,7 +81,7 @@ namespace Soom_Client
                     {
                         if (bytes == 2 && sData == "OK")
                         {
-                            if (_userInfo.Count(c => c == '#') == 1)
+                            if (_userInfo.Count(c => c == '#') == 1) // if the request is login.
                             {
                                 for(int i = 0; i < 5; i++)
                                 {
@@ -92,7 +92,7 @@ namespace Soom_Client
                                         int length = int.Parse(Encoding.UTF8.GetString(data));
                                         data = new byte[length];
                                         _socket.Receive(data, length, SocketFlags.None); // Future: Maybe Put this and the else in a func.
-                                        _userInfo = Encoding.UTF8.GetString(data); //ToDo: need to transfer the data to the MainScreen.
+                                        _userInfo += "#" + Encoding.UTF8.GetString(data); //ToDo: need to transfer the data to the MainScreen.
                                         _socket.Send(Encoding.UTF8.GetBytes("OK"));
                                         break;
                                     }
@@ -103,7 +103,7 @@ namespace Soom_Client
                                     }
                                 }
                             }
-                            else
+                            else // the request is register.
                             {
                                 for (int i = 0; i < 5; i++)
                                 {
@@ -114,7 +114,7 @@ namespace Soom_Client
                                         int length = int.Parse(Encoding.UTF8.GetString(data));
                                         data = new byte[length];
                                         _socket.Receive(data, length, SocketFlags.None); //ToDo: need to transfer the data to the MainScreen.
-                                        _userInfo = Encoding.UTF8.GetString(data);
+                                        _userInfo += "#" + Encoding.UTF8.GetString(data);
                                         _socket.Send(Encoding.UTF8.GetBytes("OK"));
                                         break;
                                     }
@@ -125,7 +125,12 @@ namespace Soom_Client
                                     }
                                 }
                             }
-                            this.Close();
+                            this.Hide();
+                            var mainScreen = new MainScreen(_socket ,this._userInfo);
+                            mainScreen.StartPosition = FormStartPosition.Manual;
+                            mainScreen.Location = this.Location;
+                            mainScreen.Closed += (s, args) => this.Close(); // Closes the current form and opens the other.
+                            mainScreen.Show();
                         }
                         else
                         {
