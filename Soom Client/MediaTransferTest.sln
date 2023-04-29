@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33414.496
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaTransferTest", "MediaTransferTest\MediaTransferTest.csproj", "{80BC769F-D740-4EC1-B5C3-8BB830DAE2AC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{80BC769F-D740-4EC1-B5C3-8BB830DAE2AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80BC769F-D740-4EC1-B5C3-8BB830DAE2AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80BC769F-D740-4EC1-B5C3-8BB830DAE2AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80BC769F-D740-4EC1-B5C3-8BB830DAE2AC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {74B2575A-7BAC-425F-8446-998ED294AB3A}
+	EndGlobalSection
+EndGlobal
