@@ -9,6 +9,7 @@ using System.Net.Sockets;
 using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Soom_Client
@@ -76,7 +77,8 @@ namespace Soom_Client
             settingsScreen.Name = "settingsScreen";
             settingsScreen.Size = new Size(this.Size.Width-16, this.Size.Height-39);
             this.Controls.Add(settingsScreen);
-            
+            Thread t = new Thread(new ParameterizedThreadStart(CheckForFinishSettings));
+            t.Start(settingsScreen);
 
             /*
             this.registerClick.Location = new System.Drawing.Point(200, 137);
@@ -126,6 +128,25 @@ namespace Soom_Client
                 if (button != joinMeetingButton) joinMeetingButton.Hide();
                 if (button != addFriendButton) addFriendButton.Hide();
             }
+        }
+        private void CheckForFinishSettings(object component)
+        {
+            SettingsScreen settings = (SettingsScreen)component;
+            while (!settings.IsFinished)
+            {
+                Thread.Sleep(50);
+            }
+            ShowAllComponents();
+            settings.Dispose();
+
+        }
+        private void ShowAllComponents()
+        {
+            title.Show();
+            settingsWheelButton.Show();
+            createMeetingButton.Show();
+            joinMeetingButton.Show();
+            addFriendButton.Show();
         }
     }
 }

@@ -15,10 +15,12 @@ namespace Soom_Client
     public partial class SettingsScreen : UserControl
     {
         private Socket _socket;
+        public bool IsFinished { get;private set; }
         public SettingsScreen(Socket sock)
         {
             InitializeComponent();
             _socket = sock;
+            IsFinished = false;
         }
 
         #region Buttons Hoverred settings
@@ -84,7 +86,7 @@ namespace Soom_Client
 
         private void backButton_Click(object sender, EventArgs e)
         {
-
+            IsFinished = true;
         }
     }
 }
