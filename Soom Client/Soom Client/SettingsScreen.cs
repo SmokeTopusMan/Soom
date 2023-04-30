@@ -99,7 +99,7 @@ namespace Soom_Client
             Thread t = new Thread(new ParameterizedThreadStart(CheckIfChanged));
             t.Start(this.profileUserControl);
         }
-        private void CheckIfChanged(object obj)
+        private void CheckIfChanged(object obj) //ToDo: Try To Make It An Event.
         {
             ISettingsScreenComponent component = (ISettingsScreenComponent)obj;
             while(!component.IsChanged)

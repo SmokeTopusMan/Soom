@@ -39,7 +39,6 @@ namespace Soom_Client
             InitializeComponent();
         }
 
-
         private void femaleCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (femaleCheckBox.Checked)

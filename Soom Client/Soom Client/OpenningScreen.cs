@@ -83,7 +83,7 @@ namespace Soom_Client
                         {
                             if (_userInfo.Count(c => c == '#') == 1) // if the request is login.
                             {
-                                for(int i = 0; i < 5; i++)
+                                for(int i = 0; i < 5; i++) // check of the data need to be removed
                                 {
                                     try
                                     {
