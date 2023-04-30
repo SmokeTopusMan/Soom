@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Encryption.cs" />
+    <Compile Include="ISettingsScreenComponent.cs" />
     <Compile Include="ServerErrors.cs" />
     <Compile Include="MainScreen.cs">
       <SubType>Form</SubType>
@@ -84,6 +85,12 @@
       <DependentUpon>SettingsScreen.cs</DependentUpon>
     </Compile>
     <Compile Include="Sex.cs" />
+    <Compile Include="ProfileUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ProfileUserControl.Designer.cs">
+      <DependentUpon>ProfileUserControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserInfo.cs" />
     <Compile Include="VideoFormat.cs" />
     <EmbeddedResource Include="MainScreen.resx">

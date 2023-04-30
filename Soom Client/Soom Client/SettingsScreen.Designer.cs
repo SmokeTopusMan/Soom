@@ -34,6 +34,8 @@
             this.profileSettingsButton = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.backButton = new System.Windows.Forms.Button();
+            this.profileUserControl = new Soom_Client.ProfileUserControl();
+            this.applyBtn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -86,6 +88,7 @@
             this.profileSettingsButton.Size = new System.Drawing.Size(89, 32);
             this.profileSettingsButton.TabIndex = 4;
             this.profileSettingsButton.Text = "Profile";
+            this.profileSettingsButton.Click += new System.EventHandler(this.profileSettingsButton_Click);
             this.profileSettingsButton.MouseEnter += new System.EventHandler(this.profileSettingsButton_MouseEnter);
             this.profileSettingsButton.MouseLeave += new System.EventHandler(this.profileSettingsButton_MouseLeave);
             // 
@@ -115,11 +118,30 @@
             this.backButton.MouseEnter += new System.EventHandler(this.backButton_MouseEnter);
             this.backButton.MouseLeave += new System.EventHandler(this.backButton_MouseLeave);
             // 
+            // profileUserControl
+            // 
+            this.profileUserControl.BackColor = System.Drawing.SystemColors.MenuHighlight;
+            this.profileUserControl.Location = new System.Drawing.Point(200, 0);
+            this.profileUserControl.Name = "profileUserControl";
+            this.profileUserControl.Size = new System.Drawing.Size(634, 461);
+            this.profileUserControl.TabIndex = 9;
+            // 
+            // applyBtn
+            // 
+            this.applyBtn.Location = new System.Drawing.Point(252, 399);
+            this.applyBtn.Name = "applyBtn";
+            this.applyBtn.Size = new System.Drawing.Size(75, 23);
+            this.applyBtn.TabIndex = 10;
+            this.applyBtn.Text = "Apply";
+            this.applyBtn.UseVisualStyleBackColor = true;
+            // 
             // SettingsScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(162)))), ((int)(((byte)(232)))));
+            this.Controls.Add(this.applyBtn);
+            this.Controls.Add(this.profileUserControl);
             this.Controls.Add(this.panel1);
             this.Name = "SettingsScreen";
             this.Size = new System.Drawing.Size(834, 461);
@@ -137,5 +159,7 @@
         private System.Windows.Forms.Label profileSettingsButton;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button backButton;
+        private ProfileUserControl profileUserControl;
+        private System.Windows.Forms.Button applyBtn;
     }
 }

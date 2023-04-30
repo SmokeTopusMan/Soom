@@ -7,7 +7,7 @@ using System.Drawing;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Soom_Client
@@ -21,6 +21,9 @@ namespace Soom_Client
             InitializeComponent();
             _socket = sock;
             IsFinished = false;
+            this.profileUserControl.Hide();
+            this.applyBtn.Enabled = false;
+            this.applyBtn.Hide();
         }
 
         #region Buttons Hoverred settings
@@ -87,6 +90,21 @@ namespace Soom_Client
         private void backButton_Click(object sender, EventArgs e)
         {
             IsFinished = true;
+        }
+
+        private void profileSettingsButton_Click(object sender, EventArgs e)
+        {
+            this.applyBtn.Show();
+            this.profileUserControl.Show();
+            Thread t = new Thread(new ParameterizedThreadStart(CheckIfChanged));
+            t.Start(this.profileUserControl);
+        }
+        private void CheckIfChanged(object obj)
+        {
+            ISettingsScreenComponent component = (ISettingsScreenComponent)obj;
+            while(!component.IsChanged)
+                Thread.Sleep(50);
+            this.applyBtn.Enabled = true;
         }
     }
 }
