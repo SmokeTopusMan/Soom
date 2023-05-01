@@ -100,27 +100,14 @@ namespace Soom_server
             }
         }
 
-        private static string GetData(Socket sock, string command)
+        private static string GetData(Socket sock, int arrayLength)
         {
-            if (command == "LOG")
-            {
-                byte[] userInfo = new byte[2];
-                sock.Receive(userInfo, 2, SocketFlags.None);
+                byte[] userInfo = new byte[arrayLength];
+                sock.Receive(userInfo, arrayLength, SocketFlags.None);
                 int length = int.Parse(Encoding.UTF8.GetString(userInfo));
                 userInfo = new byte[length];
                 sock.Receive(userInfo, length, SocketFlags.None);
                 return Encoding.UTF8.GetString(userInfo);
-            }
-            else if(command == "REG")
-            {
-                byte[] userInfo = new byte[4];
-                sock.Receive(userInfo, 4, SocketFlags.None);
-                int length = int.Parse(Encoding.UTF8.GetString(userInfo));
-                userInfo = new byte[length];
-                sock.Receive(userInfo, length, SocketFlags.None);
-                return Encoding.UTF8.GetString(userInfo);
-            }
-            return null;
         }
         private static void SendErrors(Socket clientSock, Errors error)
         {
@@ -133,18 +120,25 @@ namespace Soom_server
             else if (error == Errors.UsernameIsTaken) clientSock.Send(Encoding.UTF8.GetBytes($"NO2"));
             else if (error == Errors.UserNotExist) clientSock.Send(Encoding.UTF8.GetBytes($"NO3"));
         }
+        private static void SendID(Socket socket, int id)
+        {
+            byte[] bytes1 = BitConverter.GetBytes(id);
+            byte[] bytes2 = Encoding.UTF8.GetBytes("OK");
+            byte[] result = new byte[bytes1.Length + bytes2.Length];
+            Buffer.BlockCopy(bytes2, 0, result, 0, bytes2.Length);
+            Buffer.BlockCopy(bytes1, 0, result, bytes2.Length, bytes1.Length);
+            socket.Send(result);
+        }
         private static void Login(User user)
         {
-            string[] userInfo = GetData(user.Socket, "LOG").Split('#');
+            string[] userInfo = GetData(user.Socket, 2).Split('#');
             UserDB userDB = new UserDB(userInfo[0], userInfo[1]);
             try
             {
-                string returnedData = DataBaseAccess.LoginUser(userDB);
-                user.Socket.Send(Encoding.UTF8.GetBytes("OK"));
+                int id = DataBaseAccess.LoginUser(userDB);
                 for (int i = 0; i < 5; i++)
                 {
-                    returnedData = returnedData.Length.ToString("0000") + returnedData;
-                    user.Socket.Send(Encoding.UTF8.GetBytes(returnedData));
+                    SendID(user.Socket, id);
                     byte[] confirmation = new byte[2];
                     user.Socket.Receive(confirmation, 2, SocketFlags.None);
                     if (Encoding.UTF8.GetString(confirmation) == "OK")
@@ -163,7 +157,7 @@ namespace Soom_server
         }
         private static void Register(User user)
         {
-            string[] userInfo = GetData(user.Socket, "REG").Split('#');
+            string[] userInfo = GetData(user.Socket, 4).Split('#');
             UserDB userDetails;
             try
             {
@@ -175,12 +169,10 @@ namespace Soom_server
             }
             try
             {
-                string returnedData = DataBaseAccess.RegiterUser(userDetails);
-                user.Socket.Send(Encoding.UTF8.GetBytes("OK"));
+                int id = DataBaseAccess.RegiterUser(userDetails);
                 for (int i = 0; i < 5; i++)
                 {
-                    returnedData = returnedData.Length.ToString("0") + returnedData;
-                    user.Socket.Send(Encoding.UTF8.GetBytes(returnedData));
+                    SendID(user.Socket, id);
                     byte[] confirmation = new byte[2];
                     user.Socket.Receive(confirmation, 2, SocketFlags.None);
                     if (Encoding.UTF8.GetString(confirmation) == "OK")

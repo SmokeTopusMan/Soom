@@ -14,41 +14,47 @@ namespace Soom_server
 {
     public static class DataBaseAccess
     {
-        public static string RegiterUser(UserDB user)
+        public static int RegiterUser(UserDB user)
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
                 List<UserDB> users = GetAllUsers("REG");
-                foreach (UserDB item in users)
+                if (users.Count == 0)
                 {
-                    if (item.Username == user.Username)
-                    {
-                        throw new UsernameTakenException();
-                    }
+                    user.ID = 10000;
+                    cnn.Execute($"INSERT INTO UsersInfo (UserID, Username, Password, Age, Sex, Bio) VALUES ({10000}, @Username, @Password, @Age, @Sex, @Bio)", user);
+                    return (int)user.ID;
                 }
-                cnn.Execute("INSERT INTO UsersInfo (Username, Password, Age, Sex, Bio) VALUES (@Username, @Password, @Age, @Sex, @Bio)", user);
-                return string.Join("", cnn.Query<string>($"SELECT Points FROM UsersInfo WHERE Username = '{user.Username}'"));
+                else
+                {
+                    foreach (UserDB item in users)
+                    {
+                        if (item.Username == user.Username)
+                        {
+                            throw new UsernameTakenException();
+                        }
+                    }
+                    cnn.Execute("INSERT INTO UsersInfo (Username, Password, Age, Sex, Bio) VALUES (@Username, @Password, @Age, @Sex, @Bio)", user);
+                    return int.Parse(string.Join("", cnn.Query<string>($"SELECT UserID FROM UsersInfo WHERE Username = '{user.Username}'")));
+                }
+
             }
         }
-        public static string LoginUser(UserDB user)
+        public static int LoginUser(UserDB user)
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
                 List<UserDB> users = GetAllUsers("LOG");
                 foreach (UserDB item in users)
                 {
-                    if (item.Username == user.Username)
+                    if (item.Username == user.Username && item.Password == user.Password)
                     {
-                        if (item.Password == user.Password)
-                        {
-                            var temp = cnn.Query<UserDB>($"SELECT Age, Sex, Bio, Points FROM UsersInfo WHERE Username = '{user.Username}'");
-                            List<UserDB> data = temp.ToList();
-                            return $"{data[0].Age}#{data[0].Sex}#{data[0].Bio}#{data[0].Points}";
-                        }
+                        var temp = cnn.Query<UserDB>($"SELECT Age, Sex, Bio, Points FROM UsersInfo WHERE Username = '{user.Username}'");
+                        List<UserDB> data = temp.ToList();
+                        return int.Parse(string.Join("", cnn.Query<string>($"SELECT UserID FROM UsersInfo WHERE Username = '{user.Username}'")));
                     }
                 }
                 throw new UsernameNotExistException();
-
             }
         }
         public static UserDB GetUser(string username)

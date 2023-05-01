@@ -35,6 +35,7 @@ namespace Soom_Client
                 submitBtn.Show();
             registerClick.Show();
             loginClick.Hide();
+            loginClick.ClearBoxes();
         }
 
         private void login_Click(object sender, EventArgs e)
@@ -43,6 +44,7 @@ namespace Soom_Client
                 submitBtn.Show();
             loginClick.Show();
             registerClick.Hide();
+            registerClick.ClearBoxes();
         }
 
         private void submitBtn_Click(object sender, EventArgs e) //Future: find a way to stop the current form.
@@ -55,7 +57,6 @@ namespace Soom_Client
                     if (LogInfoCheck())
                     {
                         this._userInfo += $"{loginClick.UserName}#{loginClick.Password}";
-                        loginClick.ClearBoxes();
                         data = PrepareDataViaProtocol("LOG");
                     }
                     else data = null;
@@ -65,7 +66,6 @@ namespace Soom_Client
                     if (RegInfoCheck())
                     {
                         this._userInfo += $"{registerClick.UserName}#{registerClick.Password}#{registerClick.Age}#{registerClick.Sex}#{registerClick.Bio}";
-                        registerClick.ClearBoxes();
                         data = PrepareDataViaProtocol("REG");
                     }
                     else data = null;
@@ -81,56 +81,44 @@ namespace Soom_Client
                     {
                         if (bytes == 2 && sData == "OK")
                         {
-                            if (_userInfo.Count(c => c == '#') == 1) // if the request is login.
+                            bool isGood = false;
+                            for(int i = 0; i < 5; i++) // check of the data need to be removed
                             {
-                                for(int i = 0; i < 5; i++) // check of the data need to be removed
+                                try
                                 {
-                                    try
+                                    data = new byte[4];
+                                    _socket.Receive(data, 4, SocketFlags.None);
+                                    int id = BitConverter.ToInt32(data, 0);
+                                    if (id >= 10000 && id <= 99999)
                                     {
-                                        data = new byte[4];
-                                        _socket.Receive(data, 4, SocketFlags.None);
-                                        int length = int.Parse(Encoding.UTF8.GetString(data));
-                                        data = new byte[length];
-                                        _socket.Receive(data, length, SocketFlags.None); // Future: Maybe Put this and the else in a func.
-                                        _userInfo += "#" + Encoding.UTF8.GetString(data); //ToDo: need to transfer the data to the MainScreen.
+                                        isGood = true;
                                         _socket.Send(Encoding.UTF8.GetBytes("OK"));
+                                        if (loginClick.Visible)
+                                            loginClick.ClearBoxes();
+                                        else
+                                            registerClick.ClearBoxes();
+                                        this.Hide();
+                                        var mainScreen = new MainScreen(_socket, id);
+                                        mainScreen.StartPosition = FormStartPosition.Manual;
+                                        mainScreen.Location = this.Location;
+                                        mainScreen.Closed += (s, args) => this.Close(); // Closes the current form and opens the other.
+                                        mainScreen.Show();
                                         break;
                                     }
-                                    catch 
-                                    {
-                                        _socket.Send(Encoding.UTF8.GetBytes("NO"));
-                                        continue;   
-                                    }
                                 }
-                            }
-                            else // the request is register.
-                            {
-                                for (int i = 0; i < 5; i++)
+                                catch (SocketException)
                                 {
-                                    try
-                                    {
-                                        data = new byte[1];
-                                        _socket.Receive(data, 1, SocketFlags.None);
-                                        int length = int.Parse(Encoding.UTF8.GetString(data));
-                                        data = new byte[length];
-                                        _socket.Receive(data, length, SocketFlags.None); //ToDo: need to transfer the data to the MainScreen.
-                                        _userInfo += "#" + Encoding.UTF8.GetString(data);
-                                        _socket.Send(Encoding.UTF8.GetBytes("OK"));
-                                        break;
-                                    }
-                                    catch
-                                    {
-                                        _socket.Send(Encoding.UTF8.GetBytes("NO"));
-                                        continue;
-                                    }
+                                    throw new SocketException();
+                                }
+                                catch 
+                                {
+                                    _socket.Send(Encoding.UTF8.GetBytes("NO"));
+                                    continue;   
                                 }
                             }
-                            this.Hide();
-                            var mainScreen = new MainScreen(_socket ,this._userInfo);
-                            mainScreen.StartPosition = FormStartPosition.Manual;
-                            mainScreen.Location = this.Location;
-                            mainScreen.Closed += (s, args) => this.Close(); // Closes the current form and opens the other.
-                            mainScreen.Show();
+                            if (!isGood)
+                                MessageBox.Show("There Was an Unknown Error.\r\nTry Again!");
+
                         }
                         else
                         {

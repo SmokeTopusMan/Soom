@@ -9,6 +9,7 @@ namespace Soom_server
 {
     public class UserDB
     {
+        public long ID { get; set; }
         public string Username { get; private set; }
         public string Password { get; private set; }
         public long Age { get; set; }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Linq;
 using System.Net.Sockets;
@@ -10,12 +11,15 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
+
 namespace Soom_Client
 {
     public partial class SettingsScreen : UserControl
     {
         private Socket _socket;
         public bool IsFinished { get;private set; }
+        public event FinishedEvent Event;
+
         public SettingsScreen(Socket sock)
         {
             InitializeComponent();
@@ -89,22 +93,55 @@ namespace Soom_Client
 
         private void backButton_Click(object sender, EventArgs e)
         {
-            IsFinished = true;
+            Finished();
+        }
+
+        public void Finished()
+        {
+            // Raise the event with custom EventArgs
+            if (Event != null)
+            {
+                Event(this, new SettingsEventArgs(this));
+            }
         }
 
         private void profileSettingsButton_Click(object sender, EventArgs e)
         {
-            this.applyBtn.Show();
-            this.profileUserControl.Show();
-            Thread t = new Thread(new ParameterizedThreadStart(CheckIfChanged));
-            t.Start(this.profileUserControl);
+            if (this.profileUserControl.Visible)
+            {
+                this.applyBtn.Hide();
+                this.profileUserControl.Hide();
+            }
+            else
+            {
+                this.applyBtn.Show();
+                this.profileUserControl.Show();
+                Thread t = new Thread(new ParameterizedThreadStart(CheckIfChanged));
+                t.Start(this.profileUserControl);
+            }
         }
         private void CheckIfChanged(object obj) //ToDo: Try To Make It An Event.
         {
             ISettingsScreenComponent component = (ISettingsScreenComponent)obj;
             while(!component.IsChanged)
-                Thread.Sleep(50);
-            this.applyBtn.Enabled = true;
+            {
+                if (this.profileUserControl.Visible) //ToDo: add all the other panels' visible condition
+                    Thread.Sleep(50);
+                else
+                    break;
+            }
+            if (this.profileUserControl.Visible) //ToDo: add all the other panels' visible condition
+                this.applyBtn.Enabled = true;
         }
     }
+    public class SettingsEventArgs : EventArgs
+    {
+        public SettingsScreen Screen { get; }
+
+        public SettingsEventArgs(SettingsScreen screen)
+        {
+            Screen = screen;
+        }
+    }
+    public delegate void FinishedEvent(object sender, SettingsEventArgs e);
 }

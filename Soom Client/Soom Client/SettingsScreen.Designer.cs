@@ -34,9 +34,11 @@
             this.profileSettingsButton = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.backButton = new System.Windows.Forms.Button();
-            this.profileUserControl = new Soom_Client.ProfileUserControl();
             this.applyBtn = new System.Windows.Forms.Button();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.profileUserControl = new Soom_Client.ProfileUserControl();
             this.panel1.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // videoSettingsButton
@@ -118,14 +120,6 @@
             this.backButton.MouseEnter += new System.EventHandler(this.backButton_MouseEnter);
             this.backButton.MouseLeave += new System.EventHandler(this.backButton_MouseLeave);
             // 
-            // profileUserControl
-            // 
-            this.profileUserControl.BackColor = System.Drawing.SystemColors.MenuHighlight;
-            this.profileUserControl.Location = new System.Drawing.Point(200, 0);
-            this.profileUserControl.Name = "profileUserControl";
-            this.profileUserControl.Size = new System.Drawing.Size(634, 461);
-            this.profileUserControl.TabIndex = 9;
-            // 
             // applyBtn
             // 
             this.applyBtn.Location = new System.Drawing.Point(252, 399);
@@ -135,18 +129,37 @@
             this.applyBtn.Text = "Apply";
             this.applyBtn.UseVisualStyleBackColor = true;
             // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel2.Controls.Add(this.profileUserControl);
+            this.panel2.Location = new System.Drawing.Point(200, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(634, 461);
+            this.panel2.TabIndex = 11;
+            // 
+            // profileUserControl
+            // 
+            this.profileUserControl.BackColor = System.Drawing.SystemColors.MenuHighlight;
+            this.profileUserControl.Location = new System.Drawing.Point(-2, -2);
+            this.profileUserControl.Name = "profileUserControl";
+            this.profileUserControl.Size = new System.Drawing.Size(634, 461);
+            this.profileUserControl.TabIndex = 9;
+            // 
             // SettingsScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(162)))), ((int)(((byte)(232)))));
+            this.Controls.Add(this.panel2);
             this.Controls.Add(this.applyBtn);
-            this.Controls.Add(this.profileUserControl);
             this.Controls.Add(this.panel1);
             this.Name = "SettingsScreen";
             this.Size = new System.Drawing.Size(834, 461);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -161,5 +174,6 @@
         private System.Windows.Forms.Button backButton;
         private ProfileUserControl profileUserControl;
         private System.Windows.Forms.Button applyBtn;
+        private System.Windows.Forms.Panel panel2;
     }
 }

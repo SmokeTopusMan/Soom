@@ -17,12 +17,12 @@ namespace Soom_Client
     public partial class MainScreen : Form
     {
         public Socket Socket { get; set; }
-        public UserInfo UserInfo { get; set; }
+        public int ID { get; set; }
         
-        public MainScreen(Socket socket, string userInfo)
+        public MainScreen(Socket socket, int id)
         {
             Socket = socket;
-            UserInfo = ConvertStrToUser(userInfo);
+            ID = id;
             InitializeComponent();
         }
 
@@ -77,17 +77,17 @@ namespace Soom_Client
             settingsScreen.Name = "settingsScreen";
             settingsScreen.Size = new Size(this.Size.Width-16, this.Size.Height-39);
             this.Controls.Add(settingsScreen);
-            Thread t = new Thread(new ParameterizedThreadStart(CheckForFinishSettings));
-            t.Start(settingsScreen);
-
-            /*
-            this.registerClick.Location = new System.Drawing.Point(200, 137);
-            this.registerClick.Name = "registerClick";
-            this.registerClick.Size = new System.Drawing.Size(622, 312);
-            this.registerClick.TabIndex = 10;
-            */
+            settingsScreen.Event += SettingsScreen_Event;
 
         }
+
+        private void SettingsScreen_Event(object sender, SettingsEventArgs e)
+        {
+            ShowAllComponents();
+            this.Controls.Remove(e.Screen);
+            e.Screen.Dispose();
+        }
+
         private void createMeetingButton_Click(object sender, EventArgs e)
         {
             HideAllComponents(settingsWheelButton);
@@ -128,17 +128,6 @@ namespace Soom_Client
                 if (button != joinMeetingButton) joinMeetingButton.Hide();
                 if (button != addFriendButton) addFriendButton.Hide();
             }
-        }
-        private void CheckForFinishSettings(object component)
-        {
-            SettingsScreen settings = (SettingsScreen)component;
-            while (!settings.IsFinished)
-            {
-                Thread.Sleep(50);
-            }
-            ShowAllComponents();
-            settings.Dispose();
-
         }
         private void ShowAllComponents()
         {
