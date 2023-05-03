@@ -7,6 +7,7 @@ using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Linq;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -25,6 +26,7 @@ namespace Soom_Client
             InitializeComponent();
             _socket = sock;
             IsFinished = false;
+            this.videoUserControl.Hide();
             this.profileUserControl.Hide();
             this.applyBtn.Enabled = false;
             this.applyBtn.Hide();
@@ -114,10 +116,27 @@ namespace Soom_Client
             }
             else
             {
+                HideAllComponents(this.profileUserControl);
                 this.applyBtn.Show();
                 this.profileUserControl.Show();
                 Thread t = new Thread(new ParameterizedThreadStart(CheckIfChanged));
                 t.Start(this.profileUserControl);
+            }
+        }
+        private void videoSettingsButton_Click(object sender, EventArgs e)
+        {
+            if (this.videoUserControl.Visible)
+            {
+                this.applyBtn.Hide();
+                this.videoUserControl.Hide();
+            }
+            else
+            {
+                HideAllComponents(this.videoUserControl);
+                this.applyBtn.Show();
+                this.videoUserControl.Show();
+                Thread t = new Thread(new ParameterizedThreadStart(CheckIfChanged));
+                t.Start(this.videoUserControl);
             }
         }
         private void CheckIfChanged(object obj) //ToDo: Try To Make It An Event.
@@ -125,14 +144,23 @@ namespace Soom_Client
             ISettingsScreenComponent component = (ISettingsScreenComponent)obj;
             while(!component.IsChanged)
             {
-                if (this.profileUserControl.Visible) //ToDo: add all the other panels' visible condition
+                if (this.profileUserControl.Visible || this.videoUserControl.Visible) //ToDo: add all the other panels' visible condition
                     Thread.Sleep(50);
                 else
                     break;
             }
-            if (this.profileUserControl.Visible) //ToDo: add all the other panels' visible condition
+            if (this.profileUserControl.Visible || this.videoUserControl.Visible) //ToDo: add all the other panels' visible condition
                 this.applyBtn.Enabled = true;
         }
+        private void HideAllComponents(Component component)
+        {
+            if (component != this.profileUserControl && this.profileUserControl.Visible)
+                this.profileUserControl.Hide();
+            else if (component != this.videoUserControl && this.videoUserControl.Visible)
+                this.videoUserControl.Hide();
+        }
+
+
     }
     public class SettingsEventArgs : EventArgs
     {

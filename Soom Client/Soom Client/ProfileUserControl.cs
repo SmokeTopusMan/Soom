@@ -38,7 +38,7 @@ namespace Soom_Client
             IsChanged = false;
             InitializeComponent();
         }
-
+        #region Boxes Propeties
         private void femaleCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (femaleCheckBox.Checked)
@@ -93,5 +93,6 @@ namespace Soom_Client
                 IsChanged = true;
             }
         }
+        #endregion
     }
 }

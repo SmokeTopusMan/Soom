@@ -36,6 +36,7 @@
             this.backButton = new System.Windows.Forms.Button();
             this.applyBtn = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.videoUserControl = new Soom_Client.VideoUserControl();
             this.profileUserControl = new Soom_Client.ProfileUserControl();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -51,6 +52,7 @@
             this.videoSettingsButton.Size = new System.Drawing.Size(82, 32);
             this.videoSettingsButton.TabIndex = 7;
             this.videoSettingsButton.Text = "Video";
+            this.videoSettingsButton.Click += new System.EventHandler(this.videoSettingsButton_Click);
             this.videoSettingsButton.MouseEnter += new System.EventHandler(this.videoSettingsButton_MouseEnter);
             this.videoSettingsButton.MouseLeave += new System.EventHandler(this.videoSettingsButton_MouseLeave);
             // 
@@ -133,11 +135,20 @@
             // 
             this.panel2.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel2.Controls.Add(this.videoUserControl);
             this.panel2.Controls.Add(this.profileUserControl);
             this.panel2.Location = new System.Drawing.Point(200, 0);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(634, 461);
             this.panel2.TabIndex = 11;
+            // 
+            // videoUserControl
+            // 
+            this.videoUserControl.BackColor = System.Drawing.SystemColors.MenuHighlight;
+            this.videoUserControl.Location = new System.Drawing.Point(-2, -2);
+            this.videoUserControl.Name = "videoUserControl";
+            this.videoUserControl.Size = new System.Drawing.Size(634, 461);
+            this.videoUserControl.TabIndex = 10;
             // 
             // profileUserControl
             // 
@@ -175,5 +186,6 @@
         private ProfileUserControl profileUserControl;
         private System.Windows.Forms.Button applyBtn;
         private System.Windows.Forms.Panel panel2;
+        private VideoUserControl videoUserControl;
     }
 }
