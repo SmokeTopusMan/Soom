@@ -99,6 +99,7 @@
             // panel1
             // 
             this.panel1.Controls.Add(this.backButton);
+            this.panel1.Controls.Add(this.applyBtn);
             this.panel1.Controls.Add(this.profileSettingsButton);
             this.panel1.Controls.Add(this.videoSettingsButton);
             this.panel1.Controls.Add(this.generalSettingsButton);
@@ -124,7 +125,7 @@
             // 
             // applyBtn
             // 
-            this.applyBtn.Location = new System.Drawing.Point(252, 399);
+            this.applyBtn.Location = new System.Drawing.Point(151, 403);
             this.applyBtn.Name = "applyBtn";
             this.applyBtn.Size = new System.Drawing.Size(75, 23);
             this.applyBtn.TabIndex = 10;
@@ -153,7 +154,7 @@
             // profileUserControl
             // 
             this.profileUserControl.BackColor = System.Drawing.SystemColors.MenuHighlight;
-            this.profileUserControl.Location = new System.Drawing.Point(-2, -2);
+            this.profileUserControl.Location = new System.Drawing.Point(-5, -2);
             this.profileUserControl.Name = "profileUserControl";
             this.profileUserControl.Size = new System.Drawing.Size(634, 461);
             this.profileUserControl.TabIndex = 9;
@@ -164,7 +165,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(162)))), ((int)(((byte)(232)))));
             this.Controls.Add(this.panel2);
-            this.Controls.Add(this.applyBtn);
             this.Controls.Add(this.panel1);
             this.Name = "SettingsScreen";
             this.Size = new System.Drawing.Size(834, 461);

@@ -84,8 +84,9 @@ namespace Soom_Client
         private void SettingsScreen_Event(object sender, SettingsEventArgs e)
         {
             ShowAllComponents();
-            this.Controls.Remove(e.Screen);
-            e.Screen.Dispose();
+            this.Controls.Remove(e.settingsScreen);
+            e.settingsScreen.IsFinished = true;
+            e.settingsScreen.Dispose();
         }
 
         private void createMeetingButton_Click(object sender, EventArgs e)
@@ -136,6 +137,19 @@ namespace Soom_Client
             createMeetingButton.Show();
             joinMeetingButton.Show();
             addFriendButton.Show();
+        }
+
+        private void MainScreen_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            try
+            {
+                var settingsScreen = (SettingsScreen)this.Controls.Find("settingsScreen", false)[0];
+                settingsScreen.IsFinished = true;
+            }
+            catch (IndexOutOfRangeException)
+            {
+                ;// Do Nothing Since the Screen Isn't Exist Anymore.
+            }
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Soom_Client
     public partial class SettingsScreen : UserControl
     {
         private Socket _socket;
-        public bool IsFinished { get;private set; }
+        public bool IsFinished { get; set; }
         public event FinishedEvent Event;
 
         public SettingsScreen(Socket sock)
@@ -117,6 +117,7 @@ namespace Soom_Client
             else
             {
                 HideAllComponents(this.profileUserControl);
+                this.applyBtn.BringToFront();
                 this.applyBtn.Show();
                 this.profileUserControl.Show();
                 Thread t = new Thread(new ParameterizedThreadStart(CheckIfChanged));
@@ -133,6 +134,7 @@ namespace Soom_Client
             else
             {
                 HideAllComponents(this.videoUserControl);
+                this.applyBtn.BringToFront();
                 this.applyBtn.Show();
                 this.videoUserControl.Show();
                 Thread t = new Thread(new ParameterizedThreadStart(CheckIfChanged));
@@ -142,7 +144,7 @@ namespace Soom_Client
         private void CheckIfChanged(object obj) //ToDo: Try To Make It An Event.
         {
             ISettingsScreenComponent component = (ISettingsScreenComponent)obj;
-            while(!component.IsChanged)
+            while(!component.IsChanged && !IsFinished)
             {
                 if (this.profileUserControl.Visible || this.videoUserControl.Visible) //ToDo: add all the other panels' visible condition
                     Thread.Sleep(50);
@@ -154,6 +156,7 @@ namespace Soom_Client
         }
         private void HideAllComponents(Component component)
         {
+            this.applyBtn.Enabled = false;
             if (component != this.profileUserControl && this.profileUserControl.Visible)
                 this.profileUserControl.Hide();
             else if (component != this.videoUserControl && this.videoUserControl.Visible)
@@ -164,11 +167,11 @@ namespace Soom_Client
     }
     public class SettingsEventArgs : EventArgs
     {
-        public SettingsScreen Screen { get; }
+        public SettingsScreen settingsScreen { get; }
 
         public SettingsEventArgs(SettingsScreen screen)
         {
-            Screen = screen;
+            settingsScreen = screen;
         }
     }
     public delegate void FinishedEvent(object sender, SettingsEventArgs e);

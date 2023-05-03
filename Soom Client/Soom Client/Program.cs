@@ -19,22 +19,29 @@ namespace Soom_Client
         [STAThread]
         static void Main()
         {
+
             Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Parse("10.0.0.15"), 13000);
-            try
+
+
+            while (true)
             {
-                sock.Connect(iPEndPoint);
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
-                OpenningScreen openningScreen = new OpenningScreen(sock);
-                Application.Run(openningScreen);
-                //if (openningScreen.HasUserInfo())
-                    //Application.Run(new MainScreen(sock));
+                try
+                {
+                    sock.Connect(iPEndPoint);
+                    Application.EnableVisualStyles();
+                    Application.SetCompatibleTextRenderingDefault(false);
+                    OpenningScreen openningScreen = new OpenningScreen(sock);
+                    Application.Run(openningScreen);
+                    break;
+                    
+                }
+                catch (SocketException)
+                {
+                    MessageBox.Show("Oh No... Something went wrong, Press OK to proceed!");
+                }
             }
-            catch (SocketException)
-            {
-                MessageBox.Show("Oh No... Something went wrong, Try again later!");
-            }
+
         }
     }
 }

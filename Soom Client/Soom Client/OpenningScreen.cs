@@ -20,9 +20,9 @@ namespace Soom_Client
     {
         private string _userInfo;
         private Socket _socket;
-        public OpenningScreen(Socket sock)
+        public OpenningScreen(Socket socket)
         {
-            _socket = sock;
+            _socket = socket;
             InitializeComponent();
             registerClick.Hide();
             loginClick.Hide();
