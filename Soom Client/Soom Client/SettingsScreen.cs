@@ -162,8 +162,6 @@ namespace Soom_Client
             else if (component != this.videoUserControl && this.videoUserControl.Visible)
                 this.videoUserControl.Hide();
         }
-
-
     }
     public class SettingsEventArgs : EventArgs
     {
