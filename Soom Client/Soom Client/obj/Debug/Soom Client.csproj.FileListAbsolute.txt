@@ -78,3 +78,5 @@ C:\Users\USER\source\repos\Soom\Soom Client\Soom Client\bin\Debug\NAudio.xml
 C:\Users\USER\source\repos\Soom\Soom Client\Soom Client\bin\Debug\System.Security.AccessControl.xml
 C:\Users\USER\source\repos\Soom\Soom Client\Soom Client\bin\Debug\System.Security.Principal.Windows.xml
 C:\Users\USER\source\repos\Soom\Soom Client\Soom Client\obj\Debug\Soom Client.csproj.CopyComplete
+C:\Users\USER\source\repos\Soom\Soom Client\Soom Client\obj\Debug\Soom_Client.AudioUserControl.resources
+C:\Users\USER\source\repos\Soom\Soom Client\Soom Client\obj\Debug\Soom_Client.ProfileUserControl.resources

@@ -8,6 +8,19 @@ namespace Soom_Client
 {
     public interface ISettingsScreenComponent
     {
-        bool IsChanged { get; }
+        void IsChanged();
+        event ValuesChangedEvent ChangedEvent;
+        List<string> Convert2Str();
+        bool CheckIfChanged();
+
     }
+    public class ValuesChangedEventArgs : EventArgs
+    {
+        public bool IsChanged;
+        public ValuesChangedEventArgs(bool isChanged)
+        {
+            IsChanged = isChanged;
+        }
+    }
+    public delegate void ValuesChangedEvent(ValuesChangedEventArgs e);
 }

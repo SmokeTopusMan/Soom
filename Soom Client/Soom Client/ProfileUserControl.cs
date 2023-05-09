@@ -31,11 +31,10 @@ namespace Soom_Client
             private set { }
         }
         public string Bio { get { return bioBox.Text; } private set { } }
-        public bool IsChanged { get; private set; }
         #endregion Properties
+        public event ValuesChangedEvent ChangedEvent;
         public ProfileUserControl()
         {
-            IsChanged = false;
             InitializeComponent();
         }
         #region Boxes Propeties
@@ -43,56 +42,79 @@ namespace Soom_Client
         {
             if (femaleCheckBox.Checked)
                 maleCheckBox.Checked = false;
-            if (!IsChanged)
-            {
-                IsChanged = true;
-            }
         }
         private void maleCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (maleCheckBox.Checked)
                 femaleCheckBox.Checked = false;
-            if (!IsChanged)
-            {
-                IsChanged = true;
-            }
         }
         private void usernameBox_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == '#' || e.KeyChar == ' ')
                 e.Handled = true;
-            if (!IsChanged)
-            {
-                IsChanged = true;
-            }
         }
         private void passwordBox_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == '#' || e.KeyChar == ' ')
                 e.Handled = true;
-            if (!IsChanged)
-            {
-                IsChanged = true;
-            }
         }
         private void ageBox_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
                 e.Handled = true;
-            if (!IsChanged)
-            {
-                IsChanged = true;
-            }
         }
         private void bioBox_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == '#')
                 e.Handled = true;
-            if (!IsChanged)
+        }
+        private bool CheckBoxes()
+        {
+            Sex sex = GetSex();
+            if (this.usernameBox.Text != "" && this.passwordBox.Text != "" && this.ageBox.Text != "" && sex != Sex.NotChecked && this.passwordBox.Text.Length >= 8 && this.usernameBox.Text.Length >= 4)
+                return true;
+            if (this.usernameBox.Text == "")
+                MessageBox.Show("Fill Your Username!");
+            else if (this.usernameBox.Text.Length < 4)
             {
-                IsChanged = true;
+                MessageBox.Show("Write At Least 4 Characters In The Username Box!");
             }
+            if (this.passwordBox.Text == "")
+                MessageBox.Show("Fill Your Password!");
+            else if (this.passwordBox.Text.Length < 8)
+            {
+                MessageBox.Show("Write At Least 8 Characters In The Password Box!");
+            }
+            if (this.ageBox.Text == "")
+                MessageBox.Show("Fill Your Age!");
+            if (sex == Sex.NotChecked)
+                MessageBox.Show("Select Your Sex!");
+            return false;
         }
         #endregion
+        public void IsChanged()
+        {
+            if (ChangedEvent != null)
+            {
+                ChangedEvent(new ValuesChangedEventArgs(CheckIfChanged()));
+            }
+        }
+        public bool CheckIfChanged()
+        {
+            return (this.usernameBox.Text != UserName || this.passwordBox.Text != Password || this.ageBox.Text != Age || GetSex() != Sex || this.bioBox.Text != Bio);
+        }
+        private Sex GetSex()
+        {
+            if (this.maleCheckBox.Checked)
+                return Sex.Male;
+            else if (this.femaleCheckBox.Checked)
+                return Sex.Female;
+            else
+                return Sex.NotChecked;
+        }
+        public List<string> Convert2Str()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

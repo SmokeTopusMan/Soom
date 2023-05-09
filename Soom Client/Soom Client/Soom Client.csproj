@@ -94,6 +94,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AudioUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="AudioUserControl.Designer.cs">
+      <DependentUpon>AudioUserControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Encryption.cs" />
     <Compile Include="ISettingsScreenComponent.cs" />
     <Compile Include="ServerErrors.cs" />
@@ -144,6 +150,9 @@
     <Compile Include="VideoUserControl.Designer.cs">
       <DependentUpon>VideoUserControl.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="AudioUserControl.resx">
+      <DependentUpon>AudioUserControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainScreen.resx">
       <DependentUpon>MainScreen.cs</DependentUpon>
     </EmbeddedResource>
@@ -152,6 +161,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="LoginPanel.resx">
       <DependentUpon>LoginPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProfileUserControl.resx">
+      <DependentUpon>ProfileUserControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

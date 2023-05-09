@@ -42,7 +42,6 @@
             this.ageBox = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.pointsBox = new System.Windows.Forms.TextBox();
-            this.title = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -191,23 +190,11 @@
             this.pointsBox.Size = new System.Drawing.Size(44, 28);
             this.pointsBox.TabIndex = 40;
             // 
-            // title
-            // 
-            this.title.AutoSize = true;
-            this.title.Font = new System.Drawing.Font("Matura MT Script Capitals", 50F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.title.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(56)))), ((int)(((byte)(64)))), ((int)(((byte)(181)))));
-            this.title.Location = new System.Drawing.Point(134, 12);
-            this.title.Name = "title";
-            this.title.Size = new System.Drawing.Size(353, 89);
-            this.title.TabIndex = 41;
-            this.title.Text = "SOOM";
-            // 
-            // ProfilePanel
+            // ProfileUserControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.MenuHighlight;
-            this.Controls.Add(this.title);
             this.Controls.Add(this.pointsBox);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.usernameBox);
@@ -220,7 +207,7 @@
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.ageBox);
-            this.Name = "ProfilePanel";
+            this.Name = "ProfileUserControl";
             this.Size = new System.Drawing.Size(634, 461);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -245,6 +232,5 @@
         private System.Windows.Forms.TextBox ageBox;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox pointsBox;
-        private System.Windows.Forms.Label title;
     }
 }

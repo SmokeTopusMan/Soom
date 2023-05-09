@@ -27,9 +27,14 @@ namespace Soom_Client
             _socket = sock;
             IsFinished = false;
             this.videoUserControl.Hide();
+            this.videoUserControl.ChangedEvent += CheckIfChanged;
             this.profileUserControl.Hide();
+            this.profileUserControl.ChangedEvent += CheckIfChanged;
+            this.audioUserControl.Hide();
+            this.audioUserControl.ChangedEvent += CheckIfChanged;
             this.applyBtn.Enabled = false;
             this.applyBtn.Hide();
+            this.title.Hide();
         }
 
         #region Buttons Hoverred settings
@@ -93,6 +98,7 @@ namespace Soom_Client
         }
         #endregion
 
+        #region Back Button Press
         private void backButton_Click(object sender, EventArgs e)
         {
             Finished();
@@ -106,53 +112,67 @@ namespace Soom_Client
                 Event(this, new SettingsEventArgs(this));
             }
         }
-
+        #endregion
         private void profileSettingsButton_Click(object sender, EventArgs e)
         {
             if (this.profileUserControl.Visible)
             {
+                MessageBox.Show("Need to do here: the action u did are not saved. click apply to save them.");
+                this.title.Hide();
                 this.applyBtn.Hide();
                 this.profileUserControl.Hide();
             }
             else
             {
                 HideAllComponents(this.profileUserControl);
-                this.applyBtn.BringToFront();
+                this.title.Show();
                 this.applyBtn.Show();
                 this.profileUserControl.Show();
-                Thread t = new Thread(new ParameterizedThreadStart(CheckIfChanged));
-                t.Start(this.profileUserControl);
             }
         }
         private void videoSettingsButton_Click(object sender, EventArgs e)
         {
             if (this.videoUserControl.Visible)
             {
+                MessageBox.Show("Need to do here: the action u did are not saved. click apply to save them.");
+                this.title.Hide();
                 this.applyBtn.Hide();
                 this.videoUserControl.Hide();
             }
             else
             {
                 HideAllComponents(this.videoUserControl);
-                this.applyBtn.BringToFront();
+                this.title.Show();
                 this.applyBtn.Show();
                 this.videoUserControl.Show();
-                Thread t = new Thread(new ParameterizedThreadStart(CheckIfChanged));
-                t.Start(this.videoUserControl);
             }
         }
-        private void CheckIfChanged(object obj) //ToDo: Try To Make It An Event.
+        private void audioSettingsButton_Click(object sender, EventArgs e)
         {
-            ISettingsScreenComponent component = (ISettingsScreenComponent)obj;
-            while(!component.IsChanged && !IsFinished)
+            if (this.audioUserControl.Visible)
             {
-                if (this.profileUserControl.Visible || this.videoUserControl.Visible) //ToDo: add all the other panels' visible condition
-                    Thread.Sleep(50);
-                else
-                    break;
+                MessageBox.Show("Need to do here: the action u did are not saved. click apply to save them.");
+                this.title.Hide();
+                this.applyBtn.Hide();
+                this.audioUserControl.Hide();
             }
-            if (this.profileUserControl.Visible || this.videoUserControl.Visible) //ToDo: add all the other panels' visible condition
-                this.applyBtn.Enabled = true;
+            else
+            {
+                HideAllComponents(this.audioUserControl);
+                this.title.Show();
+                this.applyBtn.Show();
+                this.audioUserControl.Show();
+            }
+        }
+        private void CheckIfChanged(ValuesChangedEventArgs e)
+        {
+            if (e.IsChanged)
+            {
+                if (!this.applyBtn.Enabled)
+                    this.applyBtn.Enabled = true;
+            }
+            else
+                this.applyBtn.Enabled = false;
         }
         private void HideAllComponents(Component component)
         {
@@ -161,6 +181,8 @@ namespace Soom_Client
                 this.profileUserControl.Hide();
             else if (component != this.videoUserControl && this.videoUserControl.Visible)
                 this.videoUserControl.Hide();
+            else if (component != this.audioUserControl && this.audioUserControl.Visible)
+                this.audioUserControl.Hide();
         }
     }
     public class SettingsEventArgs : EventArgs

@@ -30,7 +30,6 @@
         {
             this.cameraCboBox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.title = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.enterCallBox = new System.Windows.Forms.CheckBox();
             this.mirrorBox = new System.Windows.Forms.CheckBox();
@@ -45,7 +44,6 @@
             this.cameraCboBox.Name = "cameraCboBox";
             this.cameraCboBox.Size = new System.Drawing.Size(281, 21);
             this.cameraCboBox.TabIndex = 0;
-            this.cameraCboBox.SelectedIndexChanged += new System.EventHandler(this.cameraCboBox_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -56,17 +54,6 @@
             this.label1.Size = new System.Drawing.Size(46, 13);
             this.label1.TabIndex = 37;
             this.label1.Text = "Camera:";
-            // 
-            // title
-            // 
-            this.title.AutoSize = true;
-            this.title.Font = new System.Drawing.Font("Matura MT Script Capitals", 50F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.title.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(56)))), ((int)(((byte)(64)))), ((int)(((byte)(181)))));
-            this.title.Location = new System.Drawing.Point(134, 12);
-            this.title.Name = "title";
-            this.title.Size = new System.Drawing.Size(353, 89);
-            this.title.TabIndex = 42;
-            this.title.Text = "SOOM";
             // 
             // panel1
             // 
@@ -88,7 +75,6 @@
             this.enterCallBox.TabIndex = 41;
             this.enterCallBox.Text = "Turn Off My Video When Joining Meeting";
             this.enterCallBox.UseVisualStyleBackColor = false;
-            this.enterCallBox.CheckedChanged += new System.EventHandler(this.enterCallBox_CheckedChanged);
             // 
             // mirrorBox
             // 
@@ -100,7 +86,6 @@
             this.mirrorBox.TabIndex = 40;
             this.mirrorBox.Text = "Mirror The Screen";
             this.mirrorBox.UseVisualStyleBackColor = false;
-            this.mirrorBox.CheckedChanged += new System.EventHandler(this.mirrorBox_CheckedChanged);
             // 
             // label3
             // 
@@ -117,7 +102,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.MenuHighlight;
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.title);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.cameraCboBox);
             this.Name = "VideoUserControl";
@@ -133,7 +117,6 @@
 
         private System.Windows.Forms.ComboBox cameraCboBox;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label title;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.CheckBox enterCallBox;
         private System.Windows.Forms.CheckBox mirrorBox;

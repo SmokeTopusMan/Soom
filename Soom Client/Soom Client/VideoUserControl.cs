@@ -14,11 +14,12 @@ namespace Soom_Client
 {
     public partial class VideoUserControl : UserControl, ISettingsScreenComponent
     {
-        public bool IsVideoMirrored {  get; private set; }
-        public bool IsChanged { get; private set; }
-        public bool IsVideoOnWhenJoining { get; private set; }
-        public string DeviceName { get; private set; }
+        private bool _isMirrored;
+        private bool _isVideoOnWhenJoining;
+        private string _deviceName;
         private FilterInfoCollection _filterInfoCollection;
+
+        public event ValuesChangedEvent ChangedEvent;
 
         public VideoUserControl()
         {
@@ -26,34 +27,21 @@ namespace Soom_Client
             _filterInfoCollection = new FilterInfoCollection(FilterCategory.VideoInputDevice);
             foreach (FilterInfo filterInfo in _filterInfoCollection)
                 cameraCboBox.Items.Add(filterInfo.Name);
-            DeviceName = cameraCboBox.SelectedText;
         }
-
-        private void mirrorBox_CheckedChanged(object sender, EventArgs e)
+        public void IsChanged()
         {
-            IsChanged = true;
-            if(mirrorBox.Checked)
-                IsVideoMirrored = true;
-            else
-                IsVideoMirrored = false;
-        }
-
-        private void enterCallBox_CheckedChanged(object sender, EventArgs e)
-        {
-            IsChanged = true;
-            if (enterCallBox.Checked)
-                IsVideoOnWhenJoining = true;
-            else
-                IsVideoOnWhenJoining = false;
-        }
-
-        private void cameraCboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (DeviceName != cameraCboBox.SelectedText)
+            if (ChangedEvent != null)
             {
-                DeviceName = cameraCboBox.SelectedText;
-                IsChanged = true;
+                ChangedEvent(new ValuesChangedEventArgs(CheckIfChanged()));
             }
+        }
+        public bool CheckIfChanged()
+        {
+            return (this.cameraCboBox.SelectedText != _deviceName || this.mirrorBox.Checked != _isMirrored || this.enterCallBox.Checked != _isVideoOnWhenJoining);
+        }
+        public List<string> Convert2Str()
+        {
+            return null;
         }
     }
 }
