@@ -33,7 +33,7 @@ namespace Soom_Client
         public string Bio { get { return bioBox.Text; } private set { } }
         #endregion Properties
         public event ValuesChangedEvent ChangedEvent;
-        public ProfileUserControl()
+        public ProfileUserControl()//ToDO: need to trasfer the data from the server to settingsScreen to this constructor.
         {
             InitializeComponent();
         }

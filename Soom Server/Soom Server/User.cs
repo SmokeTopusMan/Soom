@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net;
-using System.Net.Sockets;
-using System.Threading;
-
+﻿using System.Net.Sockets;
+using System.Security.Cryptography;
 namespace Soom_server
 {
     public class User
@@ -15,6 +8,7 @@ namespace Soom_server
         public Socket Socket { get; set; }
         public int Id { get; set; }
         public bool Connected { get; set; }
+        public Aes Key { get; set; }
         #endregion
 
         #region CTor
@@ -28,6 +22,10 @@ namespace Soom_server
         public override string ToString()
         {
             return $"Client's ID : '{Id}'";
+        }
+        public void SetKey(Aes aes)
+        {
+            Key = aes;
         }
     }
 }

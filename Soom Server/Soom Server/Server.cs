@@ -8,6 +8,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Runtime.CompilerServices;
 using System.Data.SQLite;
+using System.Security.Cryptography;
 
 namespace Soom_server
 {
@@ -98,6 +99,11 @@ namespace Soom_server
                 Log("REG", user.Id);
                 Register(user);
             }
+            else if (command == "KEY")
+            {
+                Log("KEY", user.Id);
+                ExchangeKeys(user);
+            }
         }
 
         private static string GetData(Socket sock, int arrayLength)
@@ -113,12 +119,13 @@ namespace Soom_server
         {
             if (error == Errors.GeneralError)
             {
-                clientSock.Send(Encoding.UTF8.GetBytes($"NO0"));
+                clientSock.Send(Encoding.UTF8.GetBytes("NO0"));
                 throw new SocketException();
             }
-            else if (error == Errors.CommandIsCorrupted) clientSock.Send(Encoding.UTF8.GetBytes($"NO1"));
-            else if (error == Errors.UsernameIsTaken) clientSock.Send(Encoding.UTF8.GetBytes($"NO2"));
-            else if (error == Errors.UserNotExist) clientSock.Send(Encoding.UTF8.GetBytes($"NO3"));
+            else if (error == Errors.CommandIsCorrupted) clientSock.Send(Encoding.UTF8.GetBytes("NO1"));
+            else if (error == Errors.UsernameIsTaken) clientSock.Send(Encoding.UTF8.GetBytes("NO2"));
+            else if (error == Errors.UserNotExist) clientSock.Send(Encoding.UTF8.GetBytes("NO3"));
+            else if (error == Errors.UnknownFormat) clientSock.Send(Encoding.UTF8.GetBytes("NO4"));
         }
         private static void SendID(Socket socket, int id)
         {
@@ -129,9 +136,43 @@ namespace Soom_server
             Buffer.BlockCopy(bytes1, 0, result, bytes2.Length, bytes1.Length);
             socket.Send(result);
         }
+        private static void ExchangeKeys(User user)
+        {
+            byte[] data = new byte[3];
+            user.Socket.Receive(data);
+            int length = int.Parse(Encoding.UTF8.GetString(data));
+            data = new byte[length];
+            user.Socket.Receive(data);
+            using (Aes aes = Aes.Create())
+            {
+                RSAParameters publicKeyParams = new RSAParameters
+                {
+                    Modulus = data,
+                    Exponent = new byte[] { 0x01, 0x00, 0x01 } // Example exponent value (usually a fixed value like 3 or 65537)
+                };
+                RSA rsa = RSA.Create();
+                rsa.ImportParameters(publicKeyParams);
+                aes.GenerateKey();
+                byte[] publicKey = rsa.Encrypt(aes.Key, RSAEncryptionPadding.Pkcs1);
+                byte[] msg = Encoding.UTF8.GetBytes("OK" + publicKey.Length.ToString("000"));
+                msg = msg.Concat(publicKey).ToArray();
+                user.Socket.Send(msg);
+            }
+
+        }
         private static void Login(User user)
         {
-            string[] userInfo = GetData(user.Socket, 2).Split('#');
+            string[] userInfo;
+            try
+            {
+                userInfo = GetData(user.Socket, 2).Split('#');
+            }
+            catch
+            {
+                SendErrors(user.Socket, Errors.UnknownFormat); Log("NOLOG", user.Id, Errors.UnknownFormat);
+                return;
+            }
+
             UserDB userDB = new UserDB(userInfo[0], userInfo[1]);
             try
             {
@@ -157,7 +198,16 @@ namespace Soom_server
         }
         private static void Register(User user)
         {
-            string[] userInfo = GetData(user.Socket, 4).Split('#');
+            string[] userInfo;
+            try
+            {
+                userInfo = GetData(user.Socket, 4).Split('#');
+            }
+            catch
+            {
+                SendErrors(user.Socket, Errors.UnknownFormat); Log("NOLOG", user.Id, Errors.UnknownFormat);
+                return;
+            }
             UserDB userDetails;
             try
             {
@@ -193,6 +243,7 @@ namespace Soom_server
         {
             if(command == "JOIN") Console.WriteLine($"Server => Server: Client '{id}' Has Been Connected!");
             else if(command == "LEFT") Console.WriteLine($"Server => Server: Client '{id}' Has Been Disconnected!");
+            else if(command == "KEY") Console.WriteLine($"Client => Server: Client '{id}' Sent Keys Exchange Request!");
             else if(command == "LOG") Console.WriteLine($"Client => Server: Client '{id}' Sent Login Request!");
             else if (command == "REG") Console.WriteLine($"Client => Server: Client '{id}' Sent Register Request!");
             else if( command == "NOLOG") Console.WriteLine($"Server => Client: Client's '{id} Login Request Has Failed', ERROR:{err}");
@@ -209,6 +260,38 @@ namespace Soom_server
                 }
             }
             return null;
+        }
+        private static RSAParameters ConvertToRSAParameters(byte[] publicKeyModulus)
+        {
+            // Create an RSAParameters instance
+            RSAParameters publicKeyParams = new RSAParameters();
+
+            // Assign the byte array to the Modulus property
+            publicKeyParams.Modulus = publicKeyModulus;
+
+            return publicKeyParams;
+        }
+        static List<byte[]> SplitByteArray(byte[] input, byte[] delimiter)
+        {
+            List<byte[]> substrings = new List<byte[]>();
+            int startIndex = 0;
+
+            while (startIndex < input.Length)
+            {
+                int delimiterIndex = Array.IndexOf(input, delimiter[0], startIndex); // Find the delimiter
+
+                if (delimiterIndex == -1)
+                    delimiterIndex = input.Length;
+
+                int length = delimiterIndex - startIndex;
+                byte[] substring = new byte[length];
+
+                Array.Copy(input, startIndex, substring, 0, length); // Copy the substring
+                substrings.Add(substring);
+
+                startIndex = delimiterIndex + 1;
+            }
+            return substrings;
         }
     }
 }

@@ -184,6 +184,10 @@ namespace Soom_Client
             else if (component != this.audioUserControl && this.audioUserControl.Visible)
                 this.audioUserControl.Hide();
         }
+        private void GetDataFromServer() //ToDo: Do the function to recieve the data from the server for all the UserControls inside this one.
+        {
+
+        }
     }
     public class SettingsEventArgs : EventArgs
     {

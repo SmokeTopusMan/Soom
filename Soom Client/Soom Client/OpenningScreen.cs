@@ -20,13 +20,15 @@ namespace Soom_Client
     {
         private string _userInfo;
         private Socket _socket;
-        public OpenningScreen(Socket socket)
+        private byte[] _key;
+        public OpenningScreen(Socket socket, byte[] key)
         {
             _socket = socket;
             InitializeComponent();
             registerClick.Hide();
             loginClick.Hide();
             submitBtn.Hide();
+            _key = key;
         }
 
         private void register_Click(object sender, EventArgs e)
@@ -47,7 +49,7 @@ namespace Soom_Client
             registerClick.ClearBoxes();
         }
 
-        private void submitBtn_Click(object sender, EventArgs e) //Future: find a way to stop the current form.
+        private void submitBtn_Click(object sender, EventArgs e)
         {
             try
             {
@@ -200,12 +202,14 @@ namespace Soom_Client
                 throw new SocketException();
             else if (err == ServerErrors.UserNotExist) MessageBox.Show("The User Does Not Exist!\r\nPlease Try Again And Check The Your Data.");
             else if (err == ServerErrors.UsernameIsTaken) MessageBox.Show("This Username is Already Taken!\r\nPlease Think of Anouther Name.");
+            else if (err == ServerErrors.UnknownFormat) MessageBox.Show("USE ENGLISH ONLY [and numbers :) ]!");
             else if (err == ServerErrors.CommandIsCorrupted) MessageBox.Show("Please Try Again To Do Your Action!");
+
         }
         private Byte[] PrepareDataViaProtocol(string command)
         {
             string[] temp = this._userInfo.Split('#');
-            temp[1] = Encryption.CreateSha256(Encryption.CreateMD5(temp[1]) + temp[0]);
+            temp[1] = Encryption.CreateSha256(Encryption.CreateMD5(temp[1]) + temp[0]); //ToDo: Hashing on the client side is useless, need to figure how to use keys (RSA?)
             string data = string.Join("#", temp);
             if (command == "REG")
             {

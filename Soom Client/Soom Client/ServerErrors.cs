@@ -6,6 +6,7 @@
         CommandIsCorrupted,
         UsernameIsTaken,
         UserNotExist,
+        UnknownFormat,
         None,
     }
 }

@@ -16,16 +16,16 @@ namespace Soom_Client
         private int _volume;
         private string _inputDeviceName;
         private string _outputDeviceName;
-        public AudioUserControl()
+        public AudioUserControl()//ToDO: need to trasfer the data from the server to settingsScreen to this constructor.
         {
             InitializeComponent();
         }
 
         public event ValuesChangedEvent ChangedEvent;
 
-        private void volumeBar_Scroll(object sender, EventArgs e) // ToDo: In all of the UserControl dont change the properties until the apply button is clicked
+        private void volumeBar_Scroll(object sender, EventArgs e)
         {
-            volumeNumberBox.Text = $"{volumeBar.Value * 100}";
+            volumeNumberBox.Text = $"{volumeBar.Value*10}";
         }
 
         private void AudioUserControl_Load(object sender, EventArgs e)

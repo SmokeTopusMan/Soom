@@ -21,7 +21,7 @@ namespace Soom_Client
 
         public event ValuesChangedEvent ChangedEvent;
 
-        public VideoUserControl()
+        public VideoUserControl()//ToDO: need to trasfer the data from the server to settingsScreen to this constructor.
         {
             InitializeComponent();
             _filterInfoCollection = new FilterInfoCollection(FilterCategory.VideoInputDevice);
