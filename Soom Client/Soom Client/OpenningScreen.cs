@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -20,15 +21,13 @@ namespace Soom_Client
     {
         private string _userInfo;
         private Socket _socket;
-        private byte[] _key;
-        public OpenningScreen(Socket socket, byte[] key)
+        public OpenningScreen(Socket socket)
         {
             _socket = socket;
             InitializeComponent();
             registerClick.Hide();
             loginClick.Hide();
             submitBtn.Hide();
-            _key = key;
         }
 
         private void register_Click(object sender, EventArgs e)
@@ -74,7 +73,8 @@ namespace Soom_Client
                 }
                 if (this._userInfo != null)
                 {
-                    _socket.Send(data);
+
+                    _socket.Send(data); // ToDo: encrypt Here!
                     data = new byte[3];
                     int bytes = _socket.Receive(data, 2, SocketFlags.None);
                     string sData = Encoding.UTF8.GetString(data);
@@ -206,16 +206,17 @@ namespace Soom_Client
             else if (err == ServerErrors.CommandIsCorrupted) MessageBox.Show("Please Try Again To Do Your Action!");
 
         }
-        private Byte[] PrepareDataViaProtocol(string command)
+        private byte[] PrepareDataViaProtocol(string command)
         {
             string[] temp = this._userInfo.Split('#');
-            temp[1] = Encryption.CreateSha256(Encryption.CreateMD5(temp[1]) + temp[0]); //ToDo: Hashing on the client side is useless, need to figure how to use keys (RSA?)
+            temp[1] = EncodingMD5andSha256.CreateSha256(EncodingMD5andSha256.CreateMD5(temp[1]) + temp[0]); //ToDo: Hashing on the client side is useless, need to figure how to use keys (RSA?)
             string data = string.Join("#", temp);
+            byte[] encryptedData = SymmetricEncryption.EncryptStringToBytesAES(data);
             if (command == "REG")
             {
-                return Encoding.UTF8.GetBytes(command + (data.Length).ToString("0000") + data);
+                return Encoding.UTF8.GetBytes(command + (encryptedData.Length).ToString("0000")).Concat(encryptedData).ToArray();
             }
-            return Encoding.UTF8.GetBytes(command + (data.Length).ToString("00") + data);
+            return Encoding.UTF8.GetBytes(command + (encryptedData.Length).ToString("00")).Concat(encryptedData).ToArray();
         }
     }
 }

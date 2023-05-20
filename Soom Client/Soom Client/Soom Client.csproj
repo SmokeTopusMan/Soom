@@ -100,7 +100,13 @@
     <Compile Include="AudioUserControl.Designer.cs">
       <DependentUpon>AudioUserControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Encryption.cs" />
+    <Compile Include="EncodingMD5andSha256.cs" />
+    <Compile Include="FriendsScreen.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FriendsScreen.Designer.cs">
+      <DependentUpon>FriendsScreen.cs</DependentUpon>
+    </Compile>
     <Compile Include="ISettingsScreenComponent.cs" />
     <Compile Include="ServerErrors.cs" />
     <Compile Include="MainScreen.cs">
@@ -142,8 +148,8 @@
     <Compile Include="ProfileUserControl.Designer.cs">
       <DependentUpon>ProfileUserControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="SymmetricEncryption.cs" />
     <Compile Include="UserInfo.cs" />
-    <Compile Include="VideoFormat.cs" />
     <Compile Include="VideoUserControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -152,6 +158,9 @@
     </Compile>
     <EmbeddedResource Include="AudioUserControl.resx">
       <DependentUpon>AudioUserControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FriendsScreen.resx">
+      <DependentUpon>FriendsScreen.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainScreen.resx">
       <DependentUpon>MainScreen.cs</DependentUpon>

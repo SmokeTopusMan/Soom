@@ -40,7 +40,7 @@
             // cameraCboBox
             // 
             this.cameraCboBox.FormattingEnabled = true;
-            this.cameraCboBox.Location = new System.Drawing.Point(206, 165);
+            this.cameraCboBox.Location = new System.Drawing.Point(167, 25);
             this.cameraCboBox.Name = "cameraCboBox";
             this.cameraCboBox.Size = new System.Drawing.Size(281, 21);
             this.cameraCboBox.TabIndex = 0;
@@ -49,7 +49,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.Color.Chocolate;
-            this.label1.Location = new System.Drawing.Point(130, 168);
+            this.label1.Location = new System.Drawing.Point(90, 28);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(46, 13);
             this.label1.TabIndex = 37;
@@ -58,18 +58,20 @@
             // panel1
             // 
             this.panel1.Controls.Add(this.enterCallBox);
+            this.panel1.Controls.Add(this.cameraCboBox);
+            this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.mirrorBox);
             this.panel1.Controls.Add(this.label3);
-            this.panel1.Location = new System.Drawing.Point(44, 192);
+            this.panel1.Location = new System.Drawing.Point(44, 320);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(547, 252);
+            this.panel1.Size = new System.Drawing.Size(547, 124);
             this.panel1.TabIndex = 43;
             // 
             // enterCallBox
             // 
             this.enterCallBox.AutoSize = true;
             this.enterCallBox.BackColor = System.Drawing.Color.Chocolate;
-            this.enterCallBox.Location = new System.Drawing.Point(302, 30);
+            this.enterCallBox.Location = new System.Drawing.Point(301, 68);
             this.enterCallBox.Name = "enterCallBox";
             this.enterCallBox.Size = new System.Drawing.Size(221, 17);
             this.enterCallBox.TabIndex = 41;
@@ -80,7 +82,7 @@
             // 
             this.mirrorBox.AutoSize = true;
             this.mirrorBox.BackColor = System.Drawing.Color.Chocolate;
-            this.mirrorBox.Location = new System.Drawing.Point(25, 30);
+            this.mirrorBox.Location = new System.Drawing.Point(25, 68);
             this.mirrorBox.Name = "mirrorBox";
             this.mirrorBox.Size = new System.Drawing.Size(111, 17);
             this.mirrorBox.TabIndex = 40;
@@ -102,14 +104,11 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.MenuHighlight;
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.cameraCboBox);
             this.Name = "VideoUserControl";
             this.Size = new System.Drawing.Size(634, 461);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 

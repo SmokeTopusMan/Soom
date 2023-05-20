@@ -153,7 +153,8 @@ namespace Soom_server
                 RSA rsa = RSA.Create();
                 rsa.ImportParameters(publicKeyParams);
                 aes.GenerateKey();
-                byte[] publicKey = rsa.Encrypt(aes.Key, RSAEncryptionPadding.Pkcs1);
+                byte[] keyAndIv = aes.Key.Concat(new byte[] { 35,35,35}).Concat(aes.IV).ToArray();
+                byte[] publicKey = rsa.Encrypt(keyAndIv, RSAEncryptionPadding.Pkcs1);
                 byte[] msg = Encoding.UTF8.GetBytes("OK" + publicKey.Length.ToString("000"));
                 msg = msg.Concat(publicKey).ToArray();
                 user.Socket.Send(msg);

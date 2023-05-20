@@ -24,14 +24,14 @@ namespace Soom_Client
                 try
                 {
                     sock.Connect(iPEndPoint);
-                    byte[] communicationKey = GetSymetricKey(sock);
-                    if (communicationKey == null)
-                        MessageBox.Show("Failed to make secure communication");
+                    GetSymetricKey(sock);
+                    if (SymmetricEncryption.Aes == null)
+                        MessageBox.Show("Failed to make secure communication, GoodBye!");
                     else
                     {
                         Application.EnableVisualStyles();
                         Application.SetCompatibleTextRenderingDefault(false);
-                        OpenningScreen openningScreen = new OpenningScreen(sock, communicationKey);
+                        OpenningScreen openningScreen = new OpenningScreen(sock);
                         Application.Run(openningScreen);
                     }
                     break;
@@ -56,7 +56,7 @@ namespace Soom_Client
 
             return byteArray;
         }
-        static byte[] GetSymetricKey(Socket sock)
+        static void GetSymetricKey(Socket sock)
         {
             var rsa = new RSACryptoServiceProvider();
             RSAParameters publicKey = rsa.ExportParameters(false);
@@ -74,10 +74,44 @@ namespace Soom_Client
                     int symmKeyLength = int.Parse(Encoding.UTF8.GetString(data));
                     data = new byte[symmKeyLength];
                     sock.Receive(data);
-                    return rsa.Decrypt(data, false);
+                    data = rsa.Decrypt(data, false);
+                    List<byte[]> keyAndIv = SplitByteArray(data, new byte[] { 35, 35, 35 });
+                    using(Aes aes = Aes.Create())
+                    {
+                        aes.Key = keyAndIv[0];
+                        aes.IV = keyAndIv[1];
+                        SymmetricEncryption.Aes = aes;
+                    }
+                    sock.Send(Encoding.UTF8.GetBytes("OK"));
                 }
             }
-            return null;
+        }
+        private static int SearchSequence(byte[] source, byte[] sequence)
+        {
+            if (sequence == null || source == null)
+                throw new ArgumentNullException();
+            if (sequence.Length > source.Length || sequence.Length == 0 || source.Length == 0)
+                return -1;
+            for(int i = 0; i < source.Length - sequence.Length + 1; i++)
+            {
+                byte[] d = source.Skip(i).ToArray();
+                if (source.Skip(i).Take(sequence.Length).SequenceEqual(sequence))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+        public static List<byte[]> SplitByteArray(byte[] source, byte[] sequence)
+        {
+            int index = SearchSequence(source, sequence);
+            List<byte[]> returnList = new List<byte[]>();
+            returnList.Add(new byte[32]);
+            returnList.Add(new byte[16]);
+            
+            Array.Copy(source, returnList[0], index);
+            Array.Copy(source, index + sequence.Length, returnList[1], 0, source.Length - index - sequence.Length);
+            return returnList;
         }
 
     }
