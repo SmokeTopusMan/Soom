@@ -40,18 +40,20 @@
             // cameraCboBox
             // 
             this.cameraCboBox.FormattingEnabled = true;
-            this.cameraCboBox.Location = new System.Drawing.Point(167, 25);
+            this.cameraCboBox.Location = new System.Drawing.Point(250, 38);
+            this.cameraCboBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.cameraCboBox.Name = "cameraCboBox";
-            this.cameraCboBox.Size = new System.Drawing.Size(281, 21);
+            this.cameraCboBox.Size = new System.Drawing.Size(420, 28);
             this.cameraCboBox.TabIndex = 0;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.Color.Chocolate;
-            this.label1.Location = new System.Drawing.Point(90, 28);
+            this.label1.Location = new System.Drawing.Point(135, 43);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(46, 13);
+            this.label1.Size = new System.Drawing.Size(69, 20);
             this.label1.TabIndex = 37;
             this.label1.Text = "Camera:";
             // 
@@ -62,18 +64,20 @@
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.mirrorBox);
             this.panel1.Controls.Add(this.label3);
-            this.panel1.Location = new System.Drawing.Point(44, 320);
+            this.panel1.Location = new System.Drawing.Point(84, 405);
+            this.panel1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(547, 124);
+            this.panel1.Size = new System.Drawing.Size(820, 281);
             this.panel1.TabIndex = 43;
             // 
             // enterCallBox
             // 
             this.enterCallBox.AutoSize = true;
             this.enterCallBox.BackColor = System.Drawing.Color.Chocolate;
-            this.enterCallBox.Location = new System.Drawing.Point(301, 68);
+            this.enterCallBox.Location = new System.Drawing.Point(452, 105);
+            this.enterCallBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.enterCallBox.Name = "enterCallBox";
-            this.enterCallBox.Size = new System.Drawing.Size(221, 17);
+            this.enterCallBox.Size = new System.Drawing.Size(323, 24);
             this.enterCallBox.TabIndex = 41;
             this.enterCallBox.Text = "Turn Off My Video When Joining Meeting";
             this.enterCallBox.UseVisualStyleBackColor = false;
@@ -82,9 +86,10 @@
             // 
             this.mirrorBox.AutoSize = true;
             this.mirrorBox.BackColor = System.Drawing.Color.Chocolate;
-            this.mirrorBox.Location = new System.Drawing.Point(25, 68);
+            this.mirrorBox.Location = new System.Drawing.Point(452, 173);
+            this.mirrorBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.mirrorBox.Name = "mirrorBox";
-            this.mirrorBox.Size = new System.Drawing.Size(111, 17);
+            this.mirrorBox.Size = new System.Drawing.Size(161, 24);
             this.mirrorBox.TabIndex = 40;
             this.mirrorBox.Text = "Mirror The Screen";
             this.mirrorBox.UseVisualStyleBackColor = false;
@@ -93,19 +98,21 @@
             // 
             this.label3.AutoSize = true;
             this.label3.BackColor = System.Drawing.Color.Chocolate;
-            this.label3.Location = new System.Drawing.Point(51, 88);
+            this.label3.Location = new System.Drawing.Point(76, 135);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(0, 13);
+            this.label3.Size = new System.Drawing.Size(0, 20);
             this.label3.TabIndex = 39;
             // 
             // VideoUserControl
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.MenuHighlight;
             this.Controls.Add(this.panel1);
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "VideoUserControl";
-            this.Size = new System.Drawing.Size(634, 461);
+            this.Size = new System.Drawing.Size(951, 709);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);

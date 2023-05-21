@@ -12,11 +12,12 @@ namespace Soom_Client
 {
     public partial class AudioUserControl : UserControl, ISettingsScreenComponent 
     {
-        private bool _isMuteWhenJoined;
-        private int _volume;
-        private string _inputDeviceName;
-        private string _outputDeviceName;
-        public AudioUserControl()//ToDO: need to trasfer the data from the server to settingsScreen to this constructor.
+        public bool IsMuteWhenJoined { get; private set; }
+        public int Volume { get; private set; }
+        public string InputDeviceName { get; private set; }
+        public string OutputDeviceName { get; private set; }
+
+        public AudioUserControl()
         {
             InitializeComponent();
         }
@@ -41,7 +42,7 @@ namespace Soom_Client
         }
         public bool CheckIfChanged()
         {
-            return (int.Parse(this.volumeNumberBox.Text) != _volume || this.inputCboBox.SelectedText != _inputDeviceName || this.outputCboBox.SelectedText != _outputDeviceName || this.enterCallBox.Checked != _isMuteWhenJoined);
+            return (int.Parse(this.volumeNumberBox.Text) != Volume || this.inputCboBox.SelectedText != InputDeviceName || this.outputCboBox.SelectedText != OutputDeviceName || this.enterCallBox.Checked != IsMuteWhenJoined);
         }
         public List<string> Convert2Str()
         {

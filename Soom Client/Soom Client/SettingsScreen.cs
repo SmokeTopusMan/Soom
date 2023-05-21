@@ -211,7 +211,7 @@ namespace Soom_Client
         {
             GetDataFromServer("PRO", this.profileUserControl);
             GetDataFromServer("AUD", this.audioUserControl);
-            //GetDataFromServer("VID", this.videoUserControl);
+            GetDataFromServer("VID", this.videoUserControl);
 
         }
     }
