@@ -30,8 +30,6 @@
         {
             this.usernameBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.passwordBox = new System.Windows.Forms.TextBox();
             this.bioBox = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -47,7 +45,7 @@
             // 
             // usernameBox
             // 
-            this.usernameBox.Location = new System.Drawing.Point(117, 146);
+            this.usernameBox.Location = new System.Drawing.Point(115, 182);
             this.usernameBox.Margin = new System.Windows.Forms.Padding(5, 15, 45, 15);
             this.usernameBox.MaxLength = 35;
             this.usernameBox.Name = "usernameBox";
@@ -59,31 +57,11 @@
             // 
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.Color.Chocolate;
-            this.label1.Location = new System.Drawing.Point(51, 149);
+            this.label1.Location = new System.Drawing.Point(49, 185);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(58, 13);
             this.label1.TabIndex = 36;
             this.label1.Text = "Username:";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.BackColor = System.Drawing.Color.Chocolate;
-            this.label2.Location = new System.Drawing.Point(51, 199);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(56, 13);
-            this.label2.TabIndex = 37;
-            this.label2.Text = "Password:";
-            // 
-            // passwordBox
-            // 
-            this.passwordBox.Location = new System.Drawing.Point(115, 196);
-            this.passwordBox.Margin = new System.Windows.Forms.Padding(5, 15, 15, 15);
-            this.passwordBox.MaxLength = 35;
-            this.passwordBox.Name = "passwordBox";
-            this.passwordBox.Size = new System.Drawing.Size(202, 20);
-            this.passwordBox.TabIndex = 38;
-            this.passwordBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.passwordBox_KeyPress);
             // 
             // bioBox
             // 
@@ -199,8 +177,6 @@
             this.Controls.Add(this.label6);
             this.Controls.Add(this.usernameBox);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.passwordBox);
             this.Controls.Add(this.bioBox);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.panel1);
@@ -220,8 +196,6 @@
 
         private System.Windows.Forms.TextBox usernameBox;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox passwordBox;
         private System.Windows.Forms.TextBox bioBox;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Panel panel1;

@@ -133,6 +133,7 @@
             this.applyBtn.TabIndex = 10;
             this.applyBtn.Text = "Apply";
             this.applyBtn.UseVisualStyleBackColor = true;
+            this.applyBtn.Click += new System.EventHandler(this.applyBtn_Click);
             // 
             // panel2
             // 
@@ -193,6 +194,7 @@
             this.Controls.Add(this.panel1);
             this.Name = "SettingsScreen";
             this.Size = new System.Drawing.Size(834, 461);
+            this.Load += new System.EventHandler(this.SettingsScreen_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);

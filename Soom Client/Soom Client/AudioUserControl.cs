@@ -47,5 +47,10 @@ namespace Soom_Client
         {
             throw new NotImplementedException();
         }
+
+        public void OrgenizeData(string data)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

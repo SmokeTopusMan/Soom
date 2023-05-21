@@ -12,8 +12,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 
 namespace Soom_Client
 {
@@ -73,8 +71,7 @@ namespace Soom_Client
                 }
                 if (this._userInfo != null)
                 {
-
-                    _socket.Send(data); // ToDo: encrypt Here!
+                    _socket.Send(data);
                     data = new byte[3];
                     int bytes = _socket.Receive(data, 2, SocketFlags.None);
                     string sData = Encoding.UTF8.GetString(data);
@@ -88,9 +85,12 @@ namespace Soom_Client
                             {
                                 try
                                 {
-                                    data = new byte[4];
-                                    _socket.Receive(data, 4, SocketFlags.None);
-                                    int id = BitConverter.ToInt32(data, 0);
+                                    byte[] length = new byte[2];
+                                    _socket.Receive(length, 2, SocketFlags.None);
+                                    byte[] idBytes = new byte[int.Parse(Encoding.UTF8.GetString(length))];
+                                    _socket.Receive(idBytes);
+
+                                    int id = int.Parse(SymmetricEncryption.DecryptBytesToStringAES(idBytes));
                                     if (id >= 10000 && id <= 99999)
                                     {
                                         isGood = true;
@@ -208,15 +208,12 @@ namespace Soom_Client
         }
         private byte[] PrepareDataViaProtocol(string command)
         {
-            string[] temp = this._userInfo.Split('#');
-            temp[1] = EncodingMD5andSha256.CreateSha256(EncodingMD5andSha256.CreateMD5(temp[1]) + temp[0]); //ToDo: Hashing on the client side is useless, need to figure how to use keys (RSA?)
-            string data = string.Join("#", temp);
-            byte[] encryptedData = SymmetricEncryption.EncryptStringToBytesAES(data);
+            byte[] encryptedData = SymmetricEncryption.EncryptStringToBytesAES(_userInfo);
             if (command == "REG")
             {
                 return Encoding.UTF8.GetBytes(command + (encryptedData.Length).ToString("0000")).Concat(encryptedData).ToArray();
             }
-            return Encoding.UTF8.GetBytes(command + (encryptedData.Length).ToString("00")).Concat(encryptedData).ToArray();
+            return Encoding.UTF8.GetBytes(command + (encryptedData.Length).ToString("000")).Concat(encryptedData).ToArray();
         }
     }
 }

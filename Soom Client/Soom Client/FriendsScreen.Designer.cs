@@ -34,6 +34,7 @@
             this.addFriendButton = new System.Windows.Forms.Label();
             this.friendsListButton = new System.Windows.Forms.Label();
             this.pendingRequestsButton = new System.Windows.Forms.Label();
+            this.usernameBox = new System.Windows.Forms.TextBox();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -105,11 +106,21 @@
             this.pendingRequestsButton.TabIndex = 5;
             this.pendingRequestsButton.Text = "Pending Requests";
             // 
+            // usernameBox
+            // 
+            this.usernameBox.Location = new System.Drawing.Point(401, 221);
+            this.usernameBox.Margin = new System.Windows.Forms.Padding(5, 15, 45, 15);
+            this.usernameBox.MaxLength = 35;
+            this.usernameBox.Name = "usernameBox";
+            this.usernameBox.Size = new System.Drawing.Size(238, 20);
+            this.usernameBox.TabIndex = 45;
+            // 
             // FriendsScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(162)))), ((int)(((byte)(232)))));
+            this.Controls.Add(this.usernameBox);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.title);
             this.Name = "FriendsScreen";
@@ -129,5 +140,6 @@
         private System.Windows.Forms.Label addFriendButton;
         private System.Windows.Forms.Label friendsListButton;
         private System.Windows.Forms.Label pendingRequestsButton;
+        private System.Windows.Forms.TextBox usernameBox;
     }
 }

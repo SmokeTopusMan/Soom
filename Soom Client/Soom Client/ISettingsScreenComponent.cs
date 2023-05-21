@@ -12,6 +12,7 @@ namespace Soom_Client
         event ValuesChangedEvent ChangedEvent;
         List<string> Convert2Str();
         bool CheckIfChanged();
+        void OrgenizeData(string data);
 
     }
     public class ValuesChangedEventArgs : EventArgs

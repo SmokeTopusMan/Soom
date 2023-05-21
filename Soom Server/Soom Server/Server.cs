@@ -9,6 +9,7 @@ using System.Threading;
 using System.Runtime.CompilerServices;
 using System.Data.SQLite;
 using System.Security.Cryptography;
+using System.Net.Configuration;
 
 namespace Soom_server
 {
@@ -89,31 +90,21 @@ namespace Soom_server
 
         private static void HandleCommand(string command, User user)
         {
-            if (command == "LOG")
-            {
-                Log("LOG", user.Id);
-                Login(user);
-            }
-            else if (command == "REG")
-            {
-                Log("REG", user.Id);
-                Register(user);
-            }
-            else if (command == "KEY")
-            {
-                Log("KEY", user.Id);
-                ExchangeKeys(user);
-            }
+            Log(command, user.Id);
+            if (command == "LOG") Login(user);
+            else if (command == "REG") Register(user);
+            else if (command == "KEY") ExchangeKeys(user);
+            else if (command == "PRO" || command == "AUD" || command == "VID") GetSettings(user, command);
         }
 
         private static string GetData(Socket sock, int arrayLength)
         {
-                byte[] userInfo = new byte[arrayLength];
-                sock.Receive(userInfo, arrayLength, SocketFlags.None);
-                int length = int.Parse(Encoding.UTF8.GetString(userInfo));
-                userInfo = new byte[length];
-                sock.Receive(userInfo, length, SocketFlags.None);
-                return Encoding.UTF8.GetString(userInfo);
+            byte[] userInfo = new byte[arrayLength];
+            sock.Receive(userInfo, arrayLength, SocketFlags.None);
+            int length = int.Parse(Encoding.UTF8.GetString(userInfo));
+            userInfo = new byte[length];
+            sock.Receive(userInfo, length, SocketFlags.None);
+            return SymmetricEncryption.DecryptBytesToStringAES(userInfo);
         }
         private static void SendErrors(Socket clientSock, Errors error)
         {
@@ -129,11 +120,8 @@ namespace Soom_server
         }
         private static void SendID(Socket socket, int id)
         {
-            byte[] bytes1 = BitConverter.GetBytes(id);
-            byte[] bytes2 = Encoding.UTF8.GetBytes("OK");
-            byte[] result = new byte[bytes1.Length + bytes2.Length];
-            Buffer.BlockCopy(bytes2, 0, result, 0, bytes2.Length);
-            Buffer.BlockCopy(bytes1, 0, result, bytes2.Length, bytes1.Length);
+            byte[] idBytes = SymmetricEncryption.EncryptStringToBytesAES(id.ToString());
+            byte[] result = Encoding.UTF8.GetBytes($"OK{idBytes.Length.ToString("00")}").Concat(idBytes).ToArray();
             socket.Send(result);
         }
         private static void ExchangeKeys(User user)
@@ -153,20 +141,27 @@ namespace Soom_server
                 RSA rsa = RSA.Create();
                 rsa.ImportParameters(publicKeyParams);
                 aes.GenerateKey();
-                byte[] keyAndIv = aes.Key.Concat(new byte[] { 35,35,35}).Concat(aes.IV).ToArray();
+                byte[] keyAndIv = aes.Key.Concat(new byte[] { 35, 35, 35 }).Concat(aes.IV).ToArray();
                 byte[] publicKey = rsa.Encrypt(keyAndIv, RSAEncryptionPadding.Pkcs1);
                 byte[] msg = Encoding.UTF8.GetBytes("OK" + publicKey.Length.ToString("000"));
                 msg = msg.Concat(publicKey).ToArray();
                 user.Socket.Send(msg);
+                byte[] answer = new byte[2];
+                user.Socket.Receive(answer, 2, SocketFlags.None);
+                if (Encoding.UTF8.GetString(answer) == "OK")
+                {
+                    SymmetricEncryption.Aes = Aes.Create();
+                    SymmetricEncryption.Aes.Key = aes.Key;
+                    SymmetricEncryption.Aes.IV = aes.IV;
+                }
             }
-
         }
         private static void Login(User user)
         {
             string[] userInfo;
             try
             {
-                userInfo = GetData(user.Socket, 2).Split('#');
+                userInfo = GetData(user.Socket, 3).Split('#');
             }
             catch
             {
@@ -227,7 +222,7 @@ namespace Soom_server
                     byte[] confirmation = new byte[2];
                     user.Socket.Receive(confirmation, 2, SocketFlags.None);
                     if (Encoding.UTF8.GetString(confirmation) == "OK")
-                        return;
+                        return; 
                 }
                 SendErrors(user.Socket, Errors.GeneralError);
             }
@@ -239,6 +234,32 @@ namespace Soom_server
             {
                 SendErrors(user.Socket, Errors.GeneralError); Log("NOREG", user.Id, Errors.GeneralError);
             }
+        }
+        private static void GetSettings(User user, string command)
+        {
+            string id = GetData(user.Socket, 2);
+            byte[] msg;
+            if (command == "PRO")
+            {
+                UserDB userDB = DataBaseAccess.GetUserProfile(int.Parse(id));
+                msg = SymmetricEncryption.EncryptStringToBytesAES($"{userDB.Username}#{userDB.Age}#{userDB.Sex}#{userDB.Bio}#{userDB.Points}");
+            }
+            else if(command == "AUD")
+            {
+                string audioSettings = string.Join("#", DataBaseAccess.GetUserAudio(int.Parse(id)));
+                msg = SymmetricEncryption.EncryptStringToBytesAES(audioSettings);
+            }
+            else
+            {
+                string videoSettings = string.Join("#", DataBaseAccess.GetUserVideo(int.Parse(id)));
+                msg = SymmetricEncryption.EncryptStringToBytesAES(videoSettings);
+            }
+            byte[] result = Encoding.UTF8.GetBytes("OK" + msg.Length.ToString("0000")).Concat(msg).ToArray();
+            user.Socket.Send(result);
+            byte[] confirmation = new byte[2];
+            user.Socket.Receive(confirmation);
+            if (Encoding.UTF8.GetString(confirmation) == "OK")
+                return;
         }
         private static void Log(string command, int id, Errors err = Errors.None)
         {
@@ -262,37 +283,6 @@ namespace Soom_server
             }
             return null;
         }
-        private static RSAParameters ConvertToRSAParameters(byte[] publicKeyModulus)
-        {
-            // Create an RSAParameters instance
-            RSAParameters publicKeyParams = new RSAParameters();
 
-            // Assign the byte array to the Modulus property
-            publicKeyParams.Modulus = publicKeyModulus;
-
-            return publicKeyParams;
-        }
-        static List<byte[]> SplitByteArray(byte[] input, byte[] delimiter)
-        {
-            List<byte[]> substrings = new List<byte[]>();
-            int startIndex = 0;
-
-            while (startIndex < input.Length)
-            {
-                int delimiterIndex = Array.IndexOf(input, delimiter[0], startIndex); // Find the delimiter
-
-                if (delimiterIndex == -1)
-                    delimiterIndex = input.Length;
-
-                int length = delimiterIndex - startIndex;
-                byte[] substring = new byte[length];
-
-                Array.Copy(input, startIndex, substring, 0, length); // Copy the substring
-                substrings.Add(substring);
-
-                startIndex = delimiterIndex + 1;
-            }
-            return substrings;
-        }
     }
 }

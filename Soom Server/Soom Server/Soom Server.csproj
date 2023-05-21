@@ -53,10 +53,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataBaseAccess.cs" />
+    <Compile Include="EncodingMD5AndSha256.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Server.cs" />
+    <Compile Include="SymmetricEncryption.cs" />
     <Compile Include="User.cs" />
     <Compile Include="UserDB.cs" />
     <Compile Include="UsernameNotExistException.cs" />

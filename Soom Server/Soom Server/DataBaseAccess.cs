@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Soom_Client;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -19,11 +20,20 @@ namespace Soom_server
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
                 List<UserDB> users = GetAllUsers("REG");
+                string encodedPassword = EncodingMD5AndSha256.CreateMD5(EncodingMD5AndSha256.CreateSha256(user.Password) + user.Username);
                 if (users.Count == 0)
                 {
                     user.ID = 10000;
-                    cnn.Execute($"INSERT INTO UsersInfo (UserID, Username, Password, Age, Sex, Bio) VALUES ({10000}, @Username, @Password, @Age, @Sex, @Bio)", user);
-                    return (int)user.ID;
+                    cnn.Execute($"INSERT INTO UsersInfo (UserID, Username, Password, Age, Sex, Bio) VALUES (@ID, @Username, @Password, @Age, @Sex, @Bio)", new
+                    {
+                        user.ID,
+                        user.Username,
+                        Password = encodedPassword, // Pass the custom password value as a parameter
+                        user.Age,
+                        user.Sex,
+                        user.Bio
+                    });
+
                 }
                 else
                 {
@@ -34,10 +44,19 @@ namespace Soom_server
                             throw new UsernameTakenException();
                         }
                     }
-                    cnn.Execute("INSERT INTO UsersInfo (Username, Password, Age, Sex, Bio) VALUES (@Username, @Password, @Age, @Sex, @Bio)", user);
-                    return int.Parse(string.Join("", cnn.Query<string>($"SELECT UserID FROM UsersInfo WHERE Username = '{user.Username}'")));
+                    cnn.Execute($"INSERT INTO UsersInfo (Username, Password, Age, Sex, Bio) VALUES (@Username, @Password, @Age, @Sex, @Bio)", new
+                    {
+                        user.Username,
+                        Password = encodedPassword, // Pass the custom password value as a parameter
+                        user.Age,
+                        user.Sex,
+                        user.Bio
+                    });
+                    user.ID = int.Parse(string.Join("", cnn.Query<string>($"SELECT UserID FROM UsersInfo WHERE Username = '{user.Username}'")));
                 }
-
+                cnn.Execute($"INSERT INTO AudioSettingsTable (UserID) VALUES {user.ID}");
+                cnn.Execute($"INSERT INTO VideoSettingsTable (UserID) VALUES {user.ID}");
+                return (int)user.ID;
             }
         }
         public static int LoginUser(UserDB user)
@@ -45,27 +64,34 @@ namespace Soom_server
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
                 List<UserDB> users = GetAllUsers("LOG");
+                string encodedPassword = EncodingMD5AndSha256.CreateMD5(EncodingMD5AndSha256.CreateSha256(user.Password) + user.Username);
                 foreach (UserDB item in users)
                 {
-                    if (item.Username == user.Username && item.Password == user.Password)
+                    if (item.Username == user.Username && item.Password == encodedPassword)
                     {
-                        var temp = cnn.Query<UserDB>($"SELECT Age, Sex, Bio, Points FROM UsersInfo WHERE Username = '{user.Username}'");
-                        List<UserDB> data = temp.ToList();
                         return int.Parse(string.Join("", cnn.Query<string>($"SELECT UserID FROM UsersInfo WHERE Username = '{user.Username}'")));
                     }
                 }
                 throw new UsernameNotExistException();
             }
         }
-        public static UserDB GetUser(string username)
+        public static UserDB GetUserProfile(int id)
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
-                var output = cnn.Query<UserDB>($"SELECT Username, Password, Age, Sex, Bio, Points FROM UsersInfo WHERE Username = '{username}'");
+                var output = cnn.Query<UserDB>($"SELECT Username, Password, Age, Sex, Bio, Points FROM UsersInfo WHERE UserID = {id}");
                 return (UserDB)output.ToList()[0];
             }
         }
-        public static List<UserDB> GetAllUsers(string command = null)
+        public static string[] GetUserAudio(int id)
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                var output = cnn.Query<string>($"SELECT InputDeviceName, OutputDeviceName, Volume, IsMicOff FROM AudioSettingsTable WHERE UserID = {id}");
+                return output.ToArray();
+            }
+        }
+        private static List<UserDB> GetAllUsers(string command = null)
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {

@@ -76,13 +76,11 @@ namespace Soom_Client
                     sock.Receive(data);
                     data = rsa.Decrypt(data, false);
                     List<byte[]> keyAndIv = SplitByteArray(data, new byte[] { 35, 35, 35 });
-                    using(Aes aes = Aes.Create())
-                    {
-                        aes.Key = keyAndIv[0];
-                        aes.IV = keyAndIv[1];
-                        SymmetricEncryption.Aes = aes;
-                    }
+                    SymmetricEncryption.Aes = Aes.Create();
+                    SymmetricEncryption.Aes.Key = keyAndIv[0];
+                    SymmetricEncryption.Aes.IV = keyAndIv[1];
                     sock.Send(Encoding.UTF8.GetBytes("OK"));
+                    return;
                 }
             }
         }

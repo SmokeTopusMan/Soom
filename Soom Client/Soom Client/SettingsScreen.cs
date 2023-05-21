@@ -18,10 +18,11 @@ namespace Soom_Client
     public partial class SettingsScreen : UserControl
     {
         private Socket _socket;
+        private int _id;
         public bool IsFinished { get; set; }
         public event FinishedEvent Event;
 
-        public SettingsScreen(Socket sock)
+        public SettingsScreen(Socket sock, int id)
         {
             InitializeComponent();
             _socket = sock;
@@ -35,6 +36,7 @@ namespace Soom_Client
             this.applyBtn.Enabled = false;
             this.applyBtn.Hide();
             this.title.Hide();
+            _id = id;
         }
 
         #region Buttons Hoverred settings
@@ -103,7 +105,6 @@ namespace Soom_Client
         {
             Finished();
         }
-
         public void Finished()
         {
             // Raise the event with custom EventArgs
@@ -184,8 +185,33 @@ namespace Soom_Client
             else if (component != this.audioUserControl && this.audioUserControl.Visible)
                 this.audioUserControl.Hide();
         }
-        private void GetDataFromServer() //ToDo: Do the function to recieve the data from the server for all the UserControls inside this one.
+        private void GetDataFromServer(string command, ISettingsScreenComponent component) //ToDo: Do the function to recieve the data from the server for all the UserControls inside this one.
         {
+            byte[] idbytes = SymmetricEncryption.EncryptStringToBytesAES(_id.ToString());
+            _socket.Send(Encoding.UTF8.GetBytes($"{command}{idbytes.Length.ToString("00")}").Concat(idbytes).ToArray());
+            byte[] data = new byte[2];
+            _socket.Receive(data, 2, SocketFlags.None);
+            if (Encoding.UTF8.GetString(data) == "OK")
+            {
+                data = new byte[4];
+                _socket.Receive(data, 4, SocketFlags.None);
+                int length = int.Parse(Encoding.UTF8.GetString(data));
+                data = new byte[length];
+                _socket.Receive(data, length, SocketFlags.None);
+                component.OrgenizeData(SymmetricEncryption.DecryptBytesToStringAES(data));
+            }
+        }
+
+        private void applyBtn_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void SettingsScreen_Load(object sender, EventArgs e)
+        {
+            GetDataFromServer("PRO", this.profileUserControl);
+            GetDataFromServer("AUD", this.audioUserControl);
+            //GetDataFromServer("VID", this.videoUserControl);
 
         }
     }

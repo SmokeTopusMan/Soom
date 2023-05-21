@@ -100,7 +100,6 @@
     <Compile Include="AudioUserControl.Designer.cs">
       <DependentUpon>AudioUserControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="EncodingMD5andSha256.cs" />
     <Compile Include="FriendsScreen.cs">
       <SubType>UserControl</SubType>
     </Compile>

@@ -72,7 +72,7 @@ namespace Soom_Client
         private void settingsWheelButton_Click(object sender, EventArgs e)
         {
             HideAllComponents();
-            SettingsScreen settingsScreen = new SettingsScreen(Socket);
+            SettingsScreen settingsScreen = new SettingsScreen(Socket, ID);
             settingsScreen.Location = new Point(0, 0);
             settingsScreen.Name = "settingsScreen";
             settingsScreen.Size = new Size(this.Size.Width-16, this.Size.Height-39);
