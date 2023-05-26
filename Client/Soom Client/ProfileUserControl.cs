@@ -30,11 +30,13 @@ namespace Soom_Client
         {
             if (femaleCheckBox.Checked)
                 maleCheckBox.Checked = false;
+            IsChanged();
         }
         private void maleCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (maleCheckBox.Checked)
                 femaleCheckBox.Checked = false;
+            IsChanged();
         }
         private void usernameBox_KeyPress(object sender, KeyPressEventArgs e)
         {
@@ -126,11 +128,6 @@ namespace Soom_Client
             else
                 return Sex.NotChecked;
         }
-        public List<string> Convert2Str()
-        {
-            throw new NotImplementedException();
-        }
-
         public void OrgenizeData(string data)
         {
             string[] dataComponents = data.Split('#');
@@ -162,6 +159,74 @@ namespace Soom_Client
             {
                 throw new ArgumentException("Invalid Enum Name");
             }
+        }
+
+        public void ResetSettingsToDefault()
+        {
+            this.usernameBox.Text = Username;
+            this.ageBox.Text = Age.ToString();
+            if(Sex == Sex.Male)
+            {
+                this.maleCheckBox.Checked = true;
+                this.femaleCheckBox.Checked = false;
+            }
+            else
+            {
+                this.maleCheckBox.Checked = false;
+                this.femaleCheckBox.Checked = true;
+            }
+            this.bioBox.Text = Bio;
+
+            this.usernameBox.SelectionStart = this.usernameBox.Text.Length;
+            this.ageBox.SelectionStart = this.ageBox.Text.Length;
+            this.bioBox.SelectionStart = this.bioBox.Text.Length;
+        }
+        public List<string> GetChanges()
+        {
+            if (CheckData())
+            {
+                List<string> changes = new List<string>();
+                if (Username == usernameBox.Text) changes.Add("None");
+                else changes.Add(usernameBox.Text);
+                if(Age == int.Parse(ageBox.Text)) changes.Add("None");
+                else changes.Add(ageBox.Text);
+                if (Sex == GetSex()) changes.Add("None");
+                else changes.Add(GetSex().ToString());
+                if (Bio == bioBox.Text) changes.Add("None");
+                else changes.Add(bioBox.Text);
+                return changes;
+            }
+            return null;
+        }
+        public void UpdateProfile()
+        {
+            Username = usernameBox.Text;
+            Age = int.Parse(ageBox.Text);
+            Sex = GetSex();
+            Bio = bioBox.Text;
+        }
+        private bool CheckData()
+        {
+            if (int.Parse(ageBox.Text) >= 12 && int.Parse(ageBox.Text) <= 117 && GetSex() != Sex.NotChecked && usernameBox.Text.Length >= 4)
+                return true;
+            if (this.usernameBox.Text == "")
+                MessageBox.Show("Fill Your Username!");
+            else if (this.usernameBox.Text.Length < 4)
+            {
+                MessageBox.Show("Write At Least 4 Characters In The Username Box!");
+            }
+            if (ageBox.Text != "")
+            {
+                if (int.Parse(ageBox.Text) < 12 || int.Parse(ageBox.Text) > 117)
+                {
+                    MessageBox.Show("Your Age Isn't Appropriate For This App, Sorry.");
+                }
+            }
+            else
+                MessageBox.Show("Fill Your Age!");
+            if (GetSex() == Sex.NotChecked)
+                MessageBox.Show("Select Your Sex!");
+            return false;
         }
     }
 }

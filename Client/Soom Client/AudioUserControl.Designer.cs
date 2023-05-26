@@ -58,6 +58,8 @@ namespace Soom_Client
             this.outputCboBox.Name = "outputCboBox";
             this.outputCboBox.Size = new System.Drawing.Size(281, 21);
             this.outputCboBox.TabIndex = 38;
+            this.outputCboBox.SelectedIndexChanged += new System.EventHandler(this.outputCboBox_SelectedIndexChanged);
+            this.outputCboBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.outputCboBox_KeyPress);
             // 
             // label2
             // 
@@ -76,6 +78,8 @@ namespace Soom_Client
             this.inputCboBox.Name = "inputCboBox";
             this.inputCboBox.Size = new System.Drawing.Size(281, 21);
             this.inputCboBox.TabIndex = 40;
+            this.inputCboBox.SelectedIndexChanged += new System.EventHandler(this.inputCboBox_SelectedIndexChanged);
+            this.inputCboBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.inputCboBox_KeyPress);
             // 
             // volumeBar
             // 
@@ -120,6 +124,7 @@ namespace Soom_Client
             this.enterCallBox.TabIndex = 45;
             this.enterCallBox.Text = "Turn Off Microphone When Joining Meeting";
             this.enterCallBox.UseVisualStyleBackColor = false;
+            this.enterCallBox.CheckedChanged += new System.EventHandler(this.enterCallBox_CheckedChanged);
             // 
             // AudioUserControl
             // 

@@ -40,29 +40,13 @@ namespace Soom_Client
                 ChangedEvent(new ValuesChangedEventArgs(CheckIfChanged()));
             }
         }
-        public void ResetSettings()
-        {
-            enterCallBox.Checked = IsMuteWhenJoined;
-            volumeBar.Value = Volume;
-            volumeNumberBox.Text = $"{Volume}";
-            for (int i = 0; i < this.inputCboBox.Items.Count; i++)
-            {
-                if (this.inputCboBox.Items[i].ToString() == this.InputDeviceName)
-                    this.inputCboBox.SelectedIndex = i;
-            }
-            for (int i = 0; i < this.outputCboBox.Items.Count; i++)
-            {
-                if (this.outputCboBox.Items[i].ToString() == this.OutputDeviceName)
-                    this.outputCboBox.SelectedIndex = i;
-            }
-        }
         public bool CheckIfChanged()
         {
             if(int.Parse(this.volumeNumberBox.Text) == Volume)
             {
-                if(this.inputCboBox.SelectedText == InputDeviceName)
+                if((string)this.inputCboBox.SelectedItem == InputDeviceName)
                 {
-                    if(this.outputCboBox.SelectedText == OutputDeviceName)
+                    if((string)this.outputCboBox.SelectedItem == OutputDeviceName)
                     {
                         if (this.enterCallBox.Checked == IsMuteWhenJoined)
                             return false;
@@ -70,19 +54,22 @@ namespace Soom_Client
                 }
             }
             return true;
-
-            return (int.Parse(this.volumeNumberBox.Text) != Volume || this.inputCboBox.SelectedText != InputDeviceName || this.outputCboBox.SelectedText != OutputDeviceName || this.enterCallBox.Checked != IsMuteWhenJoined);
         }
-        public List<string> Convert2Str()
-        {
-            throw new NotImplementedException();
-        }
-
         public void OrgenizeData(string data)
         {
             string[] dataComponents = data.Split('#');
-            this.InputDeviceName = dataComponents[0];
-            this.OutputDeviceName = dataComponents[1];
+            if (dataComponents[0] == "")
+            {
+                this.InputDeviceName = (string)inputCboBox.Items[0];
+            }
+            else
+                this.InputDeviceName = dataComponents[0];
+            if (dataComponents[1] == "")
+            {
+                this.OutputDeviceName = (string)outputCboBox.Items[0];
+            }
+            else
+                this.OutputDeviceName = dataComponents[1];
             this.Volume = int.Parse(dataComponents[2]);
             if (dataComponents[3] == "0")
                 this.IsMuteWhenJoined = false;
@@ -92,8 +79,8 @@ namespace Soom_Client
         }
         private void PresentDataInBoxes(string[] dataArray)
         {
-            FindDevice(dataArray[0], this.inputCboBox);
-            FindDevice(dataArray[1], this.outputCboBox);
+            FindDevice(this.InputDeviceName, this.inputCboBox);
+            FindDevice(this.OutputDeviceName, this.outputCboBox);
             this.volumeBar.Value = int.Parse(dataArray[2]);
             this.volumeNumberBox.Text = this.volumeBar.Value.ToString();
             if (dataArray[3] == "0")
@@ -111,6 +98,12 @@ namespace Soom_Client
                     return;
                 }
             }
+            if (box.Name == "inputCboBox")
+            {
+                this.InputDeviceName = (string)box.Items[0];
+            }
+            else
+                this.OutputDeviceName = (string)box.Items[0];
             box.SelectedIndex = 0;
         }
 
@@ -135,6 +128,56 @@ namespace Soom_Client
         private void inputCboBox_KeyPress(object sender, KeyPressEventArgs e)
         {
             e.Handled = true;
+        }
+
+        public void ResetSettingsToDefault()
+        {
+            enterCallBox.Checked = IsMuteWhenJoined;
+            volumeBar.Value = Volume;
+            volumeNumberBox.Text = $"{Volume}";
+            for (int i = 0; i < this.inputCboBox.Items.Count; i++)
+            {
+                if (this.inputCboBox.Items[i].ToString() == this.InputDeviceName)
+                {
+                    this.inputCboBox.SelectedIndex = i;
+                    break;
+                }
+
+            }
+            for (int i = 0; i < this.outputCboBox.Items.Count; i++)
+            {
+                if (this.outputCboBox.Items[i].ToString() == this.OutputDeviceName)
+                {
+                    this.outputCboBox.SelectedIndex = i;
+                    break;
+                }
+
+            }
+        }
+
+        public List<string> GetChanges()
+        {
+            List<string> changes = new List<string>();
+            if (InputDeviceName == this.inputCboBox.Text) changes.Add("None");
+            else changes.Add(this.inputCboBox.Text);
+            if (OutputDeviceName == this.outputCboBox.Text) changes.Add("None");
+            else changes.Add(this.outputCboBox.Text);
+            if (Volume == int.Parse(this.volumeNumberBox.Text)) changes.Add("None");
+            else changes.Add(this.volumeNumberBox.Text);
+            if (IsMuteWhenJoined == this.enterCallBox.Checked) changes.Add("None");
+            else
+            {
+                if (this.enterCallBox.Checked) changes.Add("1");
+                else changes.Add("0");
+            }
+            return changes;
+        }
+        public void UpdateAudio()
+        {
+            InputDeviceName = this.inputCboBox.Text;
+            OutputDeviceName = this.outputCboBox.Text;
+            Volume = int.Parse(this.volumeNumberBox.Text);
+            IsMuteWhenJoined = this.enterCallBox.Checked;
         }
     }
 }

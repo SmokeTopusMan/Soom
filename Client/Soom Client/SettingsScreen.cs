@@ -15,11 +15,11 @@ using System.Windows.Forms;
 
 namespace Soom_Client
 {
-    public partial class SettingsScreen : UserControl
+    public partial class SettingsScreen : UserControl, IMainScreenComponents
     {
         private Socket _socket;
         private int _id;
-        public bool IsFinished { get; set; }
+        public bool IsFinished { get; private set; }
         public event FinishedEvent Event;
 
         public SettingsScreen(Socket sock, int id)
@@ -40,7 +40,6 @@ namespace Soom_Client
             this.applyBtn.Enabled = false;
             this.applyBtn.Hide();
             this.title.Hide();
-
         }
 
         #region Buttons Hoverred settings
@@ -54,18 +53,6 @@ namespace Soom_Client
         {
             profileSettingsButton.ForeColor = Color.FromArgb(125, 0, 19);
             profileSettingsButton.Font = new Font("Microsoft JhengHei Light", profileSettingsButton.Font.SizeInPoints, FontStyle.Bold);
-            this.Cursor = Cursors.Arrow;
-        }
-        private void generalSettingsButton_MouseEnter(object sender, EventArgs e)
-        {
-            generalSettingsButton.ForeColor = Color.FromArgb(195, 42, 196);
-            generalSettingsButton.Font = new Font("Microsoft JhengHei Light", 20F, (FontStyle.Bold | FontStyle.Underline), GraphicsUnit.Point, ((byte)(177)));
-            this.Cursor = Cursors.Hand;
-        }
-        private void generalSettingsButton_MouseLeave(object sender, EventArgs e)
-        {
-            generalSettingsButton.ForeColor = Color.FromArgb(125, 0, 19);
-            generalSettingsButton.Font = new Font("Microsoft JhengHei Light", generalSettingsButton.Font.SizeInPoints, FontStyle.Bold);
             this.Cursor = Cursors.Arrow;
         }
         private void audioSettingsButton_MouseEnter(object sender, EventArgs e)
@@ -114,7 +101,7 @@ namespace Soom_Client
             // Raise the event with custom EventArgs
             if (Event != null)
             {
-                Event(this, new SettingsEventArgs(this));
+                Event(this, new ExitEventArgs(this, Name));
             }
         }
         #endregion
@@ -126,6 +113,7 @@ namespace Soom_Client
                 this.title.Hide();
                 this.applyBtn.Hide();
                 this.profileUserControl.Hide();
+                this.profileUserControl.ResetSettingsToDefault();
             }
             else
             {
@@ -143,6 +131,7 @@ namespace Soom_Client
                 this.title.Hide();
                 this.applyBtn.Hide();
                 this.videoUserControl.Hide();
+                this.videoUserControl.ResetSettingsToDefault();
             }
             else
             {
@@ -160,6 +149,7 @@ namespace Soom_Client
                 this.title.Hide();
                 this.applyBtn.Hide();
                 this.audioUserControl.Hide();
+                this.audioUserControl.ResetSettingsToDefault();
             }
             else
             {
@@ -183,50 +173,128 @@ namespace Soom_Client
         {
             this.applyBtn.Enabled = false;
             if (component != this.profileUserControl && this.profileUserControl.Visible)
-                this.profileUserControl.Hide();
-            else if (component != this.videoUserControl && this.videoUserControl.Visible)
-                this.videoUserControl.Hide();
-            else if (component != this.audioUserControl && this.audioUserControl.Visible)
-                this.audioUserControl.Hide();
-        }
-        private void GetDataFromServer(string command, ISettingsScreenComponent component) //ToDo: Do the function to recieve the data from the server for all the UserControls inside this one.
-        {
-            byte[] idbytes = SymmetricEncryption.EncryptStringToBytesAES(_id.ToString());
-            _socket.Send(Encoding.UTF8.GetBytes($"{command}{idbytes.Length.ToString("00")}").Concat(idbytes).ToArray());
-            byte[] data = new byte[2];
-            _socket.Receive(data, 2, SocketFlags.None);
-            if (Encoding.UTF8.GetString(data) == "OK")
             {
-                data = new byte[4];
-                _socket.Receive(data, 4, SocketFlags.None);
-                int length = int.Parse(Encoding.UTF8.GetString(data));
-                data = new byte[length];
-                _socket.Receive(data, length, SocketFlags.None);
-                component.OrgenizeData(SymmetricEncryption.DecryptBytesToStringAES(data));
-                _socket.Send(Encoding.UTF8.GetBytes("OK"));
+                this.profileUserControl.Hide();
+                this.profileUserControl.ResetSettingsToDefault();
+            }
+            else if (component != this.videoUserControl && this.videoUserControl.Visible)
+            {
+                this.videoUserControl.Hide();
+                this.videoUserControl.ResetSettingsToDefault();
+            }
+            else if (component != this.audioUserControl && this.audioUserControl.Visible)
+            {
+                this.audioUserControl.Hide();
+                this.audioUserControl.ResetSettingsToDefault();
+            }
+        }
+        private void GetDataFromServer(string command, ISettingsScreenComponent component)
+        {
+            try
+            {
+                byte[] idbytes = SymmetricEncryption.EncryptStringToBytesAES(_id.ToString());
+                _socket.Send(Encoding.UTF8.GetBytes($"{command}{idbytes.Length.ToString("00")}").Concat(idbytes).ToArray()); //ToDo: Fix the exception, i close the socket and then try to access it again.
+                byte[] data = new byte[2];
+                _socket.Receive(data, 2, SocketFlags.None);
+                if (Encoding.UTF8.GetString(data) == "OK")
+                {
+                    data = new byte[4];
+                    _socket.Receive(data, 4, SocketFlags.None);
+                    int length = int.Parse(Encoding.UTF8.GetString(data));
+                    data = new byte[length];
+                    _socket.Receive(data, length, SocketFlags.None);
+                    component.OrgenizeData(SymmetricEncryption.DecryptBytesToStringAES(data));
+                    _socket.Send(Encoding.UTF8.GetBytes("OK"));
+                }
+            }
+            catch (SocketException)
+            {
+                this._socket.Close();
+                MessageBox.Show("The Server is Having Some Technical Difficulties...\r\n Try Again Later <3");
+                IsFinished = true;
+                Finished();
             }
         }
         private void applyBtn_Click(object sender, EventArgs e)
         {
+            string stringData;
+            List<string> changesList;
+            if (profileUserControl.Visible)
+            {
+                changesList = this.profileUserControl.GetChanges();
+                stringData = "CNGPRO";
+            }
+            else if (audioUserControl.Visible)
+            {
+                changesList = this.audioUserControl.GetChanges();
+                stringData = "CNGAUD";
+            }
+            else
+            {
+                changesList = this.videoUserControl.GetChanges();
+                stringData = "CNGVID";
+            }
+            if (changesList != null)
+            {
+                string stringChanges = $"{_id}";
+                foreach(string item in changesList)
+                {
+                    stringChanges += "#";
+                    if (item != "None")
+                        stringChanges += item;
+                }
+                byte[] byteChanges = SymmetricEncryption.EncryptStringToBytesAES(stringChanges);
+                byte[] msg = Encoding.UTF8.GetBytes(stringData);
+                msg = msg.Concat(Encoding.UTF8.GetBytes(byteChanges.Length.ToString("0000"))).Concat(byteChanges).ToArray();
+                try
+                {
+                    _socket.Send(msg);
+                    byte[] bytes = new byte[2];
+                    _socket.Receive(bytes, 2, SocketFlags.None);
+                    if (Encoding.UTF8.GetString(bytes) == "OK")
+                    {
+                        if (profileUserControl.Visible)
+                            profileUserControl.UpdateProfile();
+                        else if (audioUserControl.Visible)
+                            audioUserControl.UpdateAudio();
+                        else
+                            videoUserControl.UpdateVideo();
+                        _socket.Send(Encoding.UTF8.GetBytes("OK"));
+                        this.applyBtn.Enabled = false;
+                    }
+                    else
+                    {
+                        byte[] temp = new byte[1];
+                        _socket.Receive(temp, 1, SocketFlags.None);
+                        bytes = bytes.Concat(temp).ToArray();
+                        if (Encoding.UTF8.GetString(bytes) == "BYE")
+                        {
+                            IsFinished = true;
+                            Finished();
+                        }
+                        else
+                        {
+                            int errNum = int.Parse(Encoding.UTF8.GetString(bytes)[2].ToString());
+                            OpenningScreen.ServerErrorsHandler((ServerErrors)errNum);
+                        }
+                    }
+                }
+                catch (SocketException)
+                {
+                    this._socket.Close();
+                    MessageBox.Show("The Server is Having Some Technical Difficulties...\r\n Try Again Later <3");
+                    IsFinished = true;
+                    Finished();
+                }
+            }
 
         }
-
         private void SettingsScreen_Load(object sender, EventArgs e)
         {
             GetDataFromServer("PRO", this.profileUserControl);
             GetDataFromServer("AUD", this.audioUserControl);
             GetDataFromServer("VID", this.videoUserControl);
-
         }
     }
-    public class SettingsEventArgs : EventArgs
-    {
-        public SettingsScreen settingsScreen { get; }
 
-        public SettingsEventArgs(SettingsScreen screen)
-        {
-            settingsScreen = screen;
-        }
-    }
-    public delegate void FinishedEvent(object sender, SettingsEventArgs e);
 }

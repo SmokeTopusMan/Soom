@@ -95,6 +95,7 @@ namespace Soom_server
             else if (command == "REG") Register(user);
             else if (command == "KEY") ExchangeKeys(user);
             else if (command == "PRO" || command == "AUD" || command == "VID") GetSettings(user, command);
+            else if (command == "CNG") ChangeSettings(user); //ToDo: handle when the command isnt clear and send to the client error.
         }
         private static string GetData(Socket sock, int arrayLength)
         {
@@ -214,6 +215,7 @@ namespace Soom_server
             }
             try
             {
+                userDetails.Points = 50;
                 int id = DataBaseAccess.RegiterUser(userDetails);
                 for (int i = 0; i < 5; i++)
                 {
@@ -259,6 +261,40 @@ namespace Soom_server
             user.Socket.Receive(confirmation);
             if (Encoding.UTF8.GetString(confirmation) == "OK")
                 return;
+        }
+        private static void ChangeSettings(User user)
+        {
+            byte[] commandBytes = new byte[3];
+            user.Socket.Receive(commandBytes, 3, SocketFlags.None);
+            string[] data = GetData(user.Socket, 4).Split('#');
+            string command = Encoding.UTF8.GetString(commandBytes);
+            if (command == "PRO")
+            {
+                try
+                {
+                    DataBaseAccess.ChangeUserProfile(data);
+                }
+                catch (UsernameTakenException)
+                {
+                    SendErrors(user.Socket, Errors.UsernameIsTaken);
+                }
+            }
+            else if(command == "AUD")
+            {
+                DataBaseAccess.ChangeUserAudio(data);
+                //ToDo: Continue the if statment and create the ChangeAudio func inside DataBaseAccess class
+            }
+            else if (command == "VID")
+            {
+                DataBaseAccess.ChangeUserVideo(data);
+                //ToDo: Continue the if statment and create the ChangeVideo func inside DataBaseAccess class
+            }
+            user.Socket.Send(Encoding.UTF8.GetBytes("OK"));
+            byte[] confirmation = new byte[2];
+            user.Socket.Receive(confirmation);
+            if (Encoding.UTF8.GetString(confirmation) == "OK")
+                return;
+
         }
         private static void Log(string command, int id, Errors err = Errors.None)
         {

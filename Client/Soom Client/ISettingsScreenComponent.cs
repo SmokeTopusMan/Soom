@@ -10,9 +10,10 @@ namespace Soom_Client
     {
         void IsChanged();
         event ValuesChangedEvent ChangedEvent;
-        List<string> Convert2Str();
         bool CheckIfChanged();
+        List<string> GetChanges();
         void OrgenizeData(string data);
+        void ResetSettingsToDefault();
 
     }
     public class ValuesChangedEventArgs : EventArgs

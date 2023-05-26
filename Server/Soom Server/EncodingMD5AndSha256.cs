@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Soom_Client
 {
-    internal static class EncodingMD5AndSha256 // ToDo: Need to trasfer this class to the server side and encode there.
+    internal static class EncodingMD5AndSha256
     {
         public static string CreateSha256(string input)
         {

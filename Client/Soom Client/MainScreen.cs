@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Windows.Forms;
+using System.Runtime.CompilerServices;
 
 namespace Soom_Client
 {
@@ -77,16 +78,28 @@ namespace Soom_Client
             settingsScreen.Name = "settingsScreen";
             settingsScreen.Size = new Size(this.Size.Width-16, this.Size.Height-39);
             this.Controls.Add(settingsScreen);
-            settingsScreen.Event += SettingsScreen_Event;
+            settingsScreen.Event += ReturnToMainScreen_Event;
 
         }
 
-        private void SettingsScreen_Event(object sender, SettingsEventArgs e)
+        private void ReturnToMainScreen_Event(object sender, ExitEventArgs e)
         {
             ShowAllComponents();
-            this.Controls.Remove(e.settingsScreen);
-            e.settingsScreen.IsFinished = true;
-            e.settingsScreen.Dispose();
+            if(e.Name == "settingsScreen")
+            {
+                SettingsScreen screen = e.Screen as SettingsScreen;
+                this.Controls.Remove(screen);
+                screen.Dispose();
+            }
+            else if(e.Name == "friendsScreen")
+            {
+                FriendsScreen screen = e.Screen as FriendsScreen;
+                this.Controls.Remove(screen);
+                screen.Dispose();
+            }
+            if (e.Screen.IsFinished == true)
+                this.Close();
+
         }
 
         private void createMeetingButton_Click(object sender, EventArgs e)
@@ -102,15 +115,6 @@ namespace Soom_Client
             HideAllComponents(settingsWheelButton);
         }
         #endregion
-
-        private UserInfo ConvertStrToUser(string userInfo)
-        {
-            string[] userStrings = userInfo.Split('#');
-            if (userStrings[3] == "M")
-                return new UserInfo(userStrings[0], userStrings[1], int.Parse(userStrings[2]), Sex.Male, userStrings[4], int.Parse(userStrings[5]));
-            else
-                return new UserInfo(userStrings[0], userStrings[1], int.Parse(userStrings[2]), Sex.Female, userStrings[4], int.Parse(userStrings[5]));
-        }
 
         private void HideAllComponents(Component button = null)
         {
@@ -144,7 +148,6 @@ namespace Soom_Client
             try
             {
                 var settingsScreen = (SettingsScreen)this.Controls.Find("settingsScreen", false)[0];
-                settingsScreen.IsFinished = true;
             }
             catch (IndexOutOfRangeException)
             {
@@ -152,4 +155,16 @@ namespace Soom_Client
             }
         }
     }
+    public class ExitEventArgs : EventArgs
+    {
+        public IMainScreenComponents Screen { get; private set; }
+        public string Name { get;private set; }
+
+        public ExitEventArgs(IMainScreenComponents screen, string name)
+        {
+            Screen = screen;
+            Name = name;
+        }
+    }
+    public delegate void FinishedEvent(object sender, ExitEventArgs e);
 }

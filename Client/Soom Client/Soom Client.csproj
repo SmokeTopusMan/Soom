@@ -94,6 +94,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddFriendUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="AddFriendUserControl.Designer.cs">
+      <DependentUpon>AddFriendUserControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="AudioUserControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -106,6 +112,7 @@
     <Compile Include="FriendsScreen.Designer.cs">
       <DependentUpon>FriendsScreen.cs</DependentUpon>
     </Compile>
+    <Compile Include="IMainScreenComponents.cs" />
     <Compile Include="ISettingsScreenComponent.cs" />
     <Compile Include="ServerErrors.cs" />
     <Compile Include="MainScreen.cs">
@@ -147,6 +154,12 @@
     <Compile Include="ProfileUserControl.Designer.cs">
       <DependentUpon>ProfileUserControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="ShowFriendUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ShowFriendUserControl.Designer.cs">
+      <DependentUpon>ShowFriendUserControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="SymmetricEncryption.cs" />
     <Compile Include="UserInfo.cs" />
     <Compile Include="VideoUserControl.cs">
@@ -155,6 +168,9 @@
     <Compile Include="VideoUserControl.Designer.cs">
       <DependentUpon>VideoUserControl.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="AddFriendUserControl.resx">
+      <DependentUpon>AddFriendUserControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="AudioUserControl.resx">
       <DependentUpon>AudioUserControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -188,6 +204,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SettingsScreen.resx">
       <DependentUpon>SettingsScreen.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ShowFriendUserControl.resx">
+      <DependentUpon>ShowFriendUserControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="VideoUserControl.resx">
       <DependentUpon>VideoUserControl.cs</DependentUpon>

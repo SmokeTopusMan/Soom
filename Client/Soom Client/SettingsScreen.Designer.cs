@@ -30,7 +30,6 @@
         {
             this.videoSettingsButton = new System.Windows.Forms.Label();
             this.audioSettingsButton = new System.Windows.Forms.Label();
-            this.generalSettingsButton = new System.Windows.Forms.Label();
             this.profileSettingsButton = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.backButton = new System.Windows.Forms.Button();
@@ -49,7 +48,7 @@
             this.videoSettingsButton.AutoSize = true;
             this.videoSettingsButton.Font = new System.Drawing.Font("Microsoft JhengHei Light", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(177)));
             this.videoSettingsButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(0)))), ((int)(((byte)(19)))));
-            this.videoSettingsButton.Location = new System.Drawing.Point(59, 252);
+            this.videoSettingsButton.Location = new System.Drawing.Point(59, 215);
             this.videoSettingsButton.Name = "videoSettingsButton";
             this.videoSettingsButton.Size = new System.Drawing.Size(82, 32);
             this.videoSettingsButton.TabIndex = 7;
@@ -63,7 +62,7 @@
             this.audioSettingsButton.AutoSize = true;
             this.audioSettingsButton.Font = new System.Drawing.Font("Microsoft JhengHei Light", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(177)));
             this.audioSettingsButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(0)))), ((int)(((byte)(19)))));
-            this.audioSettingsButton.Location = new System.Drawing.Point(59, 352);
+            this.audioSettingsButton.Location = new System.Drawing.Point(59, 329);
             this.audioSettingsButton.Name = "audioSettingsButton";
             this.audioSettingsButton.Size = new System.Drawing.Size(83, 32);
             this.audioSettingsButton.TabIndex = 6;
@@ -72,25 +71,12 @@
             this.audioSettingsButton.MouseEnter += new System.EventHandler(this.audioSettingsButton_MouseEnter);
             this.audioSettingsButton.MouseLeave += new System.EventHandler(this.audioSettingsButton_MouseLeave);
             // 
-            // generalSettingsButton
-            // 
-            this.generalSettingsButton.AutoSize = true;
-            this.generalSettingsButton.Font = new System.Drawing.Font("Microsoft JhengHei Light", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(177)));
-            this.generalSettingsButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(0)))), ((int)(((byte)(19)))));
-            this.generalSettingsButton.Location = new System.Drawing.Point(45, 151);
-            this.generalSettingsButton.Name = "generalSettingsButton";
-            this.generalSettingsButton.Size = new System.Drawing.Size(110, 32);
-            this.generalSettingsButton.TabIndex = 5;
-            this.generalSettingsButton.Text = "General";
-            this.generalSettingsButton.MouseEnter += new System.EventHandler(this.generalSettingsButton_MouseEnter);
-            this.generalSettingsButton.MouseLeave += new System.EventHandler(this.generalSettingsButton_MouseLeave);
-            // 
             // profileSettingsButton
             // 
             this.profileSettingsButton.AutoSize = true;
             this.profileSettingsButton.Font = new System.Drawing.Font("Microsoft JhengHei Light", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(177)));
             this.profileSettingsButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(0)))), ((int)(((byte)(19)))));
-            this.profileSettingsButton.Location = new System.Drawing.Point(59, 51);
+            this.profileSettingsButton.Location = new System.Drawing.Point(53, 100);
             this.profileSettingsButton.Name = "profileSettingsButton";
             this.profileSettingsButton.Size = new System.Drawing.Size(89, 32);
             this.profileSettingsButton.TabIndex = 4;
@@ -104,7 +90,6 @@
             this.panel1.Controls.Add(this.backButton);
             this.panel1.Controls.Add(this.profileSettingsButton);
             this.panel1.Controls.Add(this.videoSettingsButton);
-            this.panel1.Controls.Add(this.generalSettingsButton);
             this.panel1.Controls.Add(this.audioSettingsButton);
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
@@ -164,7 +149,7 @@
             // audioUserControl
             // 
             this.audioUserControl.BackColor = System.Drawing.SystemColors.MenuHighlight;
-            this.audioUserControl.Location = new System.Drawing.Point(-2, -2);
+            this.audioUserControl.Location = new System.Drawing.Point(0, 0);
             this.audioUserControl.Name = "audioUserControl";
             this.audioUserControl.Size = new System.Drawing.Size(634, 461);
             this.audioUserControl.TabIndex = 44;
@@ -206,7 +191,6 @@
 
         private System.Windows.Forms.Label videoSettingsButton;
         private System.Windows.Forms.Label audioSettingsButton;
-        private System.Windows.Forms.Label generalSettingsButton;
         private System.Windows.Forms.Label profileSettingsButton;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button backButton;

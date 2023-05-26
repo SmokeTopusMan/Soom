@@ -28,27 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.title = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.backButton = new System.Windows.Forms.Button();
             this.addFriendButton = new System.Windows.Forms.Label();
             this.friendsListButton = new System.Windows.Forms.Label();
             this.pendingRequestsButton = new System.Windows.Forms.Label();
-            this.usernameBox = new System.Windows.Forms.TextBox();
+            this.backButton = new System.Windows.Forms.Button();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.showFriendsUserControl = new Soom_Client.ShowFriendUserControl();
+            this.acceptBtn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // title
-            // 
-            this.title.AutoSize = true;
-            this.title.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(162)))), ((int)(((byte)(232)))));
-            this.title.Font = new System.Drawing.Font("Matura MT Script Capitals", 50F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.title.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(56)))), ((int)(((byte)(64)))), ((int)(((byte)(181)))));
-            this.title.Location = new System.Drawing.Point(330, 50);
-            this.title.Name = "title";
-            this.title.Size = new System.Drawing.Size(353, 89);
-            this.title.TabIndex = 43;
-            this.title.Text = "SOOM";
             // 
             // panel1
             // 
@@ -60,18 +50,6 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(200, 461);
             this.panel1.TabIndex = 44;
-            // 
-            // backButton
-            // 
-            this.backButton.FlatAppearance.BorderSize = 0;
-            this.backButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.backButton.Image = global::Soom_Client.Properties.Resources.backButton;
-            this.backButton.Location = new System.Drawing.Point(3, 3);
-            this.backButton.Name = "backButton";
-            this.backButton.Size = new System.Drawing.Size(41, 41);
-            this.backButton.TabIndex = 8;
-            this.backButton.UseVisualStyleBackColor = true;
-            this.backButton.Click += new System.EventHandler(this.backButton_Click);
             // 
             // addFriendButton
             // 
@@ -94,6 +72,7 @@
             this.friendsListButton.Size = new System.Drawing.Size(156, 32);
             this.friendsListButton.TabIndex = 7;
             this.friendsListButton.Text = "Friends List";
+            this.friendsListButton.Click += new System.EventHandler(this.friendsListButton_Click);
             // 
             // pendingRequestsButton
             // 
@@ -106,40 +85,68 @@
             this.pendingRequestsButton.TabIndex = 5;
             this.pendingRequestsButton.Text = "Pending Requests";
             // 
-            // usernameBox
+            // backButton
             // 
-            this.usernameBox.Location = new System.Drawing.Point(401, 221);
-            this.usernameBox.Margin = new System.Windows.Forms.Padding(5, 15, 45, 15);
-            this.usernameBox.MaxLength = 35;
-            this.usernameBox.Name = "usernameBox";
-            this.usernameBox.Size = new System.Drawing.Size(238, 20);
-            this.usernameBox.TabIndex = 45;
+            this.backButton.FlatAppearance.BorderSize = 0;
+            this.backButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.backButton.Image = global::Soom_Client.Properties.Resources.backButton;
+            this.backButton.Location = new System.Drawing.Point(3, 3);
+            this.backButton.Name = "backButton";
+            this.backButton.Size = new System.Drawing.Size(41, 41);
+            this.backButton.TabIndex = 8;
+            this.backButton.UseVisualStyleBackColor = true;
+            this.backButton.Click += new System.EventHandler(this.backButton_Click);
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.acceptBtn);
+            this.panel2.Controls.Add(this.showFriendsUserControl);
+            this.panel2.Location = new System.Drawing.Point(200, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(634, 461);
+            this.panel2.TabIndex = 45;
+            // 
+            // showFriendsUserControl
+            // 
+            this.showFriendsUserControl.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(162)))), ((int)(((byte)(232)))));
+            this.showFriendsUserControl.Location = new System.Drawing.Point(0, 0);
+            this.showFriendsUserControl.Name = "showFriendsUserControl";
+            this.showFriendsUserControl.Size = new System.Drawing.Size(634, 461);
+            this.showFriendsUserControl.TabIndex = 0;
+            // 
+            // acceptBtn
+            // 
+            this.acceptBtn.Location = new System.Drawing.Point(528, 417);
+            this.acceptBtn.Name = "acceptBtn";
+            this.acceptBtn.Size = new System.Drawing.Size(75, 23);
+            this.acceptBtn.TabIndex = 1;
+            this.acceptBtn.Text = "Accept";
+            this.acceptBtn.UseVisualStyleBackColor = true;
             // 
             // FriendsScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(162)))), ((int)(((byte)(232)))));
-            this.Controls.Add(this.usernameBox);
+            this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.title);
             this.Name = "FriendsScreen";
             this.Size = new System.Drawing.Size(834, 461);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Label title;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button backButton;
         private System.Windows.Forms.Label addFriendButton;
         private System.Windows.Forms.Label friendsListButton;
         private System.Windows.Forms.Label pendingRequestsButton;
-        private System.Windows.Forms.TextBox usernameBox;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Button acceptBtn;
+        private ShowFriendUserControl showFriendsUserControl;
     }
 }

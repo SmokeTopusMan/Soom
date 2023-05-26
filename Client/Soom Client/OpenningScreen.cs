@@ -191,7 +191,6 @@ namespace Soom_Client
                 if (int.Parse(registerClick.Age) < 12 || int.Parse(registerClick.Age) > 117)
                 {
                     MessageBox.Show("Your Age Isn't Appropriate For This App, Sorry.");
-                    this.Close();
                 }
             }
             else
@@ -204,7 +203,7 @@ namespace Soom_Client
         {
             return _userInfo != null;
         }
-        private static void ServerErrorsHandler(ServerErrors err)
+        public static void ServerErrorsHandler(ServerErrors err)
         {
             if (err == ServerErrors.GeneralError)
                 throw new SocketException();
