@@ -112,6 +112,7 @@
     <Compile Include="FriendsScreen.Designer.cs">
       <DependentUpon>FriendsScreen.cs</DependentUpon>
     </Compile>
+    <Compile Include="IFriendsComponents.cs" />
     <Compile Include="IMainScreenComponents.cs" />
     <Compile Include="ISettingsScreenComponent.cs" />
     <Compile Include="ServerErrors.cs" />

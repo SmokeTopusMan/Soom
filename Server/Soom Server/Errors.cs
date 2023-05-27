@@ -7,6 +7,7 @@
         UsernameIsTaken,
         UserNotExist,
         UnknownFormat,
+        AlreadySentRequest,
         None,
     }
 }

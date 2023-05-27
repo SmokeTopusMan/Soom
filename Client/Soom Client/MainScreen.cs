@@ -48,15 +48,15 @@ namespace Soom_Client
             joinMeetingButton.ForeColor = Color.FromArgb(110, 0, 17);
             joinMeetingButton.Font = new Font(joinMeetingButton.Font.Name, joinMeetingButton.Font.SizeInPoints, FontStyle.Regular);
         }
-        private void addFriendButton_MouseEnter(object sender, EventArgs e)
+        private void friendsButton_MouseEnter(object sender, EventArgs e)
         {
-            addFriendButton.ForeColor = Color.FromArgb(227, 220, 50);
-            addFriendButton.Font = new Font(addFriendButton.Font.Name, addFriendButton.Font.SizeInPoints, FontStyle.Underline);
+            friendsButton.ForeColor = Color.FromArgb(227, 220, 50);
+            friendsButton.Font = new Font(friendsButton.Font.Name, friendsButton.Font.SizeInPoints, FontStyle.Underline);
         }
-        private void addFriendButton_MouseLeave(object sender, EventArgs e)
+        private void friendsButton_MouseLeave(object sender, EventArgs e)
         {
-            addFriendButton.ForeColor = Color.FromArgb(110, 0, 17);
-            addFriendButton.Font = new Font(addFriendButton.Font.Name, addFriendButton.Font.SizeInPoints, FontStyle.Regular);
+            friendsButton.ForeColor = Color.FromArgb(110, 0, 17);
+            friendsButton.Font = new Font(friendsButton.Font.Name, friendsButton.Font.SizeInPoints, FontStyle.Regular);
         }
         private void settingsWheelButton_MouseEnter(object sender, EventArgs e)
         {
@@ -104,15 +104,21 @@ namespace Soom_Client
 
         private void createMeetingButton_Click(object sender, EventArgs e)
         {
-            HideAllComponents(settingsWheelButton);
+            HideAllComponents();
         }
         private void joinMeetingButton_Click(object sender, EventArgs e)
         {
-            HideAllComponents(settingsWheelButton);
+            HideAllComponents();
         }
-        private void addFriendButton_Click(object sender, EventArgs e)
+        private void friendsButton_Click(object sender, EventArgs e)
         {
-            HideAllComponents(settingsWheelButton);
+            HideAllComponents();
+            FriendsScreen friendsScreen = new FriendsScreen(Socket, ID);
+            friendsScreen.Location = new Point(0, 0);
+            friendsScreen.Name = "friendsScreen";
+            friendsScreen.Size = new Size(this.Size.Width - 16, this.Size.Height - 39);
+            this.Controls.Add(friendsScreen);
+            friendsScreen.Event += ReturnToMainScreen_Event;
         }
         #endregion
 
@@ -124,14 +130,14 @@ namespace Soom_Client
                 settingsWheelButton.Hide();
                 createMeetingButton.Hide();
                 joinMeetingButton.Hide();
-                addFriendButton.Hide();
+                friendsButton.Hide();
             }
             else
             {
                 if (button != settingsWheelButton) settingsWheelButton.Hide();
                 if (button != createMeetingButton) createMeetingButton.Hide();
                 if (button != joinMeetingButton) joinMeetingButton.Hide();
-                if (button != addFriendButton) addFriendButton.Hide();
+                if (button != friendsButton) friendsButton.Hide();
             }
         }
         private void ShowAllComponents()
@@ -140,7 +146,7 @@ namespace Soom_Client
             settingsWheelButton.Show();
             createMeetingButton.Show();
             joinMeetingButton.Show();
-            addFriendButton.Show();
+            friendsButton.Show();
         }
 
         private void MainScreen_FormClosed(object sender, FormClosedEventArgs e)

@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Soom_Client
 {
@@ -45,7 +46,12 @@ namespace Soom_Client
                 if (e.KeyChar == '\b')
                 {
                     if (this.usernameBox.Text != "")
-                        this.usernameBox.Text = this.usernameBox.Text.Remove(this.usernameBox.Text.Length - 1);
+                    {
+                       if (this.usernameBox.SelectionLength > 0)
+                            this.usernameBox.SelectedText = string.Empty;
+                        else
+                            this.usernameBox.Text = this.usernameBox.Text.Remove(this.usernameBox.Text.Length - 1);
+                    } 
                 }
                 else
                     this.usernameBox.Text += e.KeyChar;
@@ -60,7 +66,12 @@ namespace Soom_Client
             if (e.KeyChar == '\b')
             {
                 if (this.ageBox.Text != "")
-                    this.ageBox.Text = this.ageBox.Text.Remove(this.ageBox.Text.Length - 1);
+                {
+                    if (this.ageBox.SelectionLength > 0)
+                        this.ageBox.SelectedText = string.Empty;
+                    else
+                        this.ageBox.Text = this.ageBox.Text.Remove(this.ageBox.Text.Length - 1);
+                }
             }
             else if(char.IsDigit(e.KeyChar) && this.ageBox.Text.Length < 3)
                 this.ageBox.Text += e.KeyChar;
@@ -75,7 +86,12 @@ namespace Soom_Client
                 if (e.KeyChar == '\b')
                 {
                     if (this.bioBox.Text != "")
-                        this.bioBox.Text = this.bioBox.Text.Remove(this.bioBox.Text.Length - 1);
+                    {
+                        if (this.bioBox.SelectionLength > 0)
+                            this.bioBox.SelectedText = string.Empty;
+                        else
+                            this.bioBox.Text = this.bioBox.Text.Remove(this.bioBox.Text.Length - 1);
+                    }
                 }
                 else
                     this.bioBox.Text += e.KeyChar;
@@ -83,22 +99,6 @@ namespace Soom_Client
             this.bioBox.SelectionStart = this.bioBox.Text.Length;
             e.Handled = true;
             IsChanged();
-        }
-        private bool CheckBoxes()
-        {
-            Sex sex = GetSex();
-            if (this.usernameBox.Text != "" && this.ageBox.Text != "" && sex != Sex.NotChecked && this.usernameBox.Text.Length >= 4)
-                return true;
-            if (this.usernameBox.Text == "")
-                MessageBox.Show("Fill Your Username!");
-            else if (this.usernameBox.Text.Length < 4)
-            {
-                MessageBox.Show("Write At Least 4 Characters In The Username Box!");
-            }
-                MessageBox.Show("Fill Your Age!");
-            if (sex == Sex.NotChecked)
-                MessageBox.Show("Select Your Sex!");
-            return false;
         }
         #endregion
         public void IsChanged()

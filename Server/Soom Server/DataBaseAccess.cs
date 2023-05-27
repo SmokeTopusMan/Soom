@@ -57,6 +57,7 @@ namespace Soom_server
                 }
                 cnn.Execute($"INSERT INTO AudioSettingsTable (UserID, Volume, IsMicOff) VALUES ({user.ID}, '50', '0')");
                 cnn.Execute($"INSERT INTO VideoSettingsTable (UserID, IsMirrored, IsVidOff) VALUES ({user.ID}, '0', '0')");
+                cnn.Execute($"INSERT INTO FriendsTable (UserID) VALUES ({user.ID})");
                 return (int)user.ID;
             }
         }
@@ -80,7 +81,7 @@ namespace Soom_server
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
-                var output = cnn.Query<UserDB>($"SELECT Username, Password, Age, Sex, Bio, Points FROM UsersInfo WHERE UserID = {id}");
+                var output = cnn.Query<UserDB>($"SELECT Username, Age, Sex, Bio, Points FROM UsersInfo WHERE UserID = {id}");
                 return (UserDB)output.ToList()[0];
             }
         }
@@ -98,6 +99,64 @@ namespace Soom_server
             {
                 var output = cnn.Query<(string, string, string)>($"SELECT DeviceName, IsMirrored, IsVidOff FROM VideoSettingsTable WHERE UserID = {id}").ToList();
                 return new string[] { output[0].Item1, output[0].Item2, output[0].Item3};
+            }
+        }
+        public static string GetFriends(int id)
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                var output = cnn.Query<string>($"SELECT Friends FROM FriendsTable WHERE UserID = {id}").ToList();
+                if (output[0] != null)
+                    return output[0];
+                else
+                    return "#";
+            }
+        }
+        public static string GetPendingRequests(int id)
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                var output = cnn.Query<string>($"SELECT RequestsPending FROM FriendsTable WHERE UserID = ({id})").ToList();
+                if (output[0] != null)
+                    return output[0];
+                else
+                    return "#";
+            }
+        }
+        public static UserDB GetFriendDetails(int id, string username)
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                var output = cnn.Query<UserDB>($"SELECT Username, Age, Sex, Bio, Points FROM UsersInfo WHERE Username = '{username}'").ToList();
+                if (output[0] != null)
+                    return output[0];
+                else
+                    return null;
+            }
+        }
+        public static void SendFriendRequest(int senderId, string recieverUsername)
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                List<UserDB> usernames = GetAllUsers("LOG");
+                foreach (UserDB item in usernames)
+                {
+                    if (item.Username == recieverUsername)
+                    {
+                        int recieverId = cnn.Query<int>($"SELECT UserID FROM UsersInfo WHERE Username = '{recieverUsername}'").ToList()[0];
+                        string senderUsername = cnn.Query<string>($"SELECT Username FROM UsersInfo WHERE UserID = {senderId}").ToList()[0];
+                        string pendingList = cnn.Query<string>($"SELECT RequestsPending FROM FriendsTable WHERE UserID = {recieverId}").ToList()[0];
+                        if (pendingList == null)
+                            pendingList = senderUsername;
+                        else
+                        {
+                            pendingList += $"#{senderUsername}";
+                        }
+                        cnn.Execute($"UPDATE FriendsTable SET RequestsPending = '{pendingList}' WHERE UserID = {recieverId}");
+                        return;
+                    }
+                }
+                throw new UsernameNotExistException();
             }
         }
         public static void ChangeUserProfile(string[] data) //First element in this array is the user's id.
@@ -151,7 +210,8 @@ namespace Soom_server
                     cnn.Execute($"UPDATE VideoSettingsTable SET IsVidOff = '{data[3]}' WHERE UserID = {id}");
             }
         }
-        private static List<UserDB> GetAllUsers(string command = null)
+
+        private static List<UserDB> GetAllUsers(string command)
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
@@ -165,7 +225,7 @@ namespace Soom_server
                     var output = cnn.Query<UserDB>("SELECT Username, Password FROM UsersInfo");
                     return output.ToList();
                 }
-                return cnn.Query<UserDB>("SELECT Username, Password, Age, Sex, Bio, Points FROM UsersInfo").ToList();
+                return null;
             }
         }
 

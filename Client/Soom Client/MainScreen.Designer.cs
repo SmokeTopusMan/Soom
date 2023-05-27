@@ -32,7 +32,7 @@
             this.title = new System.Windows.Forms.Label();
             this.createMeetingButton = new System.Windows.Forms.Label();
             this.joinMeetingButton = new System.Windows.Forms.Label();
-            this.addFriendButton = new System.Windows.Forms.Label();
+            this.friendsButton = new System.Windows.Forms.Label();
             this.sponsorLabel = new System.Windows.Forms.Label();
             this.settingsWheelButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
@@ -80,21 +80,21 @@
             this.joinMeetingButton.MouseEnter += new System.EventHandler(this.joinMeetingButton_MouseEnter);
             this.joinMeetingButton.MouseLeave += new System.EventHandler(this.joinMeetingButton_MouseLeave);
             // 
-            // addFriendButton
+            // friendsButton
             // 
-            this.addFriendButton.AutoSize = true;
-            this.addFriendButton.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.addFriendButton.Font = new System.Drawing.Font("Microsoft JhengHei Light", 17.3F);
-            this.addFriendButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(110)))), ((int)(((byte)(0)))), ((int)(((byte)(17)))));
-            this.addFriendButton.Location = new System.Drawing.Point(358, 350);
-            this.addFriendButton.Margin = new System.Windows.Forms.Padding(3, 17, 3, 17);
-            this.addFriendButton.Name = "addFriendButton";
-            this.addFriendButton.Size = new System.Drawing.Size(134, 30);
-            this.addFriendButton.TabIndex = 4;
-            this.addFriendButton.Text = "Add Friend";
-            this.addFriendButton.Click += new System.EventHandler(this.addFriendButton_Click);
-            this.addFriendButton.MouseEnter += new System.EventHandler(this.addFriendButton_MouseEnter);
-            this.addFriendButton.MouseLeave += new System.EventHandler(this.addFriendButton_MouseLeave);
+            this.friendsButton.AutoSize = true;
+            this.friendsButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.friendsButton.Font = new System.Drawing.Font("Microsoft JhengHei Light", 17.3F);
+            this.friendsButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(110)))), ((int)(((byte)(0)))), ((int)(((byte)(17)))));
+            this.friendsButton.Location = new System.Drawing.Point(379, 350);
+            this.friendsButton.Margin = new System.Windows.Forms.Padding(3, 17, 3, 17);
+            this.friendsButton.Name = "friendsButton";
+            this.friendsButton.Size = new System.Drawing.Size(91, 30);
+            this.friendsButton.TabIndex = 4;
+            this.friendsButton.Text = "Friends";
+            this.friendsButton.Click += new System.EventHandler(this.friendsButton_Click);
+            this.friendsButton.MouseEnter += new System.EventHandler(this.friendsButton_MouseEnter);
+            this.friendsButton.MouseLeave += new System.EventHandler(this.friendsButton_MouseLeave);
             // 
             // sponsorLabel
             // 
@@ -133,7 +133,7 @@
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(184)))), ((int)(((byte)(199)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(834, 461);
             this.Controls.Add(this.sponsorLabel);
-            this.Controls.Add(this.addFriendButton);
+            this.Controls.Add(this.friendsButton);
             this.Controls.Add(this.joinMeetingButton);
             this.Controls.Add(this.createMeetingButton);
             this.Controls.Add(this.title);
@@ -153,7 +153,7 @@
         private System.Windows.Forms.Label title;
         private System.Windows.Forms.Label createMeetingButton;
         private System.Windows.Forms.Label joinMeetingButton;
-        private System.Windows.Forms.Label addFriendButton;
+        private System.Windows.Forms.Label friendsButton;
         private System.Windows.Forms.Label sponsorLabel;
     }
 }

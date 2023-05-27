@@ -35,31 +35,32 @@
             // 
             // usernameBox
             // 
-            this.usernameBox.Location = new System.Drawing.Point(238, 203);
+            this.usernameBox.Location = new System.Drawing.Point(208, 203);
             this.usernameBox.Margin = new System.Windows.Forms.Padding(5, 15, 45, 15);
             this.usernameBox.MaxLength = 35;
             this.usernameBox.Name = "usernameBox";
             this.usernameBox.Size = new System.Drawing.Size(202, 20);
             this.usernameBox.TabIndex = 37;
+            this.usernameBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.usernameBox_KeyPress);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.Color.Chocolate;
-            this.label1.Location = new System.Drawing.Point(172, 206);
+            this.label1.Location = new System.Drawing.Point(142, 206);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(58, 13);
             this.label1.TabIndex = 38;
             this.label1.Text = "Username:";
             // 
-            // addFriendUserControl
+            // AddFriendUserControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(162)))), ((int)(((byte)(232)))));
             this.Controls.Add(this.usernameBox);
             this.Controls.Add(this.label1);
-            this.Name = "addFriendUserControl";
+            this.Name = "AddFriendUserControl";
             this.Size = new System.Drawing.Size(634, 461);
             this.ResumeLayout(false);
             this.PerformLayout();

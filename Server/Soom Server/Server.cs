@@ -96,6 +96,10 @@ namespace Soom_server
             else if (command == "KEY") ExchangeKeys(user);
             else if (command == "PRO" || command == "AUD" || command == "VID") GetSettings(user, command);
             else if (command == "CNG") ChangeSettings(user); //ToDo: handle when the command isnt clear and send to the client error.
+            else if (command == "FRD") GerFriends(user);
+            else if (command == "PND") GetPendingRequests(user);
+            else if (command == "USR") GetUserDetails(user);
+            else if (command == "REQ") SendFriendRequest(user); 
         }
         private static string GetData(Socket sock, int arrayLength)
         {
@@ -257,6 +261,60 @@ namespace Soom_server
             }
             byte[] result = Encoding.UTF8.GetBytes("OK" + msg.Length.ToString("0000")).Concat(msg).ToArray();
             user.Socket.Send(result);
+            byte[] confirmation = new byte[2];
+            user.Socket.Receive(confirmation);
+            if (Encoding.UTF8.GetString(confirmation) == "OK")
+                return;
+        }
+        private static void GerFriends(User user)
+        {
+            string id = GetData(user.Socket, 2);
+            string friends = DataBaseAccess.GetFriends(int.Parse(id));
+            SendDataToUser(user, friends);
+        }
+        private static void GetPendingRequests(User user)
+        {
+            string id = GetData(user.Socket, 2);
+            string requsets = DataBaseAccess.GetPendingRequests(int.Parse(id));
+            SendDataToUser(user, requsets);
+        }
+        private static void GetUserDetails(User user)
+        {
+            string id = GetData(user.Socket, 2);
+            string username = GetData(user.Socket, 2);
+            UserDB userDetails = DataBaseAccess.GetFriendDetails(int.Parse(id), username);
+            string data = "";
+            if (userDetails != null)
+            {
+                data += $"{userDetails.Username}#{userDetails.Age}#{userDetails.Sex}#{userDetails.Bio}#{userDetails.Points}";
+            }
+            else
+                data += "#";
+            SendDataToUser(user, data);
+        }
+        private static void SendDataToUser(User user, string data)
+        {
+            byte[] msg = SymmetricEncryption.EncryptStringToBytesAES(data);
+            byte[] result = Encoding.UTF8.GetBytes("OK" + msg.Length.ToString("0000")).Concat(msg).ToArray();
+            user.Socket.Send(result);
+            byte[] confirmation = new byte[2];
+            user.Socket.Receive(confirmation);
+            if (Encoding.UTF8.GetString(confirmation) == "OK")
+                return;
+        }
+        private static void SendFriendRequest(User user)
+        {
+            string id = GetData(user.Socket, 2);
+            string username = GetData(user.Socket, 2);
+            try
+            {
+                DataBaseAccess.SendFriendRequest(int.Parse(id), username);
+                user.Socket.Send(Encoding.UTF8.GetBytes("OK"));
+            }
+            catch (UsernameNotExistException)
+            {
+                SendErrors(user.Socket, Errors.UserNotExist);
+            }
             byte[] confirmation = new byte[2];
             user.Socket.Receive(confirmation);
             if (Encoding.UTF8.GetString(confirmation) == "OK")

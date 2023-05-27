@@ -34,6 +34,10 @@ namespace Soom_server
             Bio = bio;
             Points = points;
         }
+        public UserDB(string username,long age, string sex, string bio, long points) : this(age, sex, bio, points)
+        {
+            Username = username;
+        }
         public UserDB(string username, string password, long age, string sex) : this(username, password)
         {
             Age = age;
