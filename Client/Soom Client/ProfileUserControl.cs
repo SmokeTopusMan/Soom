@@ -149,7 +149,7 @@ namespace Soom_Client
             this.pointsBox.Text = dataArray[4];
             
         }
-        private Sex GetSexEnumValue(string enumName)
+        public static Sex GetSexEnumValue(string enumName)
         {
             if (Enum.TryParse<Sex>(enumName, out Sex enumValue))
             {

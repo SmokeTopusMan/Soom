@@ -15,10 +15,18 @@ namespace Soom_Client
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main() //ToDo: Get the args for the ip.
+        static void Main(string[] args) //ToDo: Get the args for the ip.
         {
             Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Parse("10.0.0.15"), 13000);
+            IPEndPoint iPEndPoint;
+            if (args.Length > 0)
+            {
+                iPEndPoint = new IPEndPoint(IPAddress.Parse(args[0]), 13000);
+            }
+            else
+            {
+                iPEndPoint = new IPEndPoint(IPAddress.Parse("10.0.0.15"), 13000);
+            }
             while (true)
             {
                 try

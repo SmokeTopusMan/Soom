@@ -52,6 +52,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AlreadyFriendException.cs" />
+    <Compile Include="AlreadySentRequestException.cs" />
     <Compile Include="DataBaseAccess.cs" />
     <Compile Include="EncodingMD5AndSha256.cs" />
     <Compile Include="Errors.cs" />

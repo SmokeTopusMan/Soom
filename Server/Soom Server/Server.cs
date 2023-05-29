@@ -39,7 +39,6 @@ namespace Soom_server
             else
                 throw new Exception("!********!- Cant Decrement since the server has 0 clients online -!********!");
         }
-
         public static void HandleClient(User user)
         {
             Log("JOIN", user.Id);
@@ -87,7 +86,6 @@ namespace Soom_server
             ClientLeft();
             Log("LEFT", user.Id);
         }
-
         private static void HandleCommand(string command, User user)
         {
             Log(command, user.Id);
@@ -99,7 +97,8 @@ namespace Soom_server
             else if (command == "FRD") GerFriends(user);
             else if (command == "PND") GetPendingRequests(user);
             else if (command == "USR") GetUserDetails(user);
-            else if (command == "REQ") SendFriendRequest(user); 
+            else if (command == "REQ") SendFriendRequest(user);
+            else if (command == "ANS") HandleFriendRequest(user);
         }
         private static string GetData(Socket sock, int arrayLength)
         {
@@ -121,6 +120,8 @@ namespace Soom_server
             else if (error == Errors.UsernameIsTaken) clientSock.Send(Encoding.UTF8.GetBytes("NO2"));
             else if (error == Errors.UserNotExist) clientSock.Send(Encoding.UTF8.GetBytes("NO3"));
             else if (error == Errors.UnknownFormat) clientSock.Send(Encoding.UTF8.GetBytes("NO4"));
+            else if (error == Errors.AlreadySentRequest) clientSock.Send(Encoding.UTF8.GetBytes("NO5"));
+            else if (error == Errors.AlreadyFriends) clientSock.Send(Encoding.UTF8.GetBytes("NO6"));
         }
         private static void SendID(Socket socket, int id)
         {
@@ -280,9 +281,8 @@ namespace Soom_server
         }
         private static void GetUserDetails(User user)
         {
-            string id = GetData(user.Socket, 2);
             string username = GetData(user.Socket, 2);
-            UserDB userDetails = DataBaseAccess.GetFriendDetails(int.Parse(id), username);
+            UserDB userDetails = DataBaseAccess.GetFriendDetails(username);
             string data = "";
             if (userDetails != null)
             {
@@ -304,7 +304,7 @@ namespace Soom_server
         }
         private static void SendFriendRequest(User user)
         {
-            string id = GetData(user.Socket, 2);
+            string id = GetData(user.Socket, 2);//error
             string username = GetData(user.Socket, 2);
             try
             {
@@ -315,9 +315,35 @@ namespace Soom_server
             {
                 SendErrors(user.Socket, Errors.UserNotExist);
             }
+            catch (AlreadySentRequestException)
+            {
+                SendErrors(user.Socket, Errors.AlreadySentRequest);
+            }
+            catch(AlreadyFriendException)
+            {
+                SendErrors(user.Socket, Errors.AlreadyFriends);
+            }
             byte[] confirmation = new byte[2];
             user.Socket.Receive(confirmation);
             if (Encoding.UTF8.GetString(confirmation) == "OK")
+                return;
+        }
+        private static void HandleFriendRequest(User user)
+        {
+            string id = GetData(user.Socket, 2);
+            string[] usernameAnswer = GetData(user.Socket, 2).Split('#');
+            try
+            {
+                DataBaseAccess.AnswerFriendRequest(int.Parse(id), usernameAnswer[0], usernameAnswer[1]);
+                user.Socket.Send(Encoding.UTF8.GetBytes("OK"));
+            }
+            catch (UsernameNotExistException)
+            {
+                SendErrors(user.Socket, Errors.UserNotExist);
+            }
+            byte[] confirmation = new byte[2];
+            user.Socket.Receive(confirmation);
+            if (Encoding.UTF8.GetString(confirmation) == "OK")// todo: maybe turn this into a function
                 return;
         }
         private static void ChangeSettings(User user)
@@ -340,12 +366,10 @@ namespace Soom_server
             else if(command == "AUD")
             {
                 DataBaseAccess.ChangeUserAudio(data);
-                //ToDo: Continue the if statment and create the ChangeAudio func inside DataBaseAccess class
             }
             else if (command == "VID")
             {
                 DataBaseAccess.ChangeUserVideo(data);
-                //ToDo: Continue the if statment and create the ChangeVideo func inside DataBaseAccess class
             }
             user.Socket.Send(Encoding.UTF8.GetBytes("OK"));
             byte[] confirmation = new byte[2];

@@ -7,6 +7,8 @@
         UsernameIsTaken,
         UserNotExist,
         UnknownFormat,
+        AlreadySentRequest,
+        AlreadyFriends,
         None,
     }
 }

@@ -115,6 +115,11 @@
     <Compile Include="IFriendsComponents.cs" />
     <Compile Include="IMainScreenComponents.cs" />
     <Compile Include="ISettingsScreenComponent.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="ServerErrors.cs" />
     <Compile Include="MainScreen.cs">
       <SubType>Form</SubType>
@@ -192,14 +197,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <EmbeddedResource Include="RegisterPanel.resx">
       <DependentUpon>RegisterPanel.cs</DependentUpon>
     </EmbeddedResource>
@@ -237,6 +237,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\HoverredbackButton.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\refresh Button.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Hoverred refresh Button.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

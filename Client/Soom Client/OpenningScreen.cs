@@ -147,7 +147,6 @@ namespace Soom_Client
                 this.Close();
             }
         }
-
         private bool LogInfoCheck()
         {
             if (loginClick.UserName != "" && loginClick.Password != "" && loginClick.Password.Length >= 8 && loginClick.UserName.Length >= 4)
@@ -211,7 +210,8 @@ namespace Soom_Client
             else if (err == ServerErrors.UsernameIsTaken) MessageBox.Show("This Username is Already Taken!\r\nPlease Think of Anouther Name.");
             else if (err == ServerErrors.UnknownFormat) MessageBox.Show("USE ENGLISH ONLY [and numbers :) ]!");
             else if (err == ServerErrors.CommandIsCorrupted) MessageBox.Show("Please Try Again To Do Your Action!");
-
+            else if (err == ServerErrors.AlreadySentRequest) MessageBox.Show("You Already Sent This User a Friend Request!");
+            else if (err == ServerErrors.AlreadyFriends) MessageBox.Show("His Your Friend Already, JEEZ...");
         }
         private byte[] PrepareDataViaProtocol(string command)
         {
@@ -222,5 +222,26 @@ namespace Soom_Client
             }
             return Encoding.UTF8.GetBytes(command + (encryptedData.Length).ToString("000")).Concat(encryptedData).ToArray();
         }
+        private void OpenningScreen_Load(object sender, EventArgs e)
+        {
+            DisableMaximizeButton();
+        }
+
+        #region Disable The Maximize Button
+        private const int GWL_STYLE = -16;
+        private const int WS_MAXIMIZEBOX = 0x00010000;
+
+        [DllImport("user32.dll")]
+        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll")]
+        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+        private void DisableMaximizeButton()
+        {
+            IntPtr handle = this.Handle;
+            int style = GetWindowLong(handle, GWL_STYLE);
+            SetWindowLong(handle, GWL_STYLE, style & ~WS_MAXIMIZEBOX);
+        }
+        #endregion
     }
 }

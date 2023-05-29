@@ -73,6 +73,16 @@ namespace Soom_Client.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Hoverred_refresh_Button {
+            get {
+                object obj = ResourceManager.GetObject("Hoverred refresh Button", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap HoverredbackButton {
             get {
                 object obj = ResourceManager.GetObject("HoverredbackButton", resourceCulture);
@@ -86,6 +96,16 @@ namespace Soom_Client.Properties {
         internal static System.Drawing.Bitmap HoverredSettingsGear {
             get {
                 object obj = ResourceManager.GetObject("HoverredSettingsGear", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap refresh_Button {
+            get {
+                object obj = ResourceManager.GetObject("refresh Button", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

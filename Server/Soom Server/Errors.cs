@@ -8,6 +8,7 @@
         UserNotExist,
         UnknownFormat,
         AlreadySentRequest,
+        AlreadyFriends,
         None,
     }
 }

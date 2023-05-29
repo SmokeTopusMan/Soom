@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Soom_server
 {
-    public class AlreadySentRequestException : Exception
+    internal class AlreadyFriendException : Exception
     {
-        public AlreadySentRequestException() : base() { }
+        public AlreadyFriendException() : base() { }
     }
 }

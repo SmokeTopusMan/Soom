@@ -28,13 +28,6 @@ namespace Soom_Client
         public FriendsScreen(Socket socket, int id)
         {
             InitializeComponent();
-            _socket = socket;
-            IsFinished = false;
-            _id = id;
-            GetDataFromServer("FRD", _friendsList);
-            GetDataFromServer("PND", _pendingRequestList);
-            EnterDataToListBoxes();
-
             this.addFriendUserControl.Hide();
             this.showUserInfoUserControl.Hide();
             this.searchUserBtn.Hide();
@@ -42,10 +35,17 @@ namespace Soom_Client
             this.friendsListBox.Hide();
             this.requestsListBox.Hide();
             this.boxesLabel.Hide();
+            this.refreshBtn.Hide();
             this.acceptBtn.Hide();
             this.acceptBtn.Enabled = false;
             this.declineBtn.Hide();
             this.declineBtn.Enabled = false;
+            _socket = socket;
+            IsFinished = false;
+            _id = id;
+            EnterDataToListBoxes();
+
+
         }
 
         #region Buttons Hoverred settings
@@ -95,6 +95,16 @@ namespace Soom_Client
             backButton.Image = Resources.backButton;
             this.Cursor = Cursors.Arrow;
         }
+        private void refreshBtn_MouseEnter(object sender, EventArgs e)
+        {
+            refreshBtn.Image = Resources.Hoverred_refresh_Button;
+            this.Cursor = Cursors.Hand;
+        }
+        private void refreshBtn_MouseLeave(object sender, EventArgs e)
+        {
+            refreshBtn.Image = Resources.refresh_Button;
+            this.Cursor = Cursors.Arrow;
+        }
         #endregion
 
         #region Back Button Press
@@ -120,6 +130,7 @@ namespace Soom_Client
                 this.boxesLabel.Hide();
                 this.title.Hide();
                 this.friendsListBox.Hide();
+                this.refreshBtn.Hide();
                 if (showUserInfoUserControl.Visible)
                 {
                     this.showUserInfoUserControl.Hide();
@@ -133,6 +144,7 @@ namespace Soom_Client
                 this.boxesLabel.Show();
                 this.title.Show();
                 this.friendsListBox.Show();
+                this.refreshBtn.Show();
             }
         }
         private void pendingRequestsButton_Click(object sender, EventArgs e)
@@ -147,6 +159,7 @@ namespace Soom_Client
                 this.boxesLabel.Hide();
                 this.title.Hide();
                 this.requestsListBox.Hide();
+                this.refreshBtn.Hide();
                 if (showUserInfoUserControl.Visible)
                 {
                     this.showUserInfoUserControl.Hide();
@@ -165,6 +178,7 @@ namespace Soom_Client
                 this.boxesLabel.Show();
                 this.title.Show();
                 this.requestsListBox.Show();
+                this.refreshBtn.Show();
             }
         }
         private void addFriendButton_Click(object sender, EventArgs e)
@@ -197,6 +211,7 @@ namespace Soom_Client
             {
                 this.boxesLabel.Hide();
                 this.friendsListBox.Hide();
+                this.refreshBtn.Hide();
                 if (this.showUserInfoUserControl.Visible)
                 {
                     this.showUserInfoUserControl.Hide();
@@ -211,6 +226,7 @@ namespace Soom_Client
                 this.acceptBtn.Enabled = false;
                 this.declineBtn.Hide();
                 this.declineBtn.Enabled = false;
+                this.refreshBtn.Hide();
                 if (this.showUserInfoUserControl.Visible)
                 {
                     this.showUserInfoUserControl.Hide();
@@ -219,74 +235,99 @@ namespace Soom_Client
             }
             
         }
-        private void GetDataFromServer(string command, List<string> list)
-        {
-            try
-            {
-                byte[] idbytes = SymmetricEncryption.EncryptStringToBytesAES(_id.ToString());
-                _socket.Send(Encoding.UTF8.GetBytes($"{command}{idbytes.Length.ToString("00")}").Concat(idbytes).ToArray()); //ToDo: Fix the exception, i close the socket and then try to access it again.
-                byte[] data = new byte[2];
-                _socket.Receive(data, 2, SocketFlags.None);
-                if (Encoding.UTF8.GetString(data) == "OK")
-                {
-                    data = new byte[4];
-                    _socket.Receive(data, 4, SocketFlags.None);
-                    int length = int.Parse(Encoding.UTF8.GetString(data));
-                    data = new byte[length];
-                    _socket.Receive(data, length, SocketFlags.None);
-                     string[] msg = SymmetricEncryption.DecryptBytesToStringAES(data).Split('#');
-                    foreach (string s in msg)
-                    {
-                        if (s.Length > 0)
-                            list.Add(s);
-                    }
-                    _socket.Send(Encoding.UTF8.GetBytes("OK"));
-                }
-            }
-            catch (SocketException)
-            {
-                this._socket.Close();
-                MessageBox.Show("The Server is Having Some Technical Difficulties...\r\n Try Again Later <3");
-                IsFinished = true;
-                Finished();//todo: doesnt work because nobody is subscribed to the event
-            }
-        }
         private void EnterDataToListBoxes()
         {
+            string[] friends = GetDataFromServer("FRD").Split('#');
+            foreach (string s in friends)
+            {
+                if (s.Length > 0)
+                    _friendsList.Add(s);
+            }
+            string[] pending = GetDataFromServer("PND").Split('#');
+            foreach (string s in pending)
+            {
+                if (s.Length > 0)
+                    _pendingRequestList.Add(s);
+            }
             this.friendsListBox.DataSource = _friendsList;
             this.requestsListBox.DataSource = _pendingRequestList;
         }
-        private void requestsListBox_SelectedIndexChanged(object sender, EventArgs e) //Todo: Change it, everytime we add to list box it enters, maybe use it to store the data of the users.
+        private void requestsListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string userInfo = GetSelectedUser(requestsListBox.SelectedItem.ToString());
-            if (userInfo != "#")
+            if (requestsListBox.Visible)
             {
-                PresentUser(userInfo.Split('#'));
+                if (requestsListBox.SelectedItem.ToString() == this.showUserInfoUserControl.GetUsername())
+                {
+                    this.acceptBtn.Enabled = false;
+                    this.declineBtn.Enabled = false;
+                    this.showUserInfoUserControl.Hide();
+                    this.showUserInfoUserControl.ClearLabels();
+                }
+                else
+                {
+                    string userInfo = GetDataFromServer("USR", requestsListBox.SelectedItem.ToString());
+                    if (userInfo != "#")
+                    {
+                        PresentUser(userInfo.Split('#'));
+                        this.acceptBtn.Enabled = true;
+                        this.declineBtn.Enabled = true;
+                    }
+                    else
+                        this.requestsListBox.Items.Remove(requestsListBox.SelectedItem);
+                }
             }
-            else
-                this.requestsListBox.Items.Remove(requestsListBox.SelectedItem);
         }
-        private string GetSelectedUser(string username)
+        private void friendsListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (friendsListBox.Visible)
+            {
+                string userInfo = GetDataFromServer("USR", friendsListBox.SelectedItem.ToString());
+                if (userInfo != "#")
+                {
+                    PresentUser(userInfo.Split('#'));
+                }
+                else
+                    this.requestsListBox.Items.Remove(requestsListBox.SelectedItem);
+            }
+        }
+        private string GetDataFromServer(string command, string data = null)
         {
             try
             {
-                byte[] idbytes = SymmetricEncryption.EncryptStringToBytesAES(_id.ToString());
-                byte[] msg = Encoding.UTF8.GetBytes($"USR{idbytes.Length.ToString("00")}").Concat(idbytes).ToArray();
-                byte[] usernameBytes = SymmetricEncryption.EncryptStringToBytesAES(username);
-                msg = msg.Concat(Encoding.UTF8.GetBytes(usernameBytes.Length.ToString()).Concat(usernameBytes)).ToArray();
-                _socket.Send(msg);
-                byte[] data = new byte[2];
-                _socket.Receive(data, 2, SocketFlags.None);
-                if (Encoding.UTF8.GetString(data) == "OK")
+                byte[] msg;
+                if (command != "USR")
                 {
-                    data = new byte[4];
-                    _socket.Receive(data, 4, SocketFlags.None);
-                    int length = int.Parse(Encoding.UTF8.GetString(data));
-                    data = new byte[length];
-                    _socket.Receive(data, length, SocketFlags.None);
-                    _socket.Send(Encoding.UTF8.GetBytes("OK"));
-                    return SymmetricEncryption.DecryptBytesToStringAES(data);
+                    byte[] idbytes = SymmetricEncryption.EncryptStringToBytesAES(_id.ToString());
+                    msg = Encoding.UTF8.GetBytes($"{command}{idbytes.Length.ToString("00")}").Concat(idbytes).ToArray();
                 }
+                else
+                    msg = Encoding.UTF8.GetBytes(command);
+                if (data != null)
+                {
+                    byte[] usernameBytes = SymmetricEncryption.EncryptStringToBytesAES(data);
+                    msg = msg.Concat(Encoding.UTF8.GetBytes(usernameBytes.Length.ToString()).Concat(usernameBytes)).ToArray();
+                }
+                _socket.Send(msg);
+                byte[] byteData = new byte[2];
+                _socket.Receive(byteData, 2, SocketFlags.None);
+                if (Encoding.UTF8.GetString(byteData) == "OK")
+                {
+                    string answer;
+                    if (command != "REQ" && command != "ANS")
+                    {
+                        byteData = new byte[4];
+                        _socket.Receive(byteData, 4, SocketFlags.None);
+                        int length = int.Parse(Encoding.UTF8.GetString(byteData));
+                        byteData = new byte[length];
+                        _socket.Receive(byteData, length, SocketFlags.None);
+                        answer = SymmetricEncryption.DecryptBytesToStringAES(byteData);
+                    }
+                    else
+                        answer = Encoding.UTF8.GetString(byteData);
+                    _socket.Send(Encoding.UTF8.GetBytes("OK"));
+                    return answer;
+                }
+                return Encoding.UTF8.GetString(byteData);
             }
             catch (SocketException)
             {
@@ -315,14 +356,8 @@ namespace Soom_Client
             {
                 try
                 {
-                    byte[] idbytes = SymmetricEncryption.EncryptStringToBytesAES(_id.ToString());
-                    byte[] msg = Encoding.UTF8.GetBytes($"REQ{idbytes.Length.ToString("00")}").Concat(idbytes).ToArray();
-                    byte[] usernameBytes = SymmetricEncryption.EncryptStringToBytesAES(addFriendUserControl.UserName);
-                    msg = msg.Concat(Encoding.UTF8.GetBytes(usernameBytes.Length.ToString()).Concat(usernameBytes)).ToArray();
-                    _socket.Send(msg);
-                    byte[] data = new byte[2];
-                    _socket.Receive(data, 2, SocketFlags.None);
-                    if (Encoding.UTF8.GetString(data) == "OK")
+                    string answer = GetDataFromServer("REQ", addFriendUserControl.UserName);
+                    if (answer == "OK")
                     {
                         MessageBox.Show("The Request Has Been Sent Successfully");
                     }
@@ -330,19 +365,20 @@ namespace Soom_Client
                     {
                         byte[] temp = new byte[1];
                         _socket.Receive(temp, 1, SocketFlags.None);
-                        data = data.Concat(temp).ToArray();
-                        if (Encoding.UTF8.GetString(data) == "BYE")
+                        answer += Encoding.UTF8.GetString(temp);
+                        if (answer == "BYE")
                         {
                             IsFinished = true;
                             Finished();
                         }
                         else
                         {
-                            int errNum = int.Parse(Encoding.UTF8.GetString(data)[2].ToString());
+                            int errNum = int.Parse(answer[2].ToString());
                             OpenningScreen.ServerErrorsHandler((ServerErrors)errNum);
                         }
+                        _socket.Send(Encoding.UTF8.GetBytes("OK"));
+                        addFriendUserControl.ClearUsername();
                     }
-                    _socket.Send(Encoding.UTF8.GetBytes("OK"));
                 }
                 catch
                 {
@@ -357,6 +393,111 @@ namespace Soom_Client
                 MessageBox.Show("The Username Is Too Short!");
             }
         }
-            
+        private void acceptBtn_Click(object sender, EventArgs e)
+        {
+            string username = requestsListBox.SelectedItem.ToString();
+            string answer = GetDataFromServer("ANS", username + "#YE");
+            this.showUserInfoUserControl.ClearLabels();
+            this.showUserInfoUserControl.Hide();
+            if (answer == "OK")
+            {
+                AddToListBox(friendsListBox, username);
+                RemoveFromListBox(requestsListBox, username);
+            }
+            else
+            {
+                byte[] temp = new byte[1];
+                _socket.Receive(temp);
+                answer += Encoding.UTF8.GetString(temp);
+                if (answer == "BYE")
+                {
+                    IsFinished = true;
+                    Finished();
+                }
+                else
+                {
+                    RemoveFromListBox(requestsListBox, username);
+                }
+            }
+            if (requestsListBox.Items.Count == 0)
+            {
+                this.boxesLabel.Text = "There Are No Fresh Requests!";
+                acceptBtn.Enabled = false;
+                declineBtn.Enabled = false;
+            }
+        }
+        private void declineBtn_Click(object sender, EventArgs e)
+        {
+            string username = requestsListBox.SelectedItem.ToString();
+            string answer = GetDataFromServer("ANS", username + "#NO");
+            this.showUserInfoUserControl.ClearLabels();
+            this.showUserInfoUserControl.Hide();
+            if (answer == "OK")
+            {
+                RemoveFromListBox(requestsListBox, username);
+            }
+            else
+            {
+                byte[] temp = new byte[1];
+                _socket.Receive(temp);
+                answer += Encoding.UTF8.GetString(temp);
+                if (answer == "BYE")
+                {
+                    IsFinished = true;
+                    Finished();
+                }
+                else
+                {
+                    RemoveFromListBox(requestsListBox, username);
+                }
+            }
+            if (requestsListBox.Items.Count == 0)
+            {
+                this.boxesLabel.Text = "There Are No Fresh Requests!";
+                acceptBtn.Enabled = false;
+                declineBtn.Enabled = false;
+            }
+        }
+        private void RemoveFromListBox(ListBox listbox, string name)
+        {
+            List<string> dataSource = (List<string>)listbox.DataSource;
+            dataSource.Remove(name);
+            if (listbox.Visible)
+            {
+                listbox.Hide();
+                listbox.DataSource = null;
+                listbox.DataSource = dataSource;
+                listbox.Show();
+
+            }
+            else
+            {
+                listbox.DataSource = null;
+                listbox.DataSource = dataSource;
+            }
+        }
+        private void AddToListBox(ListBox listbox, string name)
+        {
+            List<string> dataSource = (List<string>)listbox.DataSource;
+            dataSource.Add(name);
+            if (listbox.Visible)
+            {
+                listbox.Hide();
+                listbox.DataSource = null;
+                listbox.DataSource = dataSource;
+                listbox.Show();
+            }
+            else
+            {
+                listbox.DataSource = null;
+                listbox.DataSource = dataSource;
+            }
+        }
+        private void refreshBtn_Click(object sender, EventArgs e)
+        {
+            _pendingRequestList.Clear();
+            _friendsList.Clear();
+            EnterDataToListBoxes();
+        }
     }
 }

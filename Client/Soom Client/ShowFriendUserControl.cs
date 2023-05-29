@@ -17,21 +17,25 @@ namespace Soom_Client
             InitializeComponent();
             ClearLabels();
         }
+        public string GetUsername()
+        {
+            return this.usernameBox.Text;
+        }
         public void SetUsername(string username)
         {
-            this.username.Text = username;
+            this.usernameBox.Text = username;
         }
         public void SetAge(string age)
         {
-            this.age.Text = age;
+            this.ageBox.Text = age;
         }
         public void SetSex(string sex)
         {
-            this.sex.Text = sex;
+            this.sexBox.Text = sex;
         }
         public void SetBio(string bio)
         {
-            this.bio.Text = bio;
+            this.bioBox.Text = bio;
         }
         public void SetPoints(string points)
         {
@@ -39,10 +43,10 @@ namespace Soom_Client
         }
         public void ClearLabels()
         {
-            this.username.Text = "";
-            this.age.Text = "";
-            this.sex.Text = "";
-            this.bio.Text = "";
+            this.usernameBox.Text = "";
+            this.ageBox.Text = "";
+            this.sexBox.Text = "";
+            this.bioBox.Text = "";
         }
     }
 }

@@ -28,19 +28,21 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FriendsScreen));
             this.panel1 = new System.Windows.Forms.Panel();
             this.backButton = new System.Windows.Forms.Button();
             this.addFriendButton = new System.Windows.Forms.Label();
             this.friendsListButton = new System.Windows.Forms.Label();
             this.pendingRequestsButton = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.refreshBtn = new System.Windows.Forms.Button();
+            this.declineBtn = new System.Windows.Forms.Button();
+            this.acceptBtn = new System.Windows.Forms.Button();
             this.requestsListBox = new System.Windows.Forms.ListBox();
             this.title = new System.Windows.Forms.Label();
             this.boxesLabel = new System.Windows.Forms.Label();
             this.friendsListBox = new System.Windows.Forms.ListBox();
             this.searchUserBtn = new System.Windows.Forms.Button();
-            this.acceptBtn = new System.Windows.Forms.Button();
-            this.declineBtn = new System.Windows.Forms.Button();
             this.showUserInfoUserControl = new Soom_Client.ShowFriendUserControl();
             this.addFriendUserControl = new Soom_Client.AddFriendUserControl();
             this.panel1.SuspendLayout();
@@ -117,6 +119,7 @@
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(143)))), ((int)(((byte)(210)))));
+            this.panel2.Controls.Add(this.refreshBtn);
             this.panel2.Controls.Add(this.declineBtn);
             this.panel2.Controls.Add(this.acceptBtn);
             this.panel2.Controls.Add(this.requestsListBox);
@@ -127,9 +130,44 @@
             this.panel2.Controls.Add(this.searchUserBtn);
             this.panel2.Controls.Add(this.addFriendUserControl);
             this.panel2.Location = new System.Drawing.Point(200, 0);
+            this.panel2.Margin = new System.Windows.Forms.Padding(0);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(634, 461);
             this.panel2.TabIndex = 45;
+            // 
+            // refreshBtn
+            // 
+            this.refreshBtn.FlatAppearance.BorderSize = 0;
+            this.refreshBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.refreshBtn.Image = ((System.Drawing.Image)(resources.GetObject("refreshBtn.Image")));
+            this.refreshBtn.Location = new System.Drawing.Point(20, 3);
+            this.refreshBtn.Name = "refreshBtn";
+            this.refreshBtn.Size = new System.Drawing.Size(41, 41);
+            this.refreshBtn.TabIndex = 62;
+            this.refreshBtn.UseVisualStyleBackColor = true;
+            this.refreshBtn.Click += new System.EventHandler(this.refreshBtn_Click);
+            this.refreshBtn.MouseEnter += new System.EventHandler(this.refreshBtn_MouseEnter);
+            this.refreshBtn.MouseLeave += new System.EventHandler(this.refreshBtn_MouseLeave);
+            // 
+            // declineBtn
+            // 
+            this.declineBtn.Location = new System.Drawing.Point(537, 391);
+            this.declineBtn.Name = "declineBtn";
+            this.declineBtn.Size = new System.Drawing.Size(75, 23);
+            this.declineBtn.TabIndex = 61;
+            this.declineBtn.Text = "Decline";
+            this.declineBtn.UseVisualStyleBackColor = true;
+            this.declineBtn.Click += new System.EventHandler(this.declineBtn_Click);
+            // 
+            // acceptBtn
+            // 
+            this.acceptBtn.Location = new System.Drawing.Point(537, 420);
+            this.acceptBtn.Name = "acceptBtn";
+            this.acceptBtn.Size = new System.Drawing.Size(75, 23);
+            this.acceptBtn.TabIndex = 60;
+            this.acceptBtn.Text = "Accept";
+            this.acceptBtn.UseVisualStyleBackColor = true;
+            this.acceptBtn.Click += new System.EventHandler(this.acceptBtn_Click);
             // 
             // requestsListBox
             // 
@@ -171,6 +209,7 @@
             this.friendsListBox.Name = "friendsListBox";
             this.friendsListBox.Size = new System.Drawing.Size(147, 290);
             this.friendsListBox.TabIndex = 56;
+            this.friendsListBox.SelectedIndexChanged += new System.EventHandler(this.friendsListBox_SelectedIndexChanged);
             // 
             // searchUserBtn
             // 
@@ -182,31 +221,13 @@
             this.searchUserBtn.UseVisualStyleBackColor = true;
             this.searchUserBtn.Click += new System.EventHandler(this.searchUserBtn_Click);
             // 
-            // acceptBtn
-            // 
-            this.acceptBtn.Location = new System.Drawing.Point(537, 420);
-            this.acceptBtn.Name = "acceptBtn";
-            this.acceptBtn.Size = new System.Drawing.Size(75, 23);
-            this.acceptBtn.TabIndex = 60;
-            this.acceptBtn.Text = "Accept";
-            this.acceptBtn.UseVisualStyleBackColor = true;
-            // 
-            // declineBtn
-            // 
-            this.declineBtn.Location = new System.Drawing.Point(537, 391);
-            this.declineBtn.Name = "declineBtn";
-            this.declineBtn.Size = new System.Drawing.Size(75, 23);
-            this.declineBtn.TabIndex = 61;
-            this.declineBtn.Text = "Decline";
-            this.declineBtn.UseVisualStyleBackColor = true;
-            // 
             // showUserInfoUserControl
             // 
             this.showUserInfoUserControl.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(143)))), ((int)(((byte)(210)))));
-            this.showUserInfoUserControl.Location = new System.Drawing.Point(-3, 230);
+            this.showUserInfoUserControl.Location = new System.Drawing.Point(0, 0);
             this.showUserInfoUserControl.Name = "showUserInfoUserControl";
             this.showUserInfoUserControl.Size = new System.Drawing.Size(634, 461);
-            this.showUserInfoUserControl.TabIndex = 44;
+            this.showUserInfoUserControl.TabIndex = 64;
             // 
             // addFriendUserControl
             // 
@@ -214,7 +235,7 @@
             this.addFriendUserControl.Location = new System.Drawing.Point(0, 0);
             this.addFriendUserControl.Name = "addFriendUserControl";
             this.addFriendUserControl.Size = new System.Drawing.Size(634, 461);
-            this.addFriendUserControl.TabIndex = 0;
+            this.addFriendUserControl.TabIndex = 63;
             // 
             // FriendsScreen
             // 
@@ -234,6 +255,7 @@
         }
 
         #endregion
+
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button backButton;
         private System.Windows.Forms.Label addFriendButton;
@@ -241,13 +263,14 @@
         private System.Windows.Forms.Label pendingRequestsButton;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Button searchUserBtn;
-        private AddFriendUserControl addFriendUserControl;
         private System.Windows.Forms.Label title;
         private System.Windows.Forms.ListBox friendsListBox;
-        private ShowFriendUserControl showUserInfoUserControl;
         private System.Windows.Forms.Label boxesLabel;
         private System.Windows.Forms.ListBox requestsListBox;
         private System.Windows.Forms.Button acceptBtn;
         private System.Windows.Forms.Button declineBtn;
+        private System.Windows.Forms.Button refreshBtn;
+        private ShowFriendUserControl showUserInfoUserControl;
+        private AddFriendUserControl addFriendUserControl;
     }
 }

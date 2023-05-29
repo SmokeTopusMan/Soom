@@ -133,6 +133,7 @@
             this.Name = "OpenningScreen";
             this.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Load += new System.EventHandler(this.OpenningScreen_Load);
             this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
 

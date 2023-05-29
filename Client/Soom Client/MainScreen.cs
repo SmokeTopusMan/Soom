@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Windows.Forms;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Soom_Client
 {
@@ -159,7 +160,25 @@ namespace Soom_Client
             {
                 ;// Do Nothing Since the Screen Isn't Exist Anymore.
             }
+            DisableMaximizeButton();
         }
+
+        #region Disable The Maximize Button
+        private const int GWL_STYLE = -16;
+        private const int WS_MAXIMIZEBOX = 0x00010000;
+
+        [DllImport("user32.dll")]
+        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll")]
+        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+        private void DisableMaximizeButton()
+        {
+            IntPtr handle = this.Handle;
+            int style = GetWindowLong(handle, GWL_STYLE);
+            SetWindowLong(handle, GWL_STYLE, style & ~WS_MAXIMIZEBOX);
+        }
+        #endregion
     }
     public class ExitEventArgs : EventArgs
     {

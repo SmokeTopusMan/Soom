@@ -2,6 +2,7 @@
 using Soom_Client;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration;
 using System.Data;
 using System.Data.SQLite;
@@ -118,12 +119,17 @@ namespace Soom_server
             {
                 var output = cnn.Query<string>($"SELECT RequestsPending FROM FriendsTable WHERE UserID = ({id})").ToList();
                 if (output[0] != null)
-                    return output[0];
+                {
+                    if (output[0] != "")
+                        return output[0];
+                    else 
+                        return "#";
+                }
                 else
                     return "#";
             }
         }
-        public static UserDB GetFriendDetails(int id, string username)
+        public static UserDB GetFriendDetails(string username)
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
@@ -138,25 +144,104 @@ namespace Soom_server
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
-                List<UserDB> usernames = GetAllUsers("LOG");
+                List<UserDB> usernames = GetAllUsers("REQ");
                 foreach (UserDB item in usernames)
                 {
                     if (item.Username == recieverUsername)
                     {
                         int recieverId = cnn.Query<int>($"SELECT UserID FROM UsersInfo WHERE Username = '{recieverUsername}'").ToList()[0];
+                        if(recieverId  == senderId)
+                            throw new AlreadyFriendException();
                         string senderUsername = cnn.Query<string>($"SELECT Username FROM UsersInfo WHERE UserID = {senderId}").ToList()[0];
-                        string pendingList = cnn.Query<string>($"SELECT RequestsPending FROM FriendsTable WHERE UserID = {recieverId}").ToList()[0];
-                        if (pendingList == null)
-                            pendingList = senderUsername;
+                        string recieverPendingList = cnn.Query<string>($"SELECT RequestsPending FROM FriendsTable WHERE UserID = {recieverId}").ToList()[0];
+                        string recieverFriendsList = cnn.Query<string>($"SELECT Friends FROM FriendsTable WHERE UserID = {recieverId}").ToList()[0];
+                        if (recieverFriendsList != null)
+                        {
+                            string[] friendsUsernames = recieverFriendsList.Split('#');
+                            foreach (string username in friendsUsernames)// check if not already in friends
+                            {
+                                if (username == senderUsername)
+                                    throw new AlreadyFriendException();
+                            }
+                        }
+                        if (recieverPendingList == null) //check if not already in pending
+                            recieverPendingList = senderUsername;
                         else
                         {
-                            pendingList += $"#{senderUsername}";
+                            string[] pendingUsernames = recieverPendingList.Split('#');
+                            foreach (string username in pendingUsernames)
+                            {
+                                if (username == senderUsername)
+                                    throw new AlreadySentRequestException();
+                            }
+                            if (recieverFriendsList != null)
+                            {
+                                string[] friendsUsernames = recieverFriendsList.Split('#');
+                                foreach (string username in friendsUsernames)
+                                {
+                                    if (username == senderUsername)
+                                        throw new AlreadyFriendException();
+                                }
+                            }
+                            recieverPendingList += $"#{senderUsername}";
                         }
-                        cnn.Execute($"UPDATE FriendsTable SET RequestsPending = '{pendingList}' WHERE UserID = {recieverId}");
+                        cnn.Execute($"UPDATE FriendsTable SET RequestsPending = '{recieverPendingList}' WHERE UserID = {recieverId}");
                         return;
                     }
                 }
                 throw new UsernameNotExistException();
+            }
+        }
+        public static void AnswerFriendRequest(int senderId, string recieverUsername, string answer)
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                List<UserDB> usernames = GetAllUsers("ANS");
+                foreach (UserDB item in usernames)
+                {
+                    if(item.Username == recieverUsername)
+                    {
+                        if (answer == "YE")
+                        {
+                            string senderFriendsList = cnn.Query<string>($"SELECT Friends FROM FriendsTable WHERE UserID = {senderId}").ToList()[0]; 
+                            string senderPendingList = cnn.Query<string>($"SELECT RequestsPending FROM FriendsTable WHERE UserID = {senderId}").ToList()[0];
+                            if (senderFriendsList == null)
+                                senderFriendsList = recieverUsername;
+                            else
+                            {
+                                senderFriendsList += $"#{recieverUsername}";
+                            }
+                            cnn.Execute($"UPDATE FriendsTable SET Friends = '{senderFriendsList}' WHERE UserID = {senderId}");
+
+                            int reciverId = cnn.Query<int>($"SELECT UserID FROM UsersInfo WHERE Username = '{recieverUsername}'").ToList()[0];
+                            string senderUsername = cnn.Query<string>($"SELECT Username FROM UsersInfo WHERE UserID = '{senderId}'").ToList()[0];
+                            string recieveFriendsList = cnn.Query<string>($"SELECT Friends FROM FriendsTable WHERE UserID = {reciverId}").ToList()[0];
+                            if (recieveFriendsList == null)
+                                recieveFriendsList = senderUsername;
+                            else
+                            {
+                                recieveFriendsList += $"#{senderUsername}";
+                            }
+                            cnn.Execute($"UPDATE FriendsTable SET Friends = '{recieveFriendsList}' WHERE UserID = {reciverId}");
+                        }
+                        string[] pendingList = cnn.Query<string>($"SELECT RequestsPending FROM FriendsTable WHERE UserID = {senderId}").ToList()[0].Split('#');
+                        string newPending = null;
+                        foreach (string pending in pendingList)
+                        {
+                            if (pending != recieverUsername)
+                            {
+                                if (newPending == null)
+                                    newPending = pending;
+                                else
+                                    newPending += "#" + pending;
+                            }
+                        }
+                        cnn.Execute($"UPDATE FriendsTable SET RequestsPending = '{newPending}' WHERE UserID = {senderId}");
+                        return;
+                    }
+                }
+                throw new UsernameNotExistException();
+
             }
         }
         public static void ChangeUserProfile(string[] data) //First element in this array is the user's id.
@@ -210,7 +295,6 @@ namespace Soom_server
                     cnn.Execute($"UPDATE VideoSettingsTable SET IsVidOff = '{data[3]}' WHERE UserID = {id}");
             }
         }
-
         private static List<UserDB> GetAllUsers(string command)
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
@@ -220,7 +304,7 @@ namespace Soom_server
                     var output = cnn.Query<UserDB>("SELECT Username FROM UsersInfo");
                     return output.ToList();
                 }
-                else if (command == "LOG")
+                else if (command == "LOG" || command == "REQ" || command == "ANS")
                 {
                     var output = cnn.Query<UserDB>("SELECT Username, Password FROM UsersInfo");
                     return output.ToList();
