@@ -9,21 +9,20 @@ using System.Threading.Tasks;
 namespace Soom_server
 {
     public static class SymmetricEncryption
-    {
-        public static Aes Aes {  get; set; }
-        public static byte[] EncryptStringToBytesAES(string plainText)
+    {   
+        public static byte[] EncryptStringToBytesAES(string plainText, Aes aes)
         {
             // Check arguments.
             if (plainText == null || plainText.Length <= 0)
                 throw new ArgumentNullException("plainText");
-            if (Aes.Key == null || Aes.Key.Length <= 0)
+            if (aes.Key == null || aes.Key.Length <= 0)
                 throw new ArgumentNullException("key");
-            if (Aes.IV == null || Aes.IV.Length <= 0)
+            if (aes.IV == null || aes.IV.Length <= 0)
                 throw new ArgumentNullException("iv");
 
             byte[] encrypted;
             // Create an encryptor to perform the stream transform.
-            ICryptoTransform encryptor = Aes.CreateEncryptor(Aes.Key, Aes.IV);
+            ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 
             // Create the streams used for encryption.
             using (MemoryStream msEncrypt = new MemoryStream())
@@ -41,20 +40,20 @@ namespace Soom_server
             // Return the encrypted bytes from the memory stream.
             return encrypted;
         }
-        public static byte[] EncryptBytesAES(byte[] plaintext)
+        public static byte[] EncryptBytesAES(byte[] plaintext, Aes aes)
         {
             // Check arguments.
             if (plaintext == null || plaintext.Length <= 0)
                 throw new ArgumentNullException("plaintext");
-            if (Aes.Key == null || Aes.Key.Length <= 0)
+            if (aes.Key == null || aes.Key.Length <= 0)
                 throw new ArgumentNullException("key");
-            if (Aes.IV == null || Aes.IV.Length <= 0)
+            if (aes.IV == null || aes.IV.Length <= 0)
                 throw new ArgumentNullException("iv");
 
             byte[] encryptedBytes;
 
             // Create an encryptor to perform the stream transform.
-            ICryptoTransform encryptor = Aes.CreateEncryptor(Aes.Key, Aes.IV);
+            ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 
             // Create a MemoryStream to hold the encrypted data.
             using (MemoryStream msEncrypt = new MemoryStream())
@@ -72,19 +71,19 @@ namespace Soom_server
             // Return the encrypted bytes.
             return encryptedBytes;
         }
-        public static string DecryptBytesToStringAES(byte[] ciphertext)
+        public static string DecryptBytesToStringAES(byte[] ciphertext, Aes aes)
         {
             // Check arguments.
             if (ciphertext == null || ciphertext.Length <= 0)
                 throw new ArgumentNullException("ciphertext");
-            if (Aes.Key == null || Aes.Key.Length <= 0)
+            if (aes.Key == null || aes.Key.Length <= 0)
                 throw new ArgumentNullException("key");
-            if (Aes.IV == null || Aes.IV.Length <= 0)
+            if (aes.IV == null || aes.IV.Length <= 0)
                 throw new ArgumentNullException("iv");
 
             string plaintext;
             // Create a decryptor to perform the stream transform.
-            ICryptoTransform decryptor = Aes.CreateDecryptor(Aes.Key, Aes.IV);
+            ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
 
             // Create a MemoryStream to hold the decrypted data.
             using (MemoryStream msDecrypt = new MemoryStream(ciphertext))
@@ -102,20 +101,20 @@ namespace Soom_server
             }
             return plaintext;
         }
-        public static byte[] DecryptBytesAES(byte[] ciphertext)
+        public static byte[] DecryptBytesAES(byte[] ciphertext, Aes aes)
         {
             // Check arguments.
             if (ciphertext == null || ciphertext.Length <= 0)
                 throw new ArgumentNullException("ciphertext");
-            if (Aes.Key == null || Aes.Key.Length <= 0)
+            if (aes.Key == null || aes.Key.Length <= 0)
                 throw new ArgumentNullException("key");
-            if (Aes.IV == null || Aes.IV.Length <= 0)
+            if (aes.IV == null || aes.IV.Length <= 0)
                 throw new ArgumentNullException("iv");
 
             byte[] decryptedBytes;
 
             // Create a decryptor to perform the stream transform.
-            ICryptoTransform decryptor = Aes.CreateDecryptor(Aes.Key, Aes.IV);
+            ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
 
             // Create a MemoryStream to hold the decrypted data.
             using (MemoryStream msDecrypt = new MemoryStream(ciphertext))

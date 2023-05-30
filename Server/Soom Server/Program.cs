@@ -23,6 +23,7 @@ namespace Soom_server
                 Server._serverSocket.Bind(ipEndPoint);
                 Server._serverSocket.Listen(10);
                 Console.WriteLine("Server is Up and Listening...");
+                Console.WriteLine($"IP=[{Server._ip}]");
                 Socket clientSock = default(Socket);
                 while (true)
                 {

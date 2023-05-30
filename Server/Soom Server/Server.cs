@@ -21,23 +21,23 @@ namespace Soom_server
         public static string _ip { get { return GetLocalIPAddress(); } private set { } }
         public static int _port = 13000;
         private static List<Thread> _threads = new List<Thread>();
+        private static List<string> _activeUsers = new List<string>();
         #endregion
 
         public static void AddThread(Thread thread)
         {
-            
             _threads.Add(thread);
         }
         public static void ClientJoined()
         {
             ClientsNum++;
         }
-        private static void ClientLeft()
+        private static void ClientLeft(string username)
         {
-            if (ClientsNum > 0)
-                ClientsNum--;
-            else
+            if (ClientsNum <= 0)
                 throw new Exception("!********!- Cant Decrement since the server has 0 clients online -!********!");
+            ClientsNum--;
+            _activeUsers.Remove(username);
         }
         public static void HandleClient(User user)
         {
@@ -83,7 +83,7 @@ namespace Soom_server
             }
             catch { user.Socket.Close(); }
             user.Connected = false;
-            ClientLeft();
+            ClientLeft(user.Username);
             Log("LEFT", user.Id);
         }
         private static void HandleCommand(string command, User user)
@@ -91,23 +91,27 @@ namespace Soom_server
             Log(command, user.Id);
             if (command == "LOG") Login(user);
             else if (command == "REG") Register(user);
-            else if (command == "KEY") ExchangeKeys(user);
+            else if (command == "KEY")
+            {
+                bool isSecure = ExchangeKeys(user);
+                if (!isSecure)
+                    throw new SocketException();
+            }
             else if (command == "PRO" || command == "AUD" || command == "VID") GetSettings(user, command);
             else if (command == "CNG") ChangeSettings(user); //ToDo: handle when the command isnt clear and send to the client error.
-            else if (command == "FRD") GerFriends(user);
-            else if (command == "PND") GetPendingRequests(user);
+            else if (command == "FRD" || command == "PND") GerFriendsSettings(user, command);
             else if (command == "USR") GetUserDetails(user);
             else if (command == "REQ") SendFriendRequest(user);
             else if (command == "ANS") HandleFriendRequest(user);
         }
-        private static string GetData(Socket sock, int arrayLength)
+        private static string GetData(User user, int arrayLength)
         {
             byte[] userInfo = new byte[arrayLength];
-            sock.Receive(userInfo, arrayLength, SocketFlags.None);
+            user.Socket.Receive(userInfo, arrayLength, SocketFlags.None);
             int length = int.Parse(Encoding.UTF8.GetString(userInfo));
             userInfo = new byte[length];
-            sock.Receive(userInfo, length, SocketFlags.None);
-            return SymmetricEncryption.DecryptBytesToStringAES(userInfo);
+            user.Socket.Receive(userInfo, length, SocketFlags.None);
+            return SymmetricEncryption.DecryptBytesToStringAES(userInfo, user.SymmetricKey);
         }
         private static void SendErrors(Socket clientSock, Errors error)
         {
@@ -122,71 +126,77 @@ namespace Soom_server
             else if (error == Errors.UnknownFormat) clientSock.Send(Encoding.UTF8.GetBytes("NO4"));
             else if (error == Errors.AlreadySentRequest) clientSock.Send(Encoding.UTF8.GetBytes("NO5"));
             else if (error == Errors.AlreadyFriends) clientSock.Send(Encoding.UTF8.GetBytes("NO6"));
+            else if (error == Errors.AlreadyOnline) clientSock.Send(Encoding.UTF8.GetBytes("NO7"));
         }
-        private static void SendID(Socket socket, int id)
+        private static void SendID(User user, int id)
         {
-            byte[] idBytes = SymmetricEncryption.EncryptStringToBytesAES(id.ToString());
+            byte[] idBytes = SymmetricEncryption.EncryptStringToBytesAES(id.ToString(), user.SymmetricKey);
             byte[] result = Encoding.UTF8.GetBytes($"OK{idBytes.Length.ToString("00")}").Concat(idBytes).ToArray();
-            socket.Send(result);
+            user.Socket.Send(result);
         }
-        private static void ExchangeKeys(User user)
+        private static bool ExchangeKeys(User user)
         {
             byte[] data = new byte[3];
             user.Socket.Receive(data);
             int length = int.Parse(Encoding.UTF8.GetString(data));
             data = new byte[length];
             user.Socket.Receive(data);
-            using (Aes aes = Aes.Create())
+            RSAParameters publicKeyParams = new RSAParameters
             {
-                RSAParameters publicKeyParams = new RSAParameters
-                {
-                    Modulus = data,
-                    Exponent = new byte[] { 0x01, 0x00, 0x01 } // Example exponent value (usually a fixed value like 3 or 65537)
-                };
-                RSA rsa = RSA.Create();
-                rsa.ImportParameters(publicKeyParams);
-                aes.GenerateKey();
-                byte[] keyAndIv = aes.Key.Concat(new byte[] { 35, 35, 35 }).Concat(aes.IV).ToArray();
-                byte[] publicKey = rsa.Encrypt(keyAndIv, RSAEncryptionPadding.Pkcs1);
-                byte[] msg = Encoding.UTF8.GetBytes("OK" + publicKey.Length.ToString("000"));
-                msg = msg.Concat(publicKey).ToArray();
-                user.Socket.Send(msg);
-                byte[] answer = new byte[2];
-                user.Socket.Receive(answer, 2, SocketFlags.None);
-                if (Encoding.UTF8.GetString(answer) == "OK")
-                {
-                    SymmetricEncryption.Aes = Aes.Create();
-                    SymmetricEncryption.Aes.Key = aes.Key;
-                    SymmetricEncryption.Aes.IV = aes.IV;
-                }
+                Modulus = data,
+                Exponent = new byte[] { 0x01, 0x00, 0x01 } // Example exponent value (usually a fixed value like 3 or 65537)
+            };
+            RSA rsa = RSA.Create();
+            rsa.ImportParameters(publicKeyParams);
+            user.GenerateKey();
+            byte[] keyAndIv = user.SymmetricKey.Key.Concat(new byte[] { 35, 35, 35 }).Concat(user.SymmetricKey.IV).ToArray();
+            byte[] publicKey = rsa.Encrypt(keyAndIv, RSAEncryptionPadding.Pkcs1);
+            byte[] msg = Encoding.UTF8.GetBytes("OK" + publicKey.Length.ToString("000"));
+            msg = msg.Concat(publicKey).ToArray();
+            user.Socket.Send(msg);
+            byte[] answer = new byte[2];
+            user.Socket.Receive(answer, 2, SocketFlags.None);
+            if (Encoding.UTF8.GetString(answer) == "OK")
+            {
+                return true;
             }
+            return false;
         }
         private static void Login(User user)
         {
             string[] userInfo;
             try
             {
-                userInfo = GetData(user.Socket, 3).Split('#');
+                userInfo = GetData(user, 3).Split('#');
             }
             catch
             {
                 SendErrors(user.Socket, Errors.UnknownFormat); Log("NOLOG", user.Id, Errors.UnknownFormat);
                 return;
             }
-
             UserDB userDB = new UserDB(userInfo[0], userInfo[1]);
             try
             {
+                if (_activeUsers.Contains(userInfo[0]))
+                    throw new AlreadyOnlineException();
                 int id = DataBaseAccess.LoginUser(userDB);
                 for (int i = 0; i < 5; i++)
                 {
-                    SendID(user.Socket, id);
+                    SendID(user, id);
                     byte[] confirmation = new byte[2];
                     user.Socket.Receive(confirmation, 2, SocketFlags.None);
                     if (Encoding.UTF8.GetString(confirmation) == "OK")
+                    {
+                        user.Username = userInfo[0];
+                        _activeUsers.Add(user.Username);
                         return;
+                    }
                 }
                 SendErrors(user.Socket, Errors.GeneralError);
+            }
+            catch (AlreadyOnlineException)
+            {
+                SendErrors(user.Socket, Errors.AlreadyOnline); Log("NOLOG", user.Id, Errors.AlreadyOnline);
             }
             catch (UsernameNotExistException)
             {
@@ -196,13 +206,14 @@ namespace Soom_server
             {
                 SendErrors(user.Socket, Errors.GeneralError); Log("NOLOG", user.Id, Errors.GeneralError);
             }
+            
         }
         private static void Register(User user)
         {
             string[] userInfo;
             try
             {
-                userInfo = GetData(user.Socket, 4).Split('#');
+                userInfo = GetData(user, 4).Split('#');
             }
             catch
             {
@@ -220,17 +231,27 @@ namespace Soom_server
             }
             try
             {
+                if (_activeUsers.Contains(userInfo[0]))
+                    throw new AlreadyOnlineException();
                 userDetails.Points = 50;
                 int id = DataBaseAccess.RegiterUser(userDetails);
                 for (int i = 0; i < 5; i++)
                 {
-                    SendID(user.Socket, id);
+                    SendID(user, id);
                     byte[] confirmation = new byte[2];
                     user.Socket.Receive(confirmation, 2, SocketFlags.None);
                     if (Encoding.UTF8.GetString(confirmation) == "OK")
-                        return; 
+                    {
+                        user.Username = userInfo[0];
+                        _activeUsers.Add(user.Username);
+                        return;
+                    }
                 }
                 SendErrors(user.Socket, Errors.GeneralError);
+            }
+            catch (AlreadyOnlineException) 
+            {
+                SendErrors(user.Socket, Errors.AlreadyOnline); Log("NOREG", user.Id, Errors.AlreadyOnline);
             }
             catch (UsernameTakenException)
             {
@@ -243,22 +264,22 @@ namespace Soom_server
         }
         private static void GetSettings(User user, string command)
         {
-            string id = GetData(user.Socket, 2);
+            string id = GetData(user, 2);
             byte[] msg;
             if (command == "PRO")
             {
                 UserDB userDB = DataBaseAccess.GetUserProfile(int.Parse(id));
-                msg = SymmetricEncryption.EncryptStringToBytesAES($"{userDB.Username}#{userDB.Age}#{userDB.Sex}#{userDB.Bio}#{userDB.Points}");
+                msg = SymmetricEncryption.EncryptStringToBytesAES($"{userDB.Username}#{userDB.Age}#{userDB.Sex}#{userDB.Bio}#{userDB.Points}", user.SymmetricKey);
             }
             else if(command == "AUD")
             {
                 string audioSettings = string.Join("#", DataBaseAccess.GetUserAudio(int.Parse(id)));
-                msg = SymmetricEncryption.EncryptStringToBytesAES(audioSettings);
+                msg = SymmetricEncryption.EncryptStringToBytesAES(audioSettings, user.SymmetricKey);
             }
             else
             {
                 string videoSettings = string.Join("#", DataBaseAccess.GetUserVideo(int.Parse(id)));
-                msg = SymmetricEncryption.EncryptStringToBytesAES(videoSettings);
+                msg = SymmetricEncryption.EncryptStringToBytesAES(videoSettings, user.SymmetricKey);
             }
             byte[] result = Encoding.UTF8.GetBytes("OK" + msg.Length.ToString("0000")).Concat(msg).ToArray();
             user.Socket.Send(result);
@@ -267,21 +288,19 @@ namespace Soom_server
             if (Encoding.UTF8.GetString(confirmation) == "OK")
                 return;
         }
-        private static void GerFriends(User user)
+        private static void GerFriendsSettings(User user, string command)
         {
-            string id = GetData(user.Socket, 2);
-            string friends = DataBaseAccess.GetFriends(int.Parse(id));
-            SendDataToUser(user, friends);
-        }
-        private static void GetPendingRequests(User user)
-        {
-            string id = GetData(user.Socket, 2);
-            string requsets = DataBaseAccess.GetPendingRequests(int.Parse(id));
-            SendDataToUser(user, requsets);
+            string id = GetData(user, 2);
+            string temp;
+            if (command == "FRD")
+                temp = DataBaseAccess.GetFriends(int.Parse(id));
+            else
+                temp = DataBaseAccess.GetPendingRequests(int.Parse(id));
+            SendDataToUser(user, temp);
         }
         private static void GetUserDetails(User user)
         {
-            string username = GetData(user.Socket, 2);
+            string username = GetData(user, 2);
             UserDB userDetails = DataBaseAccess.GetFriendDetails(username);
             string data = "";
             if (userDetails != null)
@@ -294,7 +313,7 @@ namespace Soom_server
         }
         private static void SendDataToUser(User user, string data)
         {
-            byte[] msg = SymmetricEncryption.EncryptStringToBytesAES(data);
+            byte[] msg = SymmetricEncryption.EncryptStringToBytesAES(data, user.SymmetricKey);
             byte[] result = Encoding.UTF8.GetBytes("OK" + msg.Length.ToString("0000")).Concat(msg).ToArray();
             user.Socket.Send(result);
             byte[] confirmation = new byte[2];
@@ -304,8 +323,8 @@ namespace Soom_server
         }
         private static void SendFriendRequest(User user)
         {
-            string id = GetData(user.Socket, 2);//error
-            string username = GetData(user.Socket, 2);
+            string id = GetData(user, 2);//error
+            string username = GetData(user, 2);
             try
             {
                 DataBaseAccess.SendFriendRequest(int.Parse(id), username);
@@ -330,8 +349,8 @@ namespace Soom_server
         }
         private static void HandleFriendRequest(User user)
         {
-            string id = GetData(user.Socket, 2);
-            string[] usernameAnswer = GetData(user.Socket, 2).Split('#');
+            string id = GetData(user, 2);
+            string[] usernameAnswer = GetData(user, 2).Split('#');
             try
             {
                 DataBaseAccess.AnswerFriendRequest(int.Parse(id), usernameAnswer[0], usernameAnswer[1]);
@@ -350,7 +369,7 @@ namespace Soom_server
         {
             byte[] commandBytes = new byte[3];
             user.Socket.Receive(commandBytes, 3, SocketFlags.None);
-            string[] data = GetData(user.Socket, 4).Split('#');
+            string[] data = GetData(user, 4).Split('#');
             string command = Encoding.UTF8.GetString(commandBytes);
             if (command == "PRO")
             {
@@ -380,12 +399,18 @@ namespace Soom_server
         }
         private static void Log(string command, int id, Errors err = Errors.None)
         {
-            if(command == "JOIN") Console.WriteLine($"Server => Server: Client '{id}' Has Been Connected!");
-            else if(command == "LEFT") Console.WriteLine($"Server => Server: Client '{id}' Has Been Disconnected!");
-            else if(command == "KEY") Console.WriteLine($"Client => Server: Client '{id}' Sent Keys Exchange Request!");
-            else if(command == "LOG") Console.WriteLine($"Client => Server: Client '{id}' Sent Login Request!");
+            if (command == "JOIN") Console.WriteLine($"Server => Server: Client '{id}' Has Been Connected!");
+            else if (command == "LEFT") Console.WriteLine($"Server => Server: Client '{id}' Has Been Disconnected!");
+            else if (command == "KEY") Console.WriteLine($"Client => Server: Client '{id}' Sent Keys Exchange Request!");
+            else if (command == "LOG") Console.WriteLine($"Client => Server: Client '{id}' Sent Login Request!");
             else if (command == "REG") Console.WriteLine($"Client => Server: Client '{id}' Sent Register Request!");
-            else if( command == "NOLOG") Console.WriteLine($"Server => Client: Client's '{id} Login Request Has Failed', ERROR:{err}");
+            else if (command == "PRO" || command == "AUD" || command == "VID") Console.WriteLine($"Client => Server: '{id}' Sent General Settings Request!");
+            else if (command == "CNG") Console.WriteLine($"Client => Server: Client '{id}' Sent Change General Settings Request!");
+            else if (command == "FRD" || command == "PND") Console.WriteLine($"Client => Server: Client '{id}' Sent Friends Settings Request!");
+            else if (command == "USR") Console.WriteLine($"Client => Server: Client '{id}' Sent Get Other User Details Request");
+            else if (command == "REQ") Console.WriteLine($"Client => Server: Client '{id}' Sent Friend Request to Other User");
+            else if (command == "ANS") Console.WriteLine($"Client => Server: Client '{id}' Sent Answer Friend Requset to Other User");
+            else if (command == "NOLOG") Console.WriteLine($"Server => Client: Client's '{id} Login Request Has Failed', ERROR:{err}");
             else if (command == "NOREG") Console.WriteLine($"Server => Client: Client's '{id} Registration Request Has Failed', ERROR:{err}");
         }
         private static string GetLocalIPAddress()

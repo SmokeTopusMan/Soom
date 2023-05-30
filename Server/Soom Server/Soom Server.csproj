@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AlreadyFriendException.cs" />
+    <Compile Include="AlreadyOnlineException.cs" />
     <Compile Include="AlreadySentRequestException.cs" />
     <Compile Include="DataBaseAccess.cs" />
     <Compile Include="EncodingMD5AndSha256.cs" />

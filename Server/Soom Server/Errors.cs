@@ -9,6 +9,7 @@
         UnknownFormat,
         AlreadySentRequest,
         AlreadyFriends,
+        AlreadyOnline,
         None,
     }
 }

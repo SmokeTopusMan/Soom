@@ -106,6 +106,12 @@
     <Compile Include="AudioUserControl.Designer.cs">
       <DependentUpon>AudioUserControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="CreateCallUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CreateCallUserControl.Designer.cs">
+      <DependentUpon>CreateCallUserControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="FriendsScreen.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -167,7 +173,6 @@
       <DependentUpon>ShowFriendUserControl.cs</DependentUpon>
     </Compile>
     <Compile Include="SymmetricEncryption.cs" />
-    <Compile Include="UserInfo.cs" />
     <Compile Include="VideoUserControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -179,6 +184,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AudioUserControl.resx">
       <DependentUpon>AudioUserControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CreateCallUserControl.resx">
+      <DependentUpon>CreateCallUserControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FriendsScreen.resx">
       <DependentUpon>FriendsScreen.cs</DependentUpon>

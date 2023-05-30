@@ -212,6 +212,7 @@ namespace Soom_Client
             else if (err == ServerErrors.CommandIsCorrupted) MessageBox.Show("Please Try Again To Do Your Action!");
             else if (err == ServerErrors.AlreadySentRequest) MessageBox.Show("You Already Sent This User a Friend Request!");
             else if (err == ServerErrors.AlreadyFriends) MessageBox.Show("His Your Friend Already, JEEZ...");
+            else if (err == ServerErrors.AlreadyOnline) MessageBox.Show("This User Is Already Online, Sorry!");
         }
         private byte[] PrepareDataViaProtocol(string command)
         {
@@ -238,6 +239,7 @@ namespace Soom_Client
         private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
         private void DisableMaximizeButton()
         {
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
             IntPtr handle = this.Handle;
             int style = GetWindowLong(handle, GWL_STYLE);
             SetWindowLong(handle, GWL_STYLE, style & ~WS_MAXIMIZEBOX);

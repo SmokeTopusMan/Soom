@@ -126,7 +126,6 @@ namespace Soom_Client
         {
             if (friendsListBox.Visible)
             {
-                MessageBox.Show("Need to do here: the action u did are not saved. click apply to save them.");
                 this.boxesLabel.Hide();
                 this.title.Hide();
                 this.friendsListBox.Hide();
@@ -151,7 +150,6 @@ namespace Soom_Client
         {
             if (requestsListBox.Visible)
             {
-                MessageBox.Show("Need to do here: the action u did are not saved. click apply to save them.");
                 this.acceptBtn.Hide();
                 this.acceptBtn.Enabled = false;
                 this.declineBtn.Hide();
@@ -185,7 +183,6 @@ namespace Soom_Client
         {
             if (addFriendUserControl.Visible)
             {
-                MessageBox.Show("Need to do here: the action u did are not saved. click apply to save them.");
                 this.title.Hide();
                 this.searchUserBtn.Hide();
                 this.addFriendUserControl.Hide();
@@ -233,10 +230,11 @@ namespace Soom_Client
                     this.showUserInfoUserControl.ClearLabels();
                 }
             }
-            
         }
         private void EnterDataToListBoxes()
         {
+            this.friendsListBox.DataSource = null;
+            this.requestsListBox.DataSource = null;
             string[] friends = GetDataFromServer("FRD").Split('#');
             foreach (string s in friends)
             {
@@ -249,12 +247,13 @@ namespace Soom_Client
                 if (s.Length > 0)
                     _pendingRequestList.Add(s);
             }
+            
             this.friendsListBox.DataSource = _friendsList;
             this.requestsListBox.DataSource = _pendingRequestList;
         }
         private void requestsListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (requestsListBox.Visible)
+            if (requestsListBox.Visible && requestsListBox.DataSource != null)
             {
                 if (requestsListBox.SelectedItem.ToString() == this.showUserInfoUserControl.GetUsername())
                 {
@@ -279,15 +278,24 @@ namespace Soom_Client
         }
         private void friendsListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (friendsListBox.Visible)
+            if (friendsListBox.Visible && friendsListBox.DataSource != null)
             {
-                string userInfo = GetDataFromServer("USR", friendsListBox.SelectedItem.ToString());
-                if (userInfo != "#")
+                if (friendsListBox.SelectedItem.ToString() != this.showUserInfoUserControl.GetUsername())
                 {
-                    PresentUser(userInfo.Split('#'));
+                    string userInfo = GetDataFromServer("USR", friendsListBox.SelectedItem.ToString());
+                    if (userInfo != "#")
+                    {
+                        PresentUser(userInfo.Split('#'));
+                    }
+                    else
+                        this.requestsListBox.Items.Remove(requestsListBox.SelectedItem);
                 }
                 else
-                    this.requestsListBox.Items.Remove(requestsListBox.SelectedItem);
+                {
+                    this.showUserInfoUserControl.Hide();
+                    this.showUserInfoUserControl.ClearLabels();
+                }
+
             }
         }
         private string GetDataFromServer(string command, string data = null)
@@ -468,7 +476,6 @@ namespace Soom_Client
                 listbox.DataSource = null;
                 listbox.DataSource = dataSource;
                 listbox.Show();
-
             }
             else
             {

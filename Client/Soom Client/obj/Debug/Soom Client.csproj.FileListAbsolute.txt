@@ -127,3 +127,4 @@ C:\Users\USER\Source\Repos\Soom\Client\Soom Client\obj\Debug\Soom Client.exe
 C:\Users\USER\Source\Repos\Soom\Client\Soom Client\obj\Debug\Soom Client.pdb
 C:\Users\USER\source\repos\Soom\Client\Soom Client\obj\Debug\Soom_Client.ShowFriendUserControl.resources
 C:\Users\USER\source\repos\Soom\Client\Soom Client\obj\Debug\Soom_Client.addFriendUserControl.resources
+C:\Users\USER\source\repos\Soom\Client\Soom Client\obj\Debug\Soom_Client.CreateCallUserControl.resources

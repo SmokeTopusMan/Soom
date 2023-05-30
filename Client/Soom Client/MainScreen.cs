@@ -82,7 +82,6 @@ namespace Soom_Client
             settingsScreen.Event += ReturnToMainScreen_Event;
 
         }
-
         private void ReturnToMainScreen_Event(object sender, ExitEventArgs e)
         {
             ShowAllComponents();
@@ -102,7 +101,6 @@ namespace Soom_Client
                 this.Close();
 
         }
-
         private void createMeetingButton_Click(object sender, EventArgs e)
         {
             HideAllComponents();
@@ -149,7 +147,6 @@ namespace Soom_Client
             joinMeetingButton.Show();
             friendsButton.Show();
         }
-
         private void MainScreen_FormClosed(object sender, FormClosedEventArgs e)
         {
             try
@@ -160,7 +157,6 @@ namespace Soom_Client
             {
                 ;// Do Nothing Since the Screen Isn't Exist Anymore.
             }
-            DisableMaximizeButton();
         }
 
         #region Disable The Maximize Button
@@ -174,11 +170,16 @@ namespace Soom_Client
         private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
         private void DisableMaximizeButton()
         {
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
             IntPtr handle = this.Handle;
             int style = GetWindowLong(handle, GWL_STYLE);
             SetWindowLong(handle, GWL_STYLE, style & ~WS_MAXIMIZEBOX);
         }
         #endregion
+        private void MainScreen_Load(object sender, EventArgs e)
+        {
+            DisableMaximizeButton();
+        }
     }
     public class ExitEventArgs : EventArgs
     {
