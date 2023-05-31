@@ -119,6 +119,5 @@ namespace Soom_Client
             Array.Copy(source, index + sequence.Length, returnList[1], 0, source.Length - index - sequence.Length);
             return returnList;
         }
-
     }
 }

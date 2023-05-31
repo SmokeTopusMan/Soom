@@ -12,15 +12,22 @@ namespace Soom_Client
 {
     public partial class ShowFriendUserControl : UserControl, IFriendsComponents
     {
+        #region CTor
         public ShowFriendUserControl()
         {
             InitializeComponent();
             ClearLabels();
         }
+        #endregion
+
+        #region Get Functions
         public string GetUsername()
         {
             return this.usernameBox.Text;
         }
+        #endregion
+
+        #region Set Functions
         public void SetUsername(string username)
         {
             this.usernameBox.Text = username;
@@ -41,6 +48,9 @@ namespace Soom_Client
         {
             this.pointsBox.Text = points;
         }
+        #endregion
+
+        #region Clear Functions
         public void ClearLabels()
         {
             this.usernameBox.Text = "";
@@ -48,5 +58,6 @@ namespace Soom_Client
             this.sexBox.Text = "";
             this.bioBox.Text = "";
         }
+        #endregion
     }
 }

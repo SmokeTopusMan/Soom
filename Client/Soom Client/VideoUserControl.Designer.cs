@@ -34,7 +34,9 @@
             this.enterCallBox = new System.Windows.Forms.CheckBox();
             this.mirrorBox = new System.Windows.Forms.CheckBox();
             this.label3 = new System.Windows.Forms.Label();
+            this.pictureBox = new System.Windows.Forms.PictureBox();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // cameraCboBox
@@ -102,16 +104,27 @@
             this.label3.Size = new System.Drawing.Size(0, 13);
             this.label3.TabIndex = 39;
             // 
+            // pictureBox
+            // 
+            this.pictureBox.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBox.Location = new System.Drawing.Point(159, 22);
+            this.pictureBox.Name = "pictureBox";
+            this.pictureBox.Size = new System.Drawing.Size(320, 228);
+            this.pictureBox.TabIndex = 44;
+            this.pictureBox.TabStop = false;
+            // 
             // VideoUserControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.MenuHighlight;
+            this.Controls.Add(this.pictureBox);
             this.Controls.Add(this.panel1);
             this.Name = "VideoUserControl";
             this.Size = new System.Drawing.Size(634, 461);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -124,5 +137,6 @@
         private System.Windows.Forms.CheckBox enterCallBox;
         private System.Windows.Forms.CheckBox mirrorBox;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.PictureBox pictureBox;
     }
 }

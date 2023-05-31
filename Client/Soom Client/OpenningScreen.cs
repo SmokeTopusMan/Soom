@@ -17,8 +17,12 @@ namespace Soom_Client
 {
     public partial class OpenningScreen : Form
     {
+        #region Properties
         private string _userInfo;
         private Socket _socket;
+        #endregion
+
+        #region CTor
         public OpenningScreen(Socket socket)
         {
             _socket = socket;
@@ -27,7 +31,9 @@ namespace Soom_Client
             loginClick.Hide();
             submitBtn.Hide();
         }
+        #endregion
 
+        #region Buttons Click
         private void register_Click(object sender, EventArgs e)
         {
             if (!submitBtn.Visible)
@@ -36,7 +42,6 @@ namespace Soom_Client
             loginClick.Hide();
             loginClick.ClearBoxes();
         }
-
         private void login_Click(object sender, EventArgs e)
         {
             if (!submitBtn.Visible)
@@ -45,7 +50,6 @@ namespace Soom_Client
             registerClick.Hide();
             registerClick.ClearBoxes();
         }
-
         private void submitBtn_Click(object sender, EventArgs e)
         {
             try
@@ -147,6 +151,9 @@ namespace Soom_Client
                 this.Close();
             }
         }
+        #endregion
+
+        #region Private Functions
         private bool LogInfoCheck()
         {
             if (loginClick.UserName != "" && loginClick.Password != "" && loginClick.Password.Length >= 8 && loginClick.UserName.Length >= 4)
@@ -198,6 +205,18 @@ namespace Soom_Client
                 MessageBox.Show("Select Your Sex!");
             return false;
         }
+        private byte[] PrepareDataViaProtocol(string command)
+        {
+            byte[] encryptedData = SymmetricEncryption.EncryptStringToBytesAES(_userInfo);
+            if (command == "REG")
+            {
+                return Encoding.UTF8.GetBytes(command + (encryptedData.Length).ToString("0000")).Concat(encryptedData).ToArray();
+            }
+            return Encoding.UTF8.GetBytes(command + (encryptedData.Length).ToString("000")).Concat(encryptedData).ToArray();
+        }
+        #endregion
+
+        #region Public Functions
         public bool HasUserInfo()
         {
             return _userInfo != null;
@@ -214,19 +233,9 @@ namespace Soom_Client
             else if (err == ServerErrors.AlreadyFriends) MessageBox.Show("His Your Friend Already, JEEZ...");
             else if (err == ServerErrors.AlreadyOnline) MessageBox.Show("This User Is Already Online, Sorry!");
         }
-        private byte[] PrepareDataViaProtocol(string command)
-        {
-            byte[] encryptedData = SymmetricEncryption.EncryptStringToBytesAES(_userInfo);
-            if (command == "REG")
-            {
-                return Encoding.UTF8.GetBytes(command + (encryptedData.Length).ToString("0000")).Concat(encryptedData).ToArray();
-            }
-            return Encoding.UTF8.GetBytes(command + (encryptedData.Length).ToString("000")).Concat(encryptedData).ToArray();
-        }
-        private void OpenningScreen_Load(object sender, EventArgs e)
-        {
-            DisableMaximizeButton();
-        }
+        #endregion
+
+        #region Form's Settings
 
         #region Disable The Maximize Button
         private const int GWL_STYLE = -16;
@@ -243,6 +252,11 @@ namespace Soom_Client
             IntPtr handle = this.Handle;
             int style = GetWindowLong(handle, GWL_STYLE);
             SetWindowLong(handle, GWL_STYLE, style & ~WS_MAXIMIZEBOX);
+        }
+        #endregion
+        private void OpenningScreen_Load(object sender, EventArgs e)
+        {
+            DisableMaximizeButton();
         }
         #endregion
     }

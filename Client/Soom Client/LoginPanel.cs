@@ -16,10 +16,13 @@ namespace Soom_Client
         public string UserName { get { return usernameLogTextBox.Text; } private set { } }
         public string Password { get { return passLogTextBox.Text; } private set { } }
         #endregion
+
+        #region CTor
         public LoginPanel()
         {
             InitializeComponent();
         }
+        #endregion
 
         #region ClearFunctions
         public void ClearBoxes()
@@ -37,21 +40,21 @@ namespace Soom_Client
         }
         #endregion
 
+        #region Key Terms
         private void usernameLogTextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == '#' || e.KeyChar == ' ')
                 e.Handled = true;
         }
-
         private void passLogTextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == '#' || e.KeyChar == ' ')
                 e.Handled = true;
         }
-
         private void LoginPanel_Load(object sender, EventArgs e)
         {
             passLogTextBox.PasswordChar = '*';
         }
+        #endregion
     }
 }

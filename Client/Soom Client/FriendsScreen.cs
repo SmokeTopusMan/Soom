@@ -16,15 +16,16 @@ namespace Soom_Client
 {
     public partial class FriendsScreen : UserControl, IMainScreenComponents
     {
+        #region Properties
         private Socket _socket;
         private int _id;
         public event FinishedEvent Event;
         private List<string> _friendsList = new List<string>();
         private List<string> _pendingRequestList = new List<string>();
-
         public bool IsFinished { get; private set; }
+        #endregion
 
-
+        #region CTor
         public FriendsScreen(Socket socket, int id)
         {
             InitializeComponent();
@@ -44,9 +45,8 @@ namespace Soom_Client
             IsFinished = false;
             _id = id;
             EnterDataToListBoxes();
-
-
         }
+        #endregion
 
         #region Buttons Hoverred settings
         private void addFriendButton_MouseEnter(object sender, EventArgs e)
@@ -122,6 +122,7 @@ namespace Soom_Client
         }
         #endregion
 
+        #region Buttons Click
         private void friendsListButton_Click(object sender, EventArgs e)
         {
             if (friendsListBox.Visible)
@@ -196,211 +197,6 @@ namespace Soom_Client
                 this.addFriendUserControl.Show();
             }
         }
-        private void HideAllComponents(IFriendsComponents component)
-        {
-            if (component != this.addFriendUserControl && this.addFriendUserControl.Visible)
-            {
-                this.searchUserBtn.Hide();
-                this.addFriendUserControl.Hide();
-                this.addFriendUserControl.ClearUsername();
-            }
-            else if (this.friendsListBox.Visible)
-            {
-                this.boxesLabel.Hide();
-                this.friendsListBox.Hide();
-                this.refreshBtn.Hide();
-                if (this.showUserInfoUserControl.Visible)
-                {
-                    this.showUserInfoUserControl.Hide();
-                    this.showUserInfoUserControl.ClearLabels();
-                }
-            }
-            else if (this.requestsListBox.Visible)
-            {
-                this.boxesLabel.Hide();
-                this.requestsListBox.Hide();
-                this.acceptBtn.Hide();
-                this.acceptBtn.Enabled = false;
-                this.declineBtn.Hide();
-                this.declineBtn.Enabled = false;
-                this.refreshBtn.Hide();
-                if (this.showUserInfoUserControl.Visible)
-                {
-                    this.showUserInfoUserControl.Hide();
-                    this.showUserInfoUserControl.ClearLabels();
-                }
-            }
-        }
-        private void EnterDataToListBoxes()
-        {
-            this.friendsListBox.DataSource = null;
-            this.requestsListBox.DataSource = null;
-            string[] friends = GetDataFromServer("FRD").Split('#');
-            foreach (string s in friends)
-            {
-                if (s.Length > 0)
-                    _friendsList.Add(s);
-            }
-            string[] pending = GetDataFromServer("PND").Split('#');
-            foreach (string s in pending)
-            {
-                if (s.Length > 0)
-                    _pendingRequestList.Add(s);
-            }
-            
-            this.friendsListBox.DataSource = _friendsList;
-            this.requestsListBox.DataSource = _pendingRequestList;
-        }
-        private void requestsListBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (requestsListBox.Visible && requestsListBox.DataSource != null)
-            {
-                if (requestsListBox.SelectedItem.ToString() == this.showUserInfoUserControl.GetUsername())
-                {
-                    this.acceptBtn.Enabled = false;
-                    this.declineBtn.Enabled = false;
-                    this.showUserInfoUserControl.Hide();
-                    this.showUserInfoUserControl.ClearLabels();
-                }
-                else
-                {
-                    string userInfo = GetDataFromServer("USR", requestsListBox.SelectedItem.ToString());
-                    if (userInfo != "#")
-                    {
-                        PresentUser(userInfo.Split('#'));
-                        this.acceptBtn.Enabled = true;
-                        this.declineBtn.Enabled = true;
-                    }
-                    else
-                        this.requestsListBox.Items.Remove(requestsListBox.SelectedItem);
-                }
-            }
-        }
-        private void friendsListBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (friendsListBox.Visible && friendsListBox.DataSource != null)
-            {
-                if (friendsListBox.SelectedItem.ToString() != this.showUserInfoUserControl.GetUsername())
-                {
-                    string userInfo = GetDataFromServer("USR", friendsListBox.SelectedItem.ToString());
-                    if (userInfo != "#")
-                    {
-                        PresentUser(userInfo.Split('#'));
-                    }
-                    else
-                        this.requestsListBox.Items.Remove(requestsListBox.SelectedItem);
-                }
-                else
-                {
-                    this.showUserInfoUserControl.Hide();
-                    this.showUserInfoUserControl.ClearLabels();
-                }
-
-            }
-        }
-        private string GetDataFromServer(string command, string data = null)
-        {
-            try
-            {
-                byte[] msg;
-                if (command != "USR")
-                {
-                    byte[] idbytes = SymmetricEncryption.EncryptStringToBytesAES(_id.ToString());
-                    msg = Encoding.UTF8.GetBytes($"{command}{idbytes.Length.ToString("00")}").Concat(idbytes).ToArray();
-                }
-                else
-                    msg = Encoding.UTF8.GetBytes(command);
-                if (data != null)
-                {
-                    byte[] usernameBytes = SymmetricEncryption.EncryptStringToBytesAES(data);
-                    msg = msg.Concat(Encoding.UTF8.GetBytes(usernameBytes.Length.ToString()).Concat(usernameBytes)).ToArray();
-                }
-                _socket.Send(msg);
-                byte[] byteData = new byte[2];
-                _socket.Receive(byteData, 2, SocketFlags.None);
-                if (Encoding.UTF8.GetString(byteData) == "OK")
-                {
-                    string answer;
-                    if (command != "REQ" && command != "ANS")
-                    {
-                        byteData = new byte[4];
-                        _socket.Receive(byteData, 4, SocketFlags.None);
-                        int length = int.Parse(Encoding.UTF8.GetString(byteData));
-                        byteData = new byte[length];
-                        _socket.Receive(byteData, length, SocketFlags.None);
-                        answer = SymmetricEncryption.DecryptBytesToStringAES(byteData);
-                    }
-                    else
-                        answer = Encoding.UTF8.GetString(byteData);
-                    _socket.Send(Encoding.UTF8.GetBytes("OK"));
-                    return answer;
-                }
-                return Encoding.UTF8.GetString(byteData);
-            }
-            catch (SocketException)
-            {
-                this._socket.Close();
-                MessageBox.Show("The Server is Having Some Technical Difficulties...\r\n Try Again Later <3");
-                IsFinished = true;
-                Finished();
-            }
-            return "";
-        }
-        private void PresentUser(string[] userDetails)
-        {
-            if (!showUserInfoUserControl.Visible)
-            {
-                showUserInfoUserControl.Show();
-            }
-            showUserInfoUserControl.SetUsername(userDetails[0]);
-            showUserInfoUserControl.SetAge(userDetails[1]);
-            showUserInfoUserControl.SetSex(userDetails[2]);
-            showUserInfoUserControl.SetBio(userDetails[3]);
-            showUserInfoUserControl.SetPoints(userDetails[4]);
-        }
-        private void searchUserBtn_Click(object sender, EventArgs e)
-        {
-            if (this.addFriendUserControl.UserName.Length >= 4)
-            {
-                try
-                {
-                    string answer = GetDataFromServer("REQ", addFriendUserControl.UserName);
-                    if (answer == "OK")
-                    {
-                        MessageBox.Show("The Request Has Been Sent Successfully");
-                    }
-                    else
-                    {
-                        byte[] temp = new byte[1];
-                        _socket.Receive(temp, 1, SocketFlags.None);
-                        answer += Encoding.UTF8.GetString(temp);
-                        if (answer == "BYE")
-                        {
-                            IsFinished = true;
-                            Finished();
-                        }
-                        else
-                        {
-                            int errNum = int.Parse(answer[2].ToString());
-                            OpenningScreen.ServerErrorsHandler((ServerErrors)errNum);
-                        }
-                        _socket.Send(Encoding.UTF8.GetBytes("OK"));
-                        addFriendUserControl.ClearUsername();
-                    }
-                }
-                catch
-                {
-                    this._socket.Close();
-                    MessageBox.Show("The Server is Having Some Technical Difficulties...\r\n Try Again Later <3");
-                    IsFinished = true;
-                    Finished();
-                }
-            }
-            else
-            {
-                MessageBox.Show("The Username Is Too Short!");
-            }
-        }
         private void acceptBtn_Click(object sender, EventArgs e)
         {
             string username = requestsListBox.SelectedItem.ToString();
@@ -466,6 +262,220 @@ namespace Soom_Client
                 declineBtn.Enabled = false;
             }
         }
+        private void searchUserBtn_Click(object sender, EventArgs e)
+        {
+            if (this.addFriendUserControl.UserName.Length >= 4)
+            {
+                try
+                {
+                    string answer = GetDataFromServer("REQ", addFriendUserControl.UserName);
+                    if (answer == "OK")
+                    {
+                        MessageBox.Show("The Request Has Been Sent Successfully");
+                    }
+                    else
+                    {
+                        byte[] temp = new byte[1];
+                        _socket.Receive(temp, 1, SocketFlags.None);
+                        answer += Encoding.UTF8.GetString(temp);
+                        if (answer == "BYE")
+                        {
+                            IsFinished = true;
+                            Finished();
+                        }
+                        else
+                        {
+                            int errNum = int.Parse(answer[2].ToString());
+                            OpenningScreen.ServerErrorsHandler((ServerErrors)errNum);
+                        }
+                        _socket.Send(Encoding.UTF8.GetBytes("OK"));
+                        addFriendUserControl.ClearUsername();
+                    }
+                }
+                catch
+                {
+                    this._socket.Close();
+                    MessageBox.Show("The Server is Having Some Technical Difficulties...\r\n Try Again Later <3");
+                    IsFinished = true;
+                    Finished();
+                }
+            }
+            else
+            {
+                MessageBox.Show("The Username Is Too Short!");
+            }
+        }
+        private void refreshBtn_Click(object sender, EventArgs e)
+        {
+            _pendingRequestList.Clear();
+            _friendsList.Clear();
+            EnterDataToListBoxes();
+        }
+        private void requestsListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (requestsListBox.Visible && requestsListBox.DataSource != null)
+            {
+                if (requestsListBox.SelectedItem.ToString() == this.showUserInfoUserControl.GetUsername())
+                {
+                    this.acceptBtn.Enabled = false;
+                    this.declineBtn.Enabled = false;
+                    this.showUserInfoUserControl.Hide();
+                    this.showUserInfoUserControl.ClearLabels();
+                }
+                else
+                {
+                    string userInfo = GetDataFromServer("USR", requestsListBox.SelectedItem.ToString());
+                    if (userInfo != "#")
+                    {
+                        PresentUser(userInfo.Split('#'));
+                        this.acceptBtn.Enabled = true;
+                        this.declineBtn.Enabled = true;
+                    }
+                    else
+                        this.requestsListBox.Items.Remove(requestsListBox.SelectedItem);
+                }
+            }
+        }
+        private void friendsListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (friendsListBox.Visible && friendsListBox.DataSource != null)
+            {
+                if (friendsListBox.SelectedItem.ToString() != this.showUserInfoUserControl.GetUsername())
+                {
+                    string userInfo = GetDataFromServer("USR", friendsListBox.SelectedItem.ToString());
+                    if (userInfo != "#")
+                    {
+                        PresentUser(userInfo.Split('#'));
+                    }
+                    else
+                        this.requestsListBox.Items.Remove(requestsListBox.SelectedItem);
+                }
+                else
+                {
+                    this.showUserInfoUserControl.Hide();
+                    this.showUserInfoUserControl.ClearLabels();
+                }
+
+            }
+        }
+        #endregion
+
+        #region Private Functions
+        private string GetDataFromServer(string command, string data = null)
+        {
+            try
+            {
+                byte[] msg;
+                if (command != "USR")
+                {
+                    byte[] idbytes = SymmetricEncryption.EncryptStringToBytesAES(_id.ToString());
+                    msg = Encoding.UTF8.GetBytes($"{command}{idbytes.Length.ToString("00")}").Concat(idbytes).ToArray();
+                }
+                else
+                    msg = Encoding.UTF8.GetBytes(command);
+                if (data != null)
+                {
+                    byte[] usernameBytes = SymmetricEncryption.EncryptStringToBytesAES(data);
+                    msg = msg.Concat(Encoding.UTF8.GetBytes(usernameBytes.Length.ToString()).Concat(usernameBytes)).ToArray();
+                }
+                _socket.Send(msg);
+                byte[] byteData = new byte[2];
+                _socket.Receive(byteData, 2, SocketFlags.None);
+                if (Encoding.UTF8.GetString(byteData) == "OK")
+                {
+                    string answer;
+                    if (command != "REQ" && command != "ANS")
+                    {
+                        byteData = new byte[4];
+                        _socket.Receive(byteData, 4, SocketFlags.None);
+                        int length = int.Parse(Encoding.UTF8.GetString(byteData));
+                        byteData = new byte[length];
+                        _socket.Receive(byteData, length, SocketFlags.None);
+                        answer = SymmetricEncryption.DecryptBytesToStringAES(byteData);
+                    }
+                    else
+                        answer = Encoding.UTF8.GetString(byteData);
+                    _socket.Send(Encoding.UTF8.GetBytes("OK"));
+                    return answer;
+                }
+                return Encoding.UTF8.GetString(byteData);
+            }
+            catch (SocketException)
+            {
+                this._socket.Close();
+                MessageBox.Show("The Server is Having Some Technical Difficulties...\r\n Try Again Later <3");
+                IsFinished = true;
+                Finished();
+            }
+            return "";
+        }
+        private void PresentUser(string[] userDetails)
+        {
+            if (!showUserInfoUserControl.Visible)
+            {
+                showUserInfoUserControl.Show();
+            }
+            showUserInfoUserControl.SetUsername(userDetails[0]);
+            showUserInfoUserControl.SetAge(userDetails[1]);
+            showUserInfoUserControl.SetSex(userDetails[2]);
+            showUserInfoUserControl.SetBio(userDetails[3]);
+            showUserInfoUserControl.SetPoints(userDetails[4]);
+        }
+        private void HideAllComponents(IFriendsComponents component)
+        {
+            if (component != this.addFriendUserControl && this.addFriendUserControl.Visible)
+            {
+                this.searchUserBtn.Hide();
+                this.addFriendUserControl.Hide();
+                this.addFriendUserControl.ClearUsername();
+            }
+            else if (this.friendsListBox.Visible)
+            {
+                this.boxesLabel.Hide();
+                this.friendsListBox.Hide();
+                this.refreshBtn.Hide();
+                if (this.showUserInfoUserControl.Visible)
+                {
+                    this.showUserInfoUserControl.Hide();
+                    this.showUserInfoUserControl.ClearLabels();
+                }
+            }
+            else if (this.requestsListBox.Visible)
+            {
+                this.boxesLabel.Hide();
+                this.requestsListBox.Hide();
+                this.acceptBtn.Hide();
+                this.acceptBtn.Enabled = false;
+                this.declineBtn.Hide();
+                this.declineBtn.Enabled = false;
+                this.refreshBtn.Hide();
+                if (this.showUserInfoUserControl.Visible)
+                {
+                    this.showUserInfoUserControl.Hide();
+                    this.showUserInfoUserControl.ClearLabels();
+                }
+            }
+        }
+        private void EnterDataToListBoxes()
+        {
+            this.friendsListBox.DataSource = null;
+            this.requestsListBox.DataSource = null;
+            string[] friends = GetDataFromServer("FRD").Split('#');
+            foreach (string s in friends)
+            {
+                if (s.Length > 0)
+                    _friendsList.Add(s);
+            }
+            string[] pending = GetDataFromServer("PND").Split('#');
+            foreach (string s in pending)
+            {
+                if (s.Length > 0)
+                    _pendingRequestList.Add(s);
+            }
+
+            this.friendsListBox.DataSource = _friendsList;
+            this.requestsListBox.DataSource = _pendingRequestList;
+        }
         private void RemoveFromListBox(ListBox listbox, string name)
         {
             List<string> dataSource = (List<string>)listbox.DataSource;
@@ -500,11 +510,6 @@ namespace Soom_Client
                 listbox.DataSource = dataSource;
             }
         }
-        private void refreshBtn_Click(object sender, EventArgs e)
-        {
-            _pendingRequestList.Clear();
-            _friendsList.Clear();
-            EnterDataToListBoxes();
-        }
+        #endregion
     }
 }

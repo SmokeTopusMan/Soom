@@ -13,10 +13,15 @@ namespace Soom_Client
 {
     public partial class AudioUserControl : UserControl, ISettingsScreenComponent 
     {
+        #region Properties
+        public event ValuesChangedEvent ChangedEvent;
         public bool IsMuteWhenJoined { get; private set; }
         public int Volume { get; private set; }
         public string InputDeviceName { get; private set; }
         public string OutputDeviceName { get; private set; }
+        #endregion
+
+        #region CTor
         public AudioUserControl()
         {
             InitializeComponent();
@@ -25,14 +30,72 @@ namespace Soom_Client
             for (int i = 0; i < WaveOut.DeviceCount; i++)
                 this.outputCboBox.Items.Add(WaveOut.GetCapabilities(i).ProductName);
         }
+        #endregion
 
-        public event ValuesChangedEvent ChangedEvent;
+        #region Components Terms
+        private void outputCboBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            e.Handled = true;
+        }
+        private void inputCboBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            e.Handled = true;
+        }
+        #endregion
 
+        #region Buttons Clicks
+        private void inputCboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            IsChanged();
+        }
+        private void outputCboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            IsChanged();
+        }
+        private void enterCallBox_CheckedChanged(object sender, EventArgs e)
+        {
+            IsChanged();
+        }
         private void volumeBar_Scroll(object sender, EventArgs e)
         {
             volumeNumberBox.Text = $"{volumeBar.Value}";
             IsChanged();
         }
+        #endregion
+
+        #region Private Function
+        private void PresentDataInBoxes(string[] dataArray)
+        {
+            FindDevice(this.InputDeviceName, this.inputCboBox);
+            FindDevice(this.OutputDeviceName, this.outputCboBox);
+            this.volumeBar.Value = int.Parse(dataArray[2]);
+            this.volumeNumberBox.Text = this.volumeBar.Value.ToString();
+            if (dataArray[3] == "0")
+                this.enterCallBox.Checked = false;
+            else
+                this.enterCallBox.Checked = true;
+        }
+        private void FindDevice(string name, ComboBox box)
+        {
+            for (int i = 0; i < box.Items.Count; i++)
+            {
+                if ((string)box.Items[i] == name)
+                {
+                    box.SelectedIndex = i;
+                    return;
+                }
+            }
+            if (box.Name == "inputCboBox")
+            {
+                this.InputDeviceName = (string)box.Items[0];
+            }
+            else
+                this.OutputDeviceName = (string)box.Items[0];
+            box.SelectedIndex = 0;
+        }
+        #endregion
+
+        #region Public Functions
         public void IsChanged()
         {
             if (ChangedEvent != null)
@@ -42,11 +105,11 @@ namespace Soom_Client
         }
         public bool CheckIfChanged()
         {
-            if(int.Parse(this.volumeNumberBox.Text) == Volume)
+            if (int.Parse(this.volumeNumberBox.Text) == Volume)
             {
-                if((string)this.inputCboBox.SelectedItem == InputDeviceName)
+                if ((string)this.inputCboBox.SelectedItem == InputDeviceName)
                 {
-                    if((string)this.outputCboBox.SelectedItem == OutputDeviceName)
+                    if ((string)this.outputCboBox.SelectedItem == OutputDeviceName)
                     {
                         if (this.enterCallBox.Checked == IsMuteWhenJoined)
                             return false;
@@ -77,59 +140,6 @@ namespace Soom_Client
                 this.IsMuteWhenJoined = true;
             PresentDataInBoxes(dataComponents);
         }
-        private void PresentDataInBoxes(string[] dataArray)
-        {
-            FindDevice(this.InputDeviceName, this.inputCboBox);
-            FindDevice(this.OutputDeviceName, this.outputCboBox);
-            this.volumeBar.Value = int.Parse(dataArray[2]);
-            this.volumeNumberBox.Text = this.volumeBar.Value.ToString();
-            if (dataArray[3] == "0")
-                this.enterCallBox.Checked = false;
-            else
-                this.enterCallBox.Checked = true;
-        }
-        private void FindDevice(string name, ComboBox box)
-        {
-            for (int i = 0; i < box.Items.Count; i++)
-            {
-                if ((string)box.Items[i] == name)
-                {
-                    box.SelectedIndex = i;
-                    return;
-                }
-            }
-            if (box.Name == "inputCboBox")
-            {
-                this.InputDeviceName = (string)box.Items[0];
-            }
-            else
-                this.OutputDeviceName = (string)box.Items[0];
-            box.SelectedIndex = 0;
-        }
-
-        private void inputCboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            IsChanged();
-        }
-        private void outputCboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            IsChanged();
-        }
-        private void enterCallBox_CheckedChanged(object sender, EventArgs e)
-        {
-            IsChanged();
-        }
-
-        private void outputCboBox_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            e.Handled = true;
-        }
-
-        private void inputCboBox_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            e.Handled = true;
-        }
-
         public void ResetSettingsToDefault()
         {
             enterCallBox.Checked = IsMuteWhenJoined;
@@ -154,7 +164,6 @@ namespace Soom_Client
 
             }
         }
-
         public List<string> GetChanges()
         {
             List<string> changes = new List<string>();
@@ -179,5 +188,6 @@ namespace Soom_Client
             Volume = int.Parse(this.volumeNumberBox.Text);
             IsMuteWhenJoined = this.enterCallBox.Checked;
         }
+        #endregion
     }
 }

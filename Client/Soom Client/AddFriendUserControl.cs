@@ -12,19 +12,30 @@ namespace Soom_Client
 {
     public partial class AddFriendUserControl : UserControl, IFriendsComponents
     {
+        #region Properties
         public string UserName { get { return usernameBox.Text; } private set { } }
+        #endregion
+
+        #region CTor
         public AddFriendUserControl()
         {
             InitializeComponent();
         }
+        #endregion
+
+        #region Components Terms
         private void usernameBox_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == '#' || e.KeyChar == ' ')
                 e.Handled = true;
         }
+        #endregion
+
+        #region Public Functions
         public void ClearUsername()
         {
             usernameBox.Text = "";
         }
+        #endregion
     }
 }

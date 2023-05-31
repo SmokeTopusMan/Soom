@@ -42,17 +42,18 @@ namespace Soom_Client
         }
         #endregion
 
+        #region Buttons Click
         private void femaleCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (femaleCheckBox.Checked)
                 maleCheckBox.Checked = false;
         }
-
         private void maleCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (maleCheckBox.Checked)
                 femaleCheckBox.Checked = false;
         }
+        #endregion
 
         #region KeyPressTerms
         private void usernameRegTextBox_KeyPress(object sender, KeyPressEventArgs e)

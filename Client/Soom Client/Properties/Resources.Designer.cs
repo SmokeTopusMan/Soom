@@ -73,9 +73,29 @@ namespace Soom_Client.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Hoverred_Mute_Button {
+            get {
+                object obj = ResourceManager.GetObject("Hoverred Mute Button", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Hoverred_refresh_Button {
             get {
                 object obj = ResourceManager.GetObject("Hoverred refresh Button", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Hoverred_Video_Button {
+            get {
+                object obj = ResourceManager.GetObject("Hoverred Video Button", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -103,6 +123,16 @@ namespace Soom_Client.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Mute_Button {
+            get {
+                object obj = ResourceManager.GetObject("Mute Button", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap refresh_Button {
             get {
                 object obj = ResourceManager.GetObject("refresh Button", resourceCulture);
@@ -116,6 +146,36 @@ namespace Soom_Client.Properties {
         internal static System.Drawing.Bitmap SettingsGear {
             get {
                 object obj = ResourceManager.GetObject("SettingsGear", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Unmute_Button {
+            get {
+                object obj = ResourceManager.GetObject("Unmute Button", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap UnVideo_Button {
+            get {
+                object obj = ResourceManager.GetObject("UnVideo Button", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Video_Button {
+            get {
+                object obj = ResourceManager.GetObject("Video Button", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

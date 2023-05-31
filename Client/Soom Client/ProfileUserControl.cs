@@ -15,18 +15,23 @@ namespace Soom_Client
 {
     public partial class ProfileUserControl : UserControl, ISettingsScreenComponent
     {
-        public event ValuesChangedEvent ChangedEvent;
+
         #region Properties
         public string Username { get; private set; }
         public int Age { get; private set; }
         public Sex Sex { get; private set; }
         public string Bio { get; private set; }
+        public event ValuesChangedEvent ChangedEvent;
         #endregion Properties
+
+        #region CTor
         public ProfileUserControl()
         {
             InitializeComponent();
         }
-        #region Boxes Propeties
+        #endregion
+
+        #region Key Press Terms
         private void femaleCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (femaleCheckBox.Checked)
@@ -101,6 +106,54 @@ namespace Soom_Client
             IsChanged();
         }
         #endregion
+
+        #region Private Functions
+        private Sex GetSex()
+        {
+            if (this.maleCheckBox.Checked)
+                return Sex.Male;
+            else if (this.femaleCheckBox.Checked)
+                return Sex.Female;
+            else
+                return Sex.NotChecked;
+        }
+        private void PresentDataInBoxes(string[] dataArray)
+        {
+            this.usernameBox.Text = dataArray[0];
+            this.ageBox.Text = dataArray[1];
+            if (dataArray[2] == "Male")
+                this.maleCheckBox.Checked = true;
+            else
+                this.femaleCheckBox.Checked = true;
+            this.bioBox.Text = dataArray[3];
+            this.pointsBox.Text = dataArray[4];
+        }
+        private bool CheckData()
+        {
+            if (int.Parse(ageBox.Text) >= 12 && int.Parse(ageBox.Text) <= 117 && GetSex() != Sex.NotChecked && usernameBox.Text.Length >= 4)
+                return true;
+            if (this.usernameBox.Text == "")
+                MessageBox.Show("Fill Your Username!");
+            else if (this.usernameBox.Text.Length < 4)
+            {
+                MessageBox.Show("Write At Least 4 Characters In The Username Box!");
+            }
+            if (ageBox.Text != "")
+            {
+                if (int.Parse(ageBox.Text) < 12 || int.Parse(ageBox.Text) > 117)
+                {
+                    MessageBox.Show("Your Age Isn't Appropriate For This App, Sorry.");
+                }
+            }
+            else
+                MessageBox.Show("Fill Your Age!");
+            if (GetSex() == Sex.NotChecked)
+                MessageBox.Show("Select Your Sex!");
+            return false;
+        }
+        #endregion
+
+        #region Public Functions
         public void IsChanged()
         {
             if (ChangedEvent != null)
@@ -119,15 +172,6 @@ namespace Soom_Client
 
             return (this.usernameBox.Text != Username || age != Age || GetSex() != Sex || this.bioBox.Text != Bio);
         }
-        private Sex GetSex()
-        {
-            if (this.maleCheckBox.Checked)
-                return Sex.Male;
-            else if (this.femaleCheckBox.Checked)
-                return Sex.Female;
-            else
-                return Sex.NotChecked;
-        }
         public void OrgenizeData(string data)
         {
             string[] dataComponents = data.Split('#');
@@ -136,18 +180,6 @@ namespace Soom_Client
             this.Sex = GetSexEnumValue(dataComponents[2]);
             this.Bio = dataComponents[3];
             PresentDataInBoxes(dataComponents);
-        }
-        private void PresentDataInBoxes(string[] dataArray)
-        {
-            this.usernameBox.Text = dataArray[0];
-            this.ageBox.Text = dataArray[1];
-            if (dataArray[2] == "Male")
-                this.maleCheckBox.Checked = true;
-            else
-                this.femaleCheckBox.Checked = true;
-            this.bioBox.Text = dataArray[3];
-            this.pointsBox.Text = dataArray[4];
-            
         }
         public static Sex GetSexEnumValue(string enumName)
         {
@@ -160,7 +192,6 @@ namespace Soom_Client
                 throw new ArgumentException("Invalid Enum Name");
             }
         }
-
         public void ResetSettingsToDefault()
         {
             this.usernameBox.Text = Username;
@@ -205,28 +236,7 @@ namespace Soom_Client
             Sex = GetSex();
             Bio = bioBox.Text;
         }
-        private bool CheckData()
-        {
-            if (int.Parse(ageBox.Text) >= 12 && int.Parse(ageBox.Text) <= 117 && GetSex() != Sex.NotChecked && usernameBox.Text.Length >= 4)
-                return true;
-            if (this.usernameBox.Text == "")
-                MessageBox.Show("Fill Your Username!");
-            else if (this.usernameBox.Text.Length < 4)
-            {
-                MessageBox.Show("Write At Least 4 Characters In The Username Box!");
-            }
-            if (ageBox.Text != "")
-            {
-                if (int.Parse(ageBox.Text) < 12 || int.Parse(ageBox.Text) > 117)
-                {
-                    MessageBox.Show("Your Age Isn't Appropriate For This App, Sorry.");
-                }
-            }
-            else
-                MessageBox.Show("Fill Your Age!");
-            if (GetSex() == Sex.NotChecked)
-                MessageBox.Show("Select Your Sex!");
-            return false;
-        }
+        #endregion
+
     }
 }

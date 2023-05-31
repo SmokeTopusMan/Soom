@@ -18,17 +18,21 @@ namespace Soom_Client
 {
     public partial class MainScreen : Form
     {
+        #region Properties
         public Socket Socket { get; set; }
         public int ID { get; set; }
-        
+        #endregion
+
+        #region CTor
         public MainScreen(Socket socket, int id)
         {
             Socket = socket;
             ID = id;
             InitializeComponent();
         }
+        #endregion
 
-        #region ButtonsHoverSettings
+        #region Buttons Hover Settings
         private void createMeetingButton_MouseEnter(object sender, EventArgs e)
         {
             createMeetingButton.ForeColor = Color.FromArgb(227,220,50);
@@ -71,29 +75,25 @@ namespace Soom_Client
         #endregion
 
         #region ButtonsClick
-        private void settingsWheelButton_Click(object sender, EventArgs e)
-        {
-            HideAllComponents();
-            SettingsScreen settingsScreen = new SettingsScreen(Socket, ID);
-            settingsScreen.Location = new Point(0, 0);
-            settingsScreen.Name = "settingsScreen";
-            settingsScreen.Size = new Size(this.Size.Width-16, this.Size.Height-39);
-            this.Controls.Add(settingsScreen);
-            settingsScreen.Event += ReturnToMainScreen_Event;
-
-        }
         private void ReturnToMainScreen_Event(object sender, ExitEventArgs e)
         {
             ShowAllComponents();
-            if(e.Name == "settingsScreen")
+            if (e.Name == "settingsScreen")
             {
                 SettingsScreen screen = e.Screen as SettingsScreen;
+                screen.CloseVid();
                 this.Controls.Remove(screen);
                 screen.Dispose();
             }
-            else if(e.Name == "friendsScreen")
+            else if (e.Name == "friendsScreen")
             {
                 FriendsScreen screen = e.Screen as FriendsScreen;
+                this.Controls.Remove(screen);
+                screen.Dispose();
+            }
+            else if (e.Name == "createCallScreen")
+            {
+                CreateCallScreen screen = e.Screen as CreateCallScreen;
                 this.Controls.Remove(screen);
                 screen.Dispose();
             }
@@ -101,9 +101,32 @@ namespace Soom_Client
                 this.Close();
 
         }
+        private void settingsWheelButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                HideAllComponents();
+                SettingsScreen settingsScreen = new SettingsScreen(Socket, ID);
+                settingsScreen.Location = new Point(0, 0);
+                settingsScreen.Name = "settingsScreen";
+                settingsScreen.Size = new Size(this.Size.Width - 16, this.Size.Height - 39);
+                this.Controls.Add(settingsScreen);
+                settingsScreen.Event += ReturnToMainScreen_Event;
+            }
+            catch (ObjectDisposedException)
+            {
+                this.Close();
+            }
+        }
         private void createMeetingButton_Click(object sender, EventArgs e)
         {
             HideAllComponents();
+            CreateCallScreen createCallScreen = new CreateCallScreen(Socket, ID);
+            createCallScreen.Location = new Point(0, 0);
+            createCallScreen.Name = "createCallScreen";
+            createCallScreen.Size = new Size(this.Size.Width - 16, this.Size.Height - 39);
+            this.Controls.Add(createCallScreen);
+            createCallScreen.Event += ReturnToMainScreen_Event;
         }
         private void joinMeetingButton_Click(object sender, EventArgs e)
         {
@@ -121,6 +144,7 @@ namespace Soom_Client
         }
         #endregion
 
+        #region Private Functions
         private void HideAllComponents(Component button = null)
         {
             title.Hide();
@@ -147,17 +171,9 @@ namespace Soom_Client
             joinMeetingButton.Show();
             friendsButton.Show();
         }
-        private void MainScreen_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            try
-            {
-                var settingsScreen = (SettingsScreen)this.Controls.Find("settingsScreen", false)[0];
-            }
-            catch (IndexOutOfRangeException)
-            {
-                ;// Do Nothing Since the Screen Isn't Exist Anymore.
-            }
-        }
+        #endregion
+
+        #region Form Settings
 
         #region Disable The Maximize Button
         private const int GWL_STYLE = -16;
@@ -176,10 +192,23 @@ namespace Soom_Client
             SetWindowLong(handle, GWL_STYLE, style & ~WS_MAXIMIZEBOX);
         }
         #endregion
+        private void MainScreen_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            try
+            {
+                var settingsScreen = (SettingsScreen)this.Controls.Find("settingsScreen", false)[0];
+                settingsScreen.CloseVid();
+            }
+            catch (IndexOutOfRangeException)
+            {
+                ;// Do Nothing Since the Screen Isn't Exist Anymore.
+            }
+        }
         private void MainScreen_Load(object sender, EventArgs e)
         {
             DisableMaximizeButton();
         }
+        #endregion
     }
     public class ExitEventArgs : EventArgs
     {

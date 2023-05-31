@@ -106,11 +106,11 @@
     <Compile Include="AudioUserControl.Designer.cs">
       <DependentUpon>AudioUserControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="CreateCallUserControl.cs">
+    <Compile Include="CreateCallScreen.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="CreateCallUserControl.Designer.cs">
-      <DependentUpon>CreateCallUserControl.cs</DependentUpon>
+    <Compile Include="CreateCallScreen.Designer.cs">
+      <DependentUpon>CreateCallScreen.cs</DependentUpon>
     </Compile>
     <Compile Include="FriendsScreen.cs">
       <SubType>UserControl</SubType>
@@ -121,6 +121,12 @@
     <Compile Include="IFriendsComponents.cs" />
     <Compile Include="IMainScreenComponents.cs" />
     <Compile Include="ISettingsScreenComponent.cs" />
+    <Compile Include="Meeting.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Meeting.Designer.cs">
+      <DependentUpon>Meeting.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -185,14 +191,17 @@
     <EmbeddedResource Include="AudioUserControl.resx">
       <DependentUpon>AudioUserControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="CreateCallUserControl.resx">
-      <DependentUpon>CreateCallUserControl.cs</DependentUpon>
+    <EmbeddedResource Include="CreateCallScreen.resx">
+      <DependentUpon>CreateCallScreen.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FriendsScreen.resx">
       <DependentUpon>FriendsScreen.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainScreen.resx">
       <DependentUpon>MainScreen.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Meeting.resx">
+      <DependentUpon>Meeting.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="OpenningScreen.resx">
       <DependentUpon>OpenningScreen.cs</DependentUpon>
@@ -251,6 +260,24 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Hoverred refresh Button.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Mute Button.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Unmute Button.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Hoverred Mute Button.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Hoverred Video Button.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\UnVideo Button.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Video Button.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

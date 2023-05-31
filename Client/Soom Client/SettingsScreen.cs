@@ -17,11 +17,14 @@ namespace Soom_Client
 {
     public partial class SettingsScreen : UserControl, IMainScreenComponents
     {
+        #region Properties
         private Socket _socket;
         private int _id;
         public bool IsFinished { get; private set; }
         public event FinishedEvent Event;
+        #endregion
 
+        #region CTor
         public SettingsScreen(Socket sock, int id)
         {
             InitializeComponent();
@@ -41,6 +44,7 @@ namespace Soom_Client
             this.applyBtn.Hide();
             this.title.Hide();
         }
+        #endregion
 
         #region Buttons Hoverred settings
         private void profileSettingsButton_MouseEnter(object sender, EventArgs e)
@@ -105,11 +109,12 @@ namespace Soom_Client
             }
         }
         #endregion
+
+        #region Button Clicks
         private void profileSettingsButton_Click(object sender, EventArgs e)
         {
             if (this.profileUserControl.Visible)
             {
-                MessageBox.Show("Need to do here: the action u did are not saved. click apply to save them.");
                 this.title.Hide();
                 this.applyBtn.Hide();
                 this.profileUserControl.Hide();
@@ -127,25 +132,24 @@ namespace Soom_Client
         {
             if (this.videoUserControl.Visible)
             {
-                MessageBox.Show("Need to do here: the action u did are not saved. click apply to save them.");
                 this.title.Hide();
                 this.applyBtn.Hide();
                 this.videoUserControl.Hide();
+                this.videoUserControl.StopVid();
                 this.videoUserControl.ResetSettingsToDefault();
             }
             else
             {
                 HideAllComponents(this.videoUserControl);
-                this.title.Show();
                 this.applyBtn.Show();
                 this.videoUserControl.Show();
+                this.videoUserControl.StartVid();
             }
         }
         private void audioSettingsButton_Click(object sender, EventArgs e)
         {
             if (this.audioUserControl.Visible)
             {
-                MessageBox.Show("Need to do here: the action u did are not saved. click apply to save them.");
                 this.title.Hide();
                 this.applyBtn.Hide();
                 this.audioUserControl.Hide();
@@ -157,62 +161,6 @@ namespace Soom_Client
                 this.title.Show();
                 this.applyBtn.Show();
                 this.audioUserControl.Show();
-            }
-        }
-        private void CheckIfChanged(ValuesChangedEventArgs e)
-        {
-            if (e.IsChanged)
-            {
-                if (!this.applyBtn.Enabled)
-                    this.applyBtn.Enabled = true;
-            }
-            else
-                this.applyBtn.Enabled = false;
-        }
-        private void HideAllComponents(Component component)
-        {
-            this.applyBtn.Enabled = false;
-            if (component != this.profileUserControl && this.profileUserControl.Visible)
-            {
-                this.profileUserControl.Hide();
-                this.profileUserControl.ResetSettingsToDefault();
-            }
-            else if (component != this.videoUserControl && this.videoUserControl.Visible)
-            {
-                this.videoUserControl.Hide();
-                this.videoUserControl.ResetSettingsToDefault();
-            }
-            else if (component != this.audioUserControl && this.audioUserControl.Visible)
-            {
-                this.audioUserControl.Hide();
-                this.audioUserControl.ResetSettingsToDefault();
-            }
-        }
-        private void GetDataFromServer(string command, ISettingsScreenComponent component)
-        {
-            try
-            {
-                byte[] idbytes = SymmetricEncryption.EncryptStringToBytesAES(_id.ToString());
-                _socket.Send(Encoding.UTF8.GetBytes($"{command}{idbytes.Length.ToString("00")}").Concat(idbytes).ToArray()); //ToDo: Fix the exception, i close the socket and then try to access it again.
-                byte[] data = new byte[2];
-                _socket.Receive(data, 2, SocketFlags.None);
-                if (Encoding.UTF8.GetString(data) == "OK")
-                {
-                    data = new byte[4];
-                    _socket.Receive(data, 4, SocketFlags.None);
-                    int length = int.Parse(Encoding.UTF8.GetString(data));
-                    data = new byte[length];
-                    _socket.Receive(data, length, SocketFlags.None);
-                    component.OrgenizeData(SymmetricEncryption.DecryptBytesToStringAES(data));
-                    _socket.Send(Encoding.UTF8.GetBytes("OK"));
-                }
-            }
-            catch (SocketException)
-            {
-                this._socket.Close();
-                MessageBox.Show("The Server is Having Some Technical Difficulties...\r\n Try Again Later <3");
-                IsFinished = true;
-                Finished();
             }
         }
         private void applyBtn_Click(object sender, EventArgs e)
@@ -237,7 +185,7 @@ namespace Soom_Client
             if (changesList != null)
             {
                 string stringChanges = $"{_id}";
-                foreach(string item in changesList)
+                foreach (string item in changesList)
                 {
                     stringChanges += "#";
                     if (item != "None")
@@ -289,12 +237,87 @@ namespace Soom_Client
             }
 
         }
+        #endregion
+
+        #region Private Functions
+        private void CheckIfChanged(ValuesChangedEventArgs e)
+        {
+            if (e.IsChanged)
+            {
+                if (!this.applyBtn.Enabled)
+                    this.applyBtn.Enabled = true;
+            }
+            else
+                this.applyBtn.Enabled = false;
+        }
+        private void HideAllComponents(Component component)
+        {
+            this.applyBtn.Enabled = false;
+            if (component != this.profileUserControl && this.profileUserControl.Visible)
+            {
+                this.title.Hide();
+                this.profileUserControl.Hide();
+                this.profileUserControl.ResetSettingsToDefault();
+            }
+            else if (component != this.videoUserControl && this.videoUserControl.Visible)
+            {
+                this.title.Hide();
+                this.videoUserControl.Hide();
+                this.videoUserControl.StopVid();
+                this.videoUserControl.ResetSettingsToDefault();
+            }
+            else if (component != this.audioUserControl && this.audioUserControl.Visible)
+            {
+                this.title.Hide();
+                this.audioUserControl.Hide();
+                this.audioUserControl.ResetSettingsToDefault();
+            }
+        }
+        private void GetDataFromServer(string command, ISettingsScreenComponent component)
+        {
+            try
+            {
+                byte[] idbytes = SymmetricEncryption.EncryptStringToBytesAES(_id.ToString());
+                _socket.Send(Encoding.UTF8.GetBytes($"{command}{idbytes.Length.ToString("00")}").Concat(idbytes).ToArray()); //ToDo: Fix the exception, i close the socket and then try to access it again.
+                byte[] data = new byte[2];
+                _socket.Receive(data, 2, SocketFlags.None);
+                if (Encoding.UTF8.GetString(data) == "OK")
+                {
+                    data = new byte[4];
+                    _socket.Receive(data, 4, SocketFlags.None);
+                    int length = int.Parse(Encoding.UTF8.GetString(data));
+                    data = new byte[length];
+                    _socket.Receive(data, length, SocketFlags.None);
+                    component.OrgenizeData(SymmetricEncryption.DecryptBytesToStringAES(data));
+                    _socket.Send(Encoding.UTF8.GetBytes("OK"));
+                }
+            }
+            catch (SocketException)
+            {
+                this._socket.Close();
+                MessageBox.Show("The Server is Having Some Technical Difficulties...\r\n Try Again Later <3");
+                IsFinished = true;
+                Finished();
+            }
+        }
+        #endregion
+
+        #region Public Functions
+        public void CloseVid()
+        {
+            videoUserControl.StopVid();
+        }
+        #endregion
+
+        #region Form's Settings
         private void SettingsScreen_Load(object sender, EventArgs e)
         {
             GetDataFromServer("PRO", this.profileUserControl);
             GetDataFromServer("AUD", this.audioUserControl);
             GetDataFromServer("VID", this.videoUserControl);
         }
+        #endregion
+
     }
 
 }

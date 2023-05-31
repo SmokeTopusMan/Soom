@@ -10,7 +10,11 @@ namespace Soom_Client
 {
     public static class SymmetricEncryption
     {
+        #region Properties
         public static Aes Aes { get; set; }
+        #endregion
+
+        #region Public Functions
         public static byte[] EncryptStringToBytesAES(string plainText)
         {
             byte[] encrypted;
@@ -131,5 +135,6 @@ namespace Soom_Client
             }
             return decryptedBytes;
         }
+        #endregion
     }
 }

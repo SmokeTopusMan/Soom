@@ -22,6 +22,7 @@ namespace Soom_server
         public static int _port = 13000;
         private static List<Thread> _threads = new List<Thread>();
         private static List<string> _activeUsers = new List<string>();
+        private static List<string> _activeMeetings = new List<string>();
         #endregion
 
         public static void AddThread(Thread thread)
@@ -38,6 +39,10 @@ namespace Soom_server
                 throw new Exception("!********!- Cant Decrement since the server has 0 clients online -!********!");
             ClientsNum--;
             _activeUsers.Remove(username);
+        }
+        private static void MeetingEnded(string name)
+        {
+            _activeMeetings.Remove(name);
         }
         public static void HandleClient(User user)
         {
@@ -69,7 +74,8 @@ namespace Soom_server
                         }
                     }
                     string command = Encoding.UTF8.GetString(buffer);
-                    HandleCommand(command, user);
+                    if (!HandleCommand(command, user))
+                        break;
                 }
                 catch (SocketException)
                 {
@@ -86,7 +92,7 @@ namespace Soom_server
             ClientLeft(user.Username);
             Log("LEFT", user.Id);
         }
-        private static void HandleCommand(string command, User user)
+        private static bool HandleCommand(string command, User user)
         {
             Log(command, user.Id);
             if (command == "LOG") Login(user);
@@ -98,11 +104,15 @@ namespace Soom_server
                     throw new SocketException();
             }
             else if (command == "PRO" || command == "AUD" || command == "VID") GetSettings(user, command);
-            else if (command == "CNG") ChangeSettings(user); //ToDo: handle when the command isnt clear and send to the client error.
+            else if (command == "CNG") ChangeSettings(user); 
             else if (command == "FRD" || command == "PND") GerFriendsSettings(user, command);
             else if (command == "USR") GetUserDetails(user);
             else if (command == "REQ") SendFriendRequest(user);
             else if (command == "ANS") HandleFriendRequest(user);
+            else if (command == "STR") StartNewMeeting(user);
+            else
+                return false;
+            return true;
         }
         private static string GetData(User user, int arrayLength)
         {
@@ -395,6 +405,12 @@ namespace Soom_server
             user.Socket.Receive(confirmation);
             if (Encoding.UTF8.GetString(confirmation) == "OK")
                 return;
+
+        }
+        private static void StartNewMeeting(User user)
+        {
+            string id = GetData(user, 2);
+
 
         }
         private static void Log(string command, int id, Errors err = Errors.None)
