@@ -132,12 +132,12 @@ namespace Soom_Client
         private void MeetingEvent(object sender, MeetingEventArgs e)
         {
             this.Hide();
-            MeetingScreen meeting = new MeetingScreen(e.VidSock, e.AudSock , Socket);
+            MeetingScreen meeting = new MeetingScreen(e.VidSock, e.AudSock , Socket, e.Name);
             meeting.StartPosition = FormStartPosition.Manual;
             meeting.Location = this.Location;
             meeting.Closed += (s, args) => this.Show(); // Closes the current form and opens the other.
             meeting.Show();
-            meeting.StartGetVideoFromServer();
+            meeting.StartGetFromServer();
         }
         private void joinMeetingButton_Click(object sender, EventArgs e)
         {

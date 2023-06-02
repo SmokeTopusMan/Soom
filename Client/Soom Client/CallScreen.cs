@@ -64,14 +64,6 @@ namespace Soom_Client
             {
                 e.Handled = true; // Ignore the key press
             }
-            else
-            {
-                // Convert the character to uppercase if it's a letter
-                if (char.IsLetter(e.KeyChar))
-                {
-                    e.KeyChar = char.ToUpper(e.KeyChar);
-                }
-            }
         }
         private void backButton_MouseEnter(object sender, EventArgs e)
         {
@@ -106,7 +98,7 @@ namespace Soom_Client
         {
             if (MeetingEvent != null)
             {
-                MeetingEvent(this, new MeetingEventArgs(vidSock, audSock));
+                MeetingEvent(this, new MeetingEventArgs(vidSock, audSock, callsNameBox.Text));
             }
         }
         #endregion
@@ -180,11 +172,13 @@ namespace Soom_Client
     public class MeetingEventArgs : EventArgs
     {
         public Socket VidSock { get;private set; }
+        public string Name { get;private set; }
         public Socket AudSock { get;private set; }
-        public MeetingEventArgs(Socket vidSock, Socket audSock)
+        public MeetingEventArgs(Socket vidSock, Socket audSock, string name)
         {
             VidSock = vidSock;
             AudSock = audSock;
+            Name = name;
         }
     }
     public delegate void MeetingEvent(object sender, MeetingEventArgs e);

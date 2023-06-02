@@ -18,6 +18,10 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Drawing.Imaging;
+using System.CodeDom.Compiler;
+using System.Runtime.InteropServices.WindowsRuntime;
+using AForge.Video;
+using System.Reflection.Emit;
 
 namespace Soom_Client
 {
@@ -35,18 +39,22 @@ namespace Soom_Client
         private string _audioInputDeviceName;
         private string _audioOutputDeviceName;
         private string _videoDeviceName;
-        VideoCaptureDevice _videoCaptureDevice;
+        private VideoCaptureDevice _videoCaptureDevice;
+        private WaveInEvent _inputAudioDevice;
         private Stopwatch _stopwatch;
         TimeSpan _frameRate;
         TimeSpan _minFrameTime;
-        private Dictionary<string, PictureBox> _MatchUserToBox;
+        private Dictionary<string, PictureBox> _MatchUserVideo;
+        //private Dictionary<string, WaveOutEvent> _MatchUserAudio = new Dictionary<string, WaveOutEvent>();
+        //private int _BytesPerMillisecond;
 
         #endregion
 
         #region CTor
-        public MeetingScreen(Socket vidSock, Socket audSock, Socket mainSock)
+        public MeetingScreen(Socket vidSock, Socket audSock, Socket mainSock, string name)
         {
             InitializeComponent();
+            label2.Text = name;
             _vidSock = vidSock;
             _audSock = audSock;
             _mainSock = mainSock;
@@ -55,7 +63,7 @@ namespace Soom_Client
             _minFrameTime = _frameRate;
             SetSettings();
             IsAlive = true;
-            _MatchUserToBox = new Dictionary<string, PictureBox>
+            _MatchUserVideo = new Dictionary<string, PictureBox>
             {
                 { "me", pictureBox1 }
             };
@@ -123,12 +131,12 @@ namespace Soom_Client
                 if (_stopwatch.Elapsed == TimeSpan.Zero)
                     _stopwatch.Start();
                 var frameTime = _stopwatch.Elapsed;
-                if (frameTime > _frameRate)
+                if (frameTime > _minFrameTime)
                 {
                     _minFrameTime = _minFrameTime.Add(TimeSpan.FromMilliseconds(_frameRate.TotalMilliseconds));
                     Bitmap bitmap = (Bitmap)eventArgs.Frame.Clone();
-                    byte[] frame = BitmapToBytes(bitmap, out int length);
-                    _vidSock.Send(Encoding.UTF8.GetBytes(length.ToString("00000")).Concat(frame).ToArray());
+                    byte[] frame = BitmapToBytes(bitmap);
+                    _vidSock.Send(Encoding.UTF8.GetBytes(frame.Length.ToString("00000")).Concat(frame).ToArray());
                     if (_isMirrored)
                     {
                         var filter = new Mirror(false, true);
@@ -154,7 +162,12 @@ namespace Soom_Client
                 }
             }
         }
-        private byte[] BitmapToBytes(Bitmap bitmap, out int length)
+        private void _inputAudioDevice_DataAvailable(object sender, WaveInEventArgs e)
+        {
+            if(_isMuted)
+                _audSock.Send(Encoding.UTF8.GetBytes(e.Buffer.Length.ToString("00000")).Concat(e.Buffer).ToArray());
+        }
+        private byte[] BitmapToBytes(Bitmap bitmap)
         {
             using (MemoryStream stream = new MemoryStream())
             {
@@ -163,24 +176,14 @@ namespace Soom_Client
 
                 // Get the byte array from the memory stream
                 byte[] bytes = stream.ToArray();
-                length = bytes.Length;
 
                 return bytes;
             }
         }
-        private Bitmap BytesToBitmap(byte[] bytes)
+        private Bitmap BytesToBitmap(MemoryStream bytes)
         {
-            using (MemoryStream stream = new MemoryStream(bytes))
-            {
-                // Create a new bitmap from the memory stream
-                Bitmap bitmap = new Bitmap(stream);
-                if (_isMirrored)
-                {
-                    var filter = new Mirror(false, true);
-                    filter.ApplyInPlace(bitmap);
-                }
-                return bitmap;
-            }
+            Bitmap bitmap = new Bitmap(bytes);
+            return bitmap;
         }
         private void SetSettings()
         {
@@ -201,11 +204,18 @@ namespace Soom_Client
             _mainSock.Send(Encoding.UTF8.GetBytes("OK"));
             return SymmetricEncryption.DecryptBytesToStringAES(temp);
         }
-        private void PresentDataToScreen(string username, byte[] frame)
+        private void PresentDataToScreen(string username, MemoryStream frame)
         {
-            PictureBox pictureBox = _MatchUserToBox[username];
+            PictureBox pictureBox = _MatchUserVideo[username];
             Bitmap picture = BytesToBitmap(frame);
-            pictureBox.Image = picture;
+            try
+            {
+                pictureBox.Image = picture;
+            }
+            catch 
+            {
+                picture.Dispose();
+            }
         }
         private void RecieveVideoFromServer()
         {
@@ -218,13 +228,67 @@ namespace Soom_Client
                 _vidSock.Receive(frame);
                 string username = SymmetricEncryption.DecryptBytesToStringAES(frame);
                 frame = new byte[5];
-                _vidSock.Receive(frame);
+                 _vidSock.Receive(frame);
                 length = int.Parse(Encoding.UTF8.GetString(frame));
-                frame = new byte[length];
-                _vidSock.Receive(frame);
-                PresentDataToScreen(username, frame);
+                MemoryStream stm = new MemoryStream();
+                byte[] temp = new byte[length];
+                int bytesCount = 0;
+                while (bytesCount < length)
+                {
+                    int bytes = _vidSock.Receive(temp, length - bytesCount, SocketFlags.None);
+                    byte[] d = new byte[bytes];
+                    Array.Copy(temp, d, bytes);
+                    stm.Write(d, 0, d.Length);
+                    bytesCount += bytes;
+                    temp = new byte[length - bytesCount];
+                }
+                PresentDataToScreen(username, stm);
             }
         }
+        /*
+        private void RecieveAudioFromServer()
+        {
+            while (IsAlive)
+            {
+                byte[] segment = new byte[2];
+                _audSock.Receive(segment);
+                int length = int.Parse(Encoding.UTF8.GetString(segment));
+                segment = new byte[length];
+                _vidSock.Receive(segment);
+                string username = SymmetricEncryption.DecryptBytesToStringAES(segment);
+                segment = new byte[5];
+                _vidSock.Receive(segment);
+                Thread thread = new Thread(() => { PlayAudio(username, segment); });
+                thread.Start();
+            }
+        }
+        
+        private void PlayAudio(string username, byte[] data)
+        {
+            WaveOutEvent waveOut = _MatchUserAudio[username];
+            MemoryStream stream = new MemoryStream(data);
+            int timeToPlay = (int)stream.Length / _BytesPerMillisecond * 4 / 5;
+            stream.Position = 0;
+            RawSourceWaveStream audioStream = new RawSourceWaveStream(stream, new WaveFormat(44100, WaveInEvent.GetCapabilities(FindAudioInputDeviceNumber()).Channels));
+            waveOut.Init(audioStream);
+            waveOut.Play();
+            while (waveOut.PlaybackState == PlaybackState.Playing)
+            {
+                if (timeToPlay > 8)
+                {
+                    Thread.Sleep(8); //ToDo: Fix here.
+                    timeToPlay -= 8;
+                }
+                else
+                {
+                    Thread.Sleep(timeToPlay);
+                    waveOut.Stop();
+                    break;
+                }
+
+            }
+        }
+        */
         private void RecieveUsersInfo()
         {
             while (true)
@@ -239,22 +303,41 @@ namespace Soom_Client
                 string username = SymmetricEncryption.DecryptBytesToStringAES(bytes);
                 if (Encoding.UTF8.GetString(command) == "JON")
                     AddNewUserToCall(username);
-                else
-                    RemoveNewUserFromCall(username);
             }
         }
         private void AddNewUserToCall(string name)
         {
-            if (_MatchUserToBox.Count == 1)
-                _MatchUserToBox.Add(name, pictureBox2);
-            else if (_MatchUserToBox.Count == 2)
-                _MatchUserToBox.Add(name, pictureBox3);
+            if (_MatchUserVideo.Count == 1)
+                _MatchUserVideo.Add(name, pictureBox2);
+            else if (_MatchUserVideo.Count == 2)
+                _MatchUserVideo.Add(name, pictureBox3);
             else
-                _MatchUserToBox.Add(name, pictureBox4);
+                _MatchUserVideo.Add(name, pictureBox4);
+            WaveOutEvent waveOut = new WaveOutEvent();
+            waveOut.DeviceNumber = FIndAudioOutputDeviceNumber();
+            //_MatchUserAudio.Add(name, waveOut);
         }
-        private void RemoveNewUserFromCall(string name) 
+        private int FindAudioInputDeviceNumber()
         {
-
+            for (int i = 0; i < WaveInEvent.DeviceCount; i++)
+            {
+                if (WaveInEvent.GetCapabilities(i).ProductName == _audioInputDeviceName)
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+        private int FIndAudioOutputDeviceNumber()
+        {
+            for (int i = 0; i < WaveOut.DeviceCount; i++)
+            {
+                if (WaveOut.GetCapabilities(i).ProductName == _audioOutputDeviceName)
+                {
+                    return i;
+                }
+            }
+            return -1;
         }
         private FilterInfo FindIndexOfVideoDevice()
         {
@@ -317,16 +400,31 @@ namespace Soom_Client
             }
 
         }
-        public void StartGetVideoFromServer()
+        public void StartGetFromServer()
         {
             _videoCaptureDevice = new VideoCaptureDevice(FindIndexOfVideoDevice().MonikerString);
             _videoCaptureDevice.VideoResolution = _videoCaptureDevice.VideoCapabilities.First(v => v.FrameSize.Width == 320 && v.FrameSize.Height == 240);
             _videoCaptureDevice.NewFrame += VideoCaptureDevice_NewFrame;
+
+            /*
+            _inputAudioDevice = new WaveInEvent();
+            _inputAudioDevice.DeviceNumber = FindAudioInputDeviceNumber();
+            _inputAudioDevice.WaveFormat = new WaveFormat(44100, WaveInEvent.GetCapabilities(FindAudioInputDeviceNumber()).Channels);
+            _BytesPerMillisecond = _inputAudioDevice.WaveFormat.SampleRate * _inputAudioDevice.WaveFormat.BitsPerSample / 8 * _inputAudioDevice.WaveFormat.Channels / 1000;
+            _inputAudioDevice.DataAvailable += _inputAudioDevice_DataAvailable;
+            */
             Thread t = new Thread(new ThreadStart(() => RecieveVideoFromServer()));
             t.Start();
             Thread t1 = new Thread(new ThreadStart(()=> RecieveUsersInfo()));
             t1.Start();
+
+            /*
+            Thread t2 = new Thread(new ThreadStart(() => RecieveAudioFromServer()));
+            t2.Start();
+            */
+
             _videoCaptureDevice.Start();
+            //_inputAudioDevice.StartRecording();
         }
         #endregion
         private void Meeting_FormClosing(object sender, FormClosingEventArgs e)

@@ -521,7 +521,7 @@ namespace Soom_server
                         return false;
                 }
             }
-            if (_activeMeetingsInfo.Count == 0 && meetingPassword != "")
+            if (meetingPassword != "")
                 return false;
             return true;
         }
@@ -529,21 +529,40 @@ namespace Soom_server
         {
             Socket vidSock = _usersMeetingSockets[user].Item1;
             Socket audSock = _usersMeetingSockets[user].Item2;
-            byte[] vidData = new byte[5], audData = new byte[5];
-            int vidLength, audLength;
             bool connected = vidSock.Connected;
+            vidSock.ReceiveTimeout = 30;
+            audSock.ReceiveTimeout = 30;
+
             while (connected)
             {
                 try
                 {
-                    int bytesRecieved = vidSock.Receive(vidData);
-                    if (bytesRecieved == 0)
-                        throw new SocketException();
-                    vidLength = int.Parse(Encoding.UTF8.GetString(vidData));
-                    vidData = new byte[vidLength];
-                    vidSock.Receive(vidData);
-                    SendVideoToParticipants(vidData, user, meetingName);
-                    vidData = new byte[5];
+                    try
+                    {
+                        byte[] Data = GetDataFromSocket(vidSock);
+                        SendMediaToParticipants(Data, user, meetingName);
+                    }
+                    catch (SocketException ex)
+                    {
+                        if (ex.SocketErrorCode != SocketError.TimedOut)
+                        {
+                            throw new SocketException();
+                        }
+                    }
+                    /*
+                    try
+                    {
+                        byte[] Data = GetDataFromSocket(audSock);
+                        SendMediaToParticipants(Data, user, meetingName);
+                    }
+                    catch (SocketException ex)
+                    {
+                        if (ex.SocketErrorCode != SocketError.TimedOut)
+                        {
+                            throw new SocketException();
+                        }
+                    }
+                    */
                 }
                 catch 
                 {
@@ -560,7 +579,28 @@ namespace Soom_server
                 }
             }
         }
-        private static void SendVideoToParticipants(byte[] data, User userSender, string meetingName)
+        private static byte[] GetDataFromSocket(Socket socket)
+        {
+            byte[] Data = new byte[5];
+            int bytesRecieved = socket.Receive(Data);
+            if (bytesRecieved == 0)
+                throw new SocketException();
+            int Length = int.Parse(Encoding.UTF8.GetString(Data));
+            Data = new byte[0];
+            byte[] temp = new byte[Length];
+            int bytesCount = 0;
+            while (bytesCount < Length)
+            {
+                int bytes = socket.Receive(temp, SocketFlags.None);
+                byte[] d = new byte[bytes];
+                Array.Copy(temp, d, bytes);
+                bytesCount += bytes;
+                Data = Data.Concat(d).ToArray();
+                temp = new byte[Length - bytesCount];
+            }
+            return Data;
+        }
+        private static void SendMediaToParticipants(byte[] data, User userSender, string meetingName)
         {
             int length = data.Length;
             List<User> users = _activeMeetingsParticipants[meetingName];
