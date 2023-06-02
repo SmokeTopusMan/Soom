@@ -114,7 +114,6 @@ namespace Soom_Client
             FindDevice(out int index);
             this.cameraCboBox.SelectedIndex = index;
         }
-
         public List<string> GetChanges()
         {
             List<string> changes = new List<string>();

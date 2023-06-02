@@ -312,6 +312,14 @@ namespace Soom_server
                 return null;
             }
         }
+        public static List<string> GetUserName(int id)
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                var output = cnn.Query<string>($"SELECT Username FROM UsersInfo WHERE UserID = {id}").ToList();
+                return output;
+            }
+        }
 
         #region Get Connection String
         private static string LoadConnectionString(string connectionString = "Default")

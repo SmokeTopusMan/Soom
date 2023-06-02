@@ -14,7 +14,7 @@ namespace Soom_server
     {
         //public static Server server = new Server();
 
-        static void Main(string[] args)
+        static void Main()
         {
             Console.WriteLine("Attempting To Set Up The Server...");
             try
@@ -24,7 +24,7 @@ namespace Soom_server
                 Server._serverSocket.Listen(10);
                 Console.WriteLine("Server is Up and Listening...");
                 Console.WriteLine($"IP=[{Server._ip}]");
-                Socket clientSock = default(Socket);
+                Socket clientSock;
                 while (true)
                 {
                     clientSock = Server._serverSocket.Accept();

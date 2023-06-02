@@ -91,9 +91,9 @@ namespace Soom_Client
                 this.Controls.Remove(screen);
                 screen.Dispose();
             }
-            else if (e.Name == "createCallScreen")
+            else if (e.Name == "createCallScreen" || e.Name == "joinCallScreen")
             {
-                CreateCallScreen screen = e.Screen as CreateCallScreen;
+                CallScreen screen = e.Screen as CallScreen;
                 this.Controls.Remove(screen);
                 screen.Dispose();
             }
@@ -121,16 +121,34 @@ namespace Soom_Client
         private void createMeetingButton_Click(object sender, EventArgs e)
         {
             HideAllComponents();
-            CreateCallScreen createCallScreen = new CreateCallScreen(Socket, ID);
+            CallScreen createCallScreen = new CallScreen(Socket, ID, true);
             createCallScreen.Location = new Point(0, 0);
             createCallScreen.Name = "createCallScreen";
             createCallScreen.Size = new Size(this.Size.Width - 16, this.Size.Height - 39);
             this.Controls.Add(createCallScreen);
             createCallScreen.Event += ReturnToMainScreen_Event;
+            createCallScreen.MeetingEvent += MeetingEvent;
+        }
+        private void MeetingEvent(object sender, MeetingEventArgs e)
+        {
+            this.Hide();
+            MeetingScreen meeting = new MeetingScreen(e.VidSock, e.AudSock , Socket);
+            meeting.StartPosition = FormStartPosition.Manual;
+            meeting.Location = this.Location;
+            meeting.Closed += (s, args) => this.Show(); // Closes the current form and opens the other.
+            meeting.Show();
+            meeting.StartGetVideoFromServer();
         }
         private void joinMeetingButton_Click(object sender, EventArgs e)
         {
             HideAllComponents();
+            CallScreen joinCallScreen = new CallScreen(Socket, ID, false);
+            joinCallScreen.Location = new Point(0, 0);
+            joinCallScreen.Name = "joinCallScreen";
+            joinCallScreen.Size = new Size(this.Size.Width - 16, this.Size.Height - 39);
+            this.Controls.Add(joinCallScreen);
+            joinCallScreen.Event += ReturnToMainScreen_Event;
+            joinCallScreen.MeetingEvent += MeetingEvent;
         }
         private void friendsButton_Click(object sender, EventArgs e)
         {

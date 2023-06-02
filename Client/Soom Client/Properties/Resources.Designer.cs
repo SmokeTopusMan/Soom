@@ -93,6 +93,26 @@ namespace Soom_Client.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Hoverred_Unmute_Button {
+            get {
+                object obj = ResourceManager.GetObject("Hoverred Unmute Button", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Hoverred_UnVideo_Button {
+            get {
+                object obj = ResourceManager.GetObject("Hoverred UnVideo Button", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Hoverred_Video_Button {
             get {
                 object obj = ResourceManager.GetObject("Hoverred Video Button", resourceCulture);

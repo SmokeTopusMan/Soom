@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Soom_Client
@@ -15,19 +16,26 @@ namespace Soom_Client
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main(string[] args) //ToDo: Get the args for the ip.
+        static void Main(string[] args)
         {
             Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             IPEndPoint iPEndPoint;
             if (args.Length > 0)
             {
-                iPEndPoint = new IPEndPoint(IPAddress.Parse(args[0]), 13000);
+                try
+                {
+                    iPEndPoint = new IPEndPoint(IPAddress.Parse(args[0]), 13000);
+                }
+                catch (FormatException)
+                {
+                    iPEndPoint = new IPEndPoint(IPAddress.Parse("10.0.0.15"), 13000);
+                }
             }
             else
             {
                 iPEndPoint = new IPEndPoint(IPAddress.Parse("10.0.0.15"), 13000);
             }
-            while (true)
+            for (int i = 0; i < 20; i++)
             {
                 try
                 {
@@ -40,6 +48,7 @@ namespace Soom_Client
                         Application.EnableVisualStyles();
                         Application.SetCompatibleTextRenderingDefault(false);
                         OpenningScreen openningScreen = new OpenningScreen(sock);
+                        MessageBox.Show("Click ENTER To Procede To The App!");
                         Application.Run(openningScreen);
                     }
                     break;
@@ -54,7 +63,6 @@ namespace Soom_Client
         {
             // Create a new byte array to store the RSAParameters
             int keySize = parameters.Modulus.Length;
-            int exponentSize = parameters.Exponent.Length;
             int byteArraySize = keySize;
             byte[] byteArray = new byte[byteArraySize];
 
@@ -69,7 +77,7 @@ namespace Soom_Client
             var rsa = new RSACryptoServiceProvider();
             RSAParameters publicKey = rsa.ExportParameters(false);
             byte[] publicKeyArray = ConvertToByteArray(publicKey);
-            byte[] msg = (Encoding.UTF8.GetBytes("KEY" + $"{publicKeyArray.Length.ToString("000")}")).Concat(publicKeyArray).ToArray();
+            byte[] msg = (Encoding.UTF8.GetBytes("KEY" + $"{publicKeyArray.Length:000}")).Concat(publicKeyArray).ToArray();
             for (int i = 0; i < 5; i++)
             {
                 sock.Send(msg);
@@ -100,7 +108,6 @@ namespace Soom_Client
                 return -1;
             for(int i = 0; i < source.Length - sequence.Length + 1; i++)
             {
-                byte[] d = source.Skip(i).ToArray();
                 if (source.Skip(i).Take(sequence.Length).SequenceEqual(sequence))
                 {
                     return i;
@@ -111,10 +118,11 @@ namespace Soom_Client
         public static List<byte[]> SplitByteArray(byte[] source, byte[] sequence)
         {
             int index = SearchSequence(source, sequence);
-            List<byte[]> returnList = new List<byte[]>();
-            returnList.Add(new byte[32]);
-            returnList.Add(new byte[16]);
-            
+            List<byte[]> returnList = new List<byte[]>
+            {
+                new byte[32],
+                new byte[16]
+            };
             Array.Copy(source, returnList[0], index);
             Array.Copy(source, index + sequence.Length, returnList[1], 0, source.Length - index - sequence.Length);
             return returnList;

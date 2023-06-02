@@ -10,6 +10,8 @@ using System.Runtime.CompilerServices;
 using System.Data.SQLite;
 using System.Security.Cryptography;
 using System.Net.Configuration;
+using System.Web;
+using System.Reflection;
 
 namespace Soom_server
 {
@@ -22,9 +24,11 @@ namespace Soom_server
         public static int _port = 13000;
         private static List<Thread> _threads = new List<Thread>();
         private static List<string> _activeUsers = new List<string>();
-        private static List<string> _activeMeetings = new List<string>();
+        private static Dictionary<string, string> _activeMeetingsInfo = new Dictionary<string,string>();
+        private static Dictionary<string, List<User>> _activeMeetingsParticipants = new Dictionary<string, List<User>>();
+        private static Dictionary<User, (Socket, Socket, Socket)> _usersMeetingSockets = new Dictionary<User, (Socket, Socket, Socket)>();
+        private static Dictionary<string, Socket> _meetingsSockets = new Dictionary<string, Socket>();
         #endregion
-
         public static void AddThread(Thread thread)
         {
             _threads.Add(thread);
@@ -40,9 +44,11 @@ namespace Soom_server
             ClientsNum--;
             _activeUsers.Remove(username);
         }
-        private static void MeetingEnded(string name)
+        private static void MeetingEnded(string meetingName) // ToDo: Use the func
         {
-            _activeMeetings.Remove(name);
+            _activeMeetingsInfo.Remove(meetingName);
+            _activeMeetingsParticipants.Remove(meetingName);
+            _meetingsSockets.Remove(meetingName);
         }
         public static void HandleClient(User user)
         {
@@ -104,12 +110,13 @@ namespace Soom_server
                     throw new SocketException();
             }
             else if (command == "PRO" || command == "AUD" || command == "VID") GetSettings(user, command);
-            else if (command == "CNG") ChangeSettings(user); 
+            else if (command == "CNG") ChangeSettings(user);
             else if (command == "FRD" || command == "PND") GerFriendsSettings(user, command);
             else if (command == "USR") GetUserDetails(user);
             else if (command == "REQ") SendFriendRequest(user);
             else if (command == "ANS") HandleFriendRequest(user);
             else if (command == "STR") StartNewMeeting(user);
+            else if (command == "JON") JoinMeeting(user);
             else
                 return false;
             return true;
@@ -137,6 +144,8 @@ namespace Soom_server
             else if (error == Errors.AlreadySentRequest) clientSock.Send(Encoding.UTF8.GetBytes("NO5"));
             else if (error == Errors.AlreadyFriends) clientSock.Send(Encoding.UTF8.GetBytes("NO6"));
             else if (error == Errors.AlreadyOnline) clientSock.Send(Encoding.UTF8.GetBytes("NO7"));
+            else if (error == Errors.MeetingNameTaken) clientSock.Send(Encoding.UTF8.GetBytes("NO8"));
+            else if (error == Errors.MeetingNotFound) clientSock.Send(Encoding.UTF8.GetBytes("NO9"));
         }
         private static void SendID(User user, int id)
         {
@@ -272,9 +281,10 @@ namespace Soom_server
                 SendErrors(user.Socket, Errors.GeneralError); Log("NOREG", user.Id, Errors.GeneralError);
             }
         }
-        private static void GetSettings(User user, string command)
+        private static void GetSettings(User user, string command, string id = "")
         {
-            string id = GetData(user, 2);
+            if(id == "")
+                id = GetData(user, 2);
             byte[] msg;
             if (command == "PRO")
             {
@@ -407,11 +417,161 @@ namespace Soom_server
                 return;
 
         }
+        private static void JoinMeeting(User user)
+        {
+            string id = GetData(user, 2);
+            string[] meetingInfo = GetData(user, 2).Split('#');
+            if (!CheckForMeeting(meetingInfo[0], meetingInfo[1]))
+            {
+                SendErrors(user.Socket, Errors.MeetingNotFound);
+                byte[] confirmation = new byte[2];
+                user.Socket.Receive(confirmation);
+                if (Encoding.UTF8.GetString(confirmation) == "OK")
+                { return; }
+            }
+            else
+            {
+                user.Socket.Send(Encoding.UTF8.GetBytes("OK"));
+                byte[] confirmation = new byte[2];
+                user.Socket.Receive(confirmation);
+                if (Encoding.UTF8.GetString(confirmation) == "OK")
+                {
+                    int boundPort = ((IPEndPoint)_meetingsSockets[meetingInfo[0]].LocalEndPoint).Port;
+                    user.Socket.Send(SymmetricEncryption.EncryptStringToBytesAES($"{boundPort}", user.SymmetricKey));
+                    Socket vidSock = _meetingsSockets[meetingInfo[0]].Accept();
+                    Socket audSock = _meetingsSockets[meetingInfo[0]].Accept();
+                    GetSettings(user, "VID", id);
+                    GetSettings(user, "AUD", id);
+                    foreach (var item in _usersMeetingSockets)
+                    {
+                        byte[] username = SymmetricEncryption.EncryptStringToBytesAES(user.Username, item.Key.SymmetricKey);
+                        item.Value.Item3.Send(Encoding.UTF8.GetBytes($"JON{username.Length:00}").Concat(username).ToArray());
+                        username = SymmetricEncryption.EncryptStringToBytesAES(item.Key.Username, user.SymmetricKey);
+                        user.Socket.Send(Encoding.UTF8.GetBytes($"JON{username.Length:00}").Concat(username).ToArray());
+                    }
+                    _usersMeetingSockets.Add(user, (vidSock, audSock, user.Socket));
+                    _activeMeetingsParticipants[meetingInfo[0]].Add(user);
+                    HandleMeeting(meetingInfo[0], user);
+                }
+            }
+        }
         private static void StartNewMeeting(User user)
         {
             string id = GetData(user, 2);
-
-
+            string[] meetingInfo = GetData(user, 2).Split('#');
+            bool canStartNewMeeting = CheckForMeeting(meetingInfo[0]);
+            if (canStartNewMeeting)
+            {
+                user.Socket.Send(Encoding.UTF8.GetBytes("OK"));
+                CreateMeeting(meetingInfo, user);
+                byte[] confirmation = new byte[2];
+                user.Socket.Receive(confirmation);
+                if (Encoding.UTF8.GetString(confirmation) == "OK")
+                {
+                    Socket meetingSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    int counter = 1;
+                    while (true)
+                    {
+                        try
+                        {
+                            meetingSocket.Bind(new IPEndPoint(IPAddress.Parse(Server._ip), Server._port + counter));
+                            meetingSocket.Listen(10);
+                            _meetingsSockets.Add(meetingInfo[0], meetingSocket);
+                            user.Socket.Send(SymmetricEncryption.EncryptStringToBytesAES($"{Server._port + counter}", user.SymmetricKey));
+                            break;
+                        }
+                        catch
+                        {
+                            counter++;
+                        }
+                    }
+                    Socket vidSock = meetingSocket.Accept();
+                    Socket audSock = meetingSocket.Accept();
+                    GetSettings(user, "VID", id);
+                    GetSettings(user, "AUD", id);
+                    _usersMeetingSockets.Add(user, (vidSock, audSock, user.Socket));
+                    HandleMeeting(meetingInfo[0], user);
+                }
+            }
+            else
+            {
+                SendErrors(user.Socket, Errors.MeetingNameTaken);
+                byte[] confirmation = new byte[2];
+                user.Socket.Receive(confirmation);
+                if (Encoding.UTF8.GetString(confirmation) == "OK")
+                    return;
+            }
+        }
+        private static void CreateMeeting(string[] meetingInfo, User user)
+        {
+            _activeMeetingsInfo.Add(meetingInfo[0], meetingInfo[1]);
+            _activeMeetingsParticipants.Add(meetingInfo[0], new List<User>() {user});
+        }
+        private static bool CheckForMeeting(string meetingName, string meetingPassword = "")
+        {
+            foreach (var meeting in _activeMeetingsInfo) 
+            {
+                if (meeting.Key == meetingName)
+                {
+                    if (meetingPassword == "")
+                        return false;
+                    else if (meetingPassword == meeting.Value)
+                        return true;
+                    else
+                        return false;
+                }
+            }
+            if (_activeMeetingsInfo.Count == 0 && meetingPassword != "")
+                return false;
+            return true;
+        }
+        private static void HandleMeeting(string meetingName, User user)
+        {
+            Socket vidSock = _usersMeetingSockets[user].Item1;
+            Socket audSock = _usersMeetingSockets[user].Item2;
+            byte[] vidData = new byte[5], audData = new byte[5];
+            int vidLength, audLength;
+            bool connected = vidSock.Connected;
+            while (connected)
+            {
+                try
+                {
+                    int bytesRecieved = vidSock.Receive(vidData);
+                    if (bytesRecieved == 0)
+                        throw new SocketException();
+                    vidLength = int.Parse(Encoding.UTF8.GetString(vidData));
+                    vidData = new byte[vidLength];
+                    vidSock.Receive(vidData);
+                    SendVideoToParticipants(vidData, user, meetingName);
+                    vidData = new byte[5];
+                }
+                catch 
+                {
+                    _activeMeetingsParticipants[meetingName].Remove(user);
+                    _usersMeetingSockets.Remove(user);
+                    if (_activeMeetingsParticipants[meetingName].Count == 0)
+                    {
+                        _meetingsSockets[meetingName].Close();
+                        MeetingEnded(meetingName);
+                    }
+                    vidSock.Close();
+                    audSock.Close();
+                    break;
+                }
+            }
+        }
+        private static void SendVideoToParticipants(byte[] data, User userSender, string meetingName)
+        {
+            int length = data.Length;
+            List<User> users = _activeMeetingsParticipants[meetingName];
+            foreach (User userReciever in users)
+            {
+                if (userReciever != userSender)
+                {
+                    byte[] usernameBytes = SymmetricEncryption.EncryptStringToBytesAES(userSender.Username, userReciever.SymmetricKey);
+                    _usersMeetingSockets[userReciever].Item1.Send(Encoding.UTF8.GetBytes(usernameBytes.Length.ToString("00")).Concat(usernameBytes).Concat(Encoding.UTF8.GetBytes(length.ToString("00000"))).Concat(data).ToArray());
+                }
+            }
         }
         private static void Log(string command, int id, Errors err = Errors.None)
         {

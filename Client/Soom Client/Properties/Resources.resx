@@ -124,34 +124,40 @@
   <data name="refresh Button" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\refresh Button.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Unmute Button" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Unmute Button.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Mute Button" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Mute Button.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="SettingsGear" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\SettingsGear.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="backButton" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\backButton.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Hoverred refresh Button" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Hoverred refresh Button.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="HoverredbackButton" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\HoverredbackButton.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Hoverred Mute Button" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Hoverred Mute Button.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Mute Button" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Mute Button.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Hoverred Video Button" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Hoverred Video Button.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="SettingsGear" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SettingsGear.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Hoverred Mute Button" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Hoverred Mute Button.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="UnVideo Button" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\UnVideo Button.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="backButton" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\backButton.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Video Button" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Video Button.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Unmute Button" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Unmute Button.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Hoverred Unmute Button" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Hoverred Unmute Button.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Hoverred UnVideo Button" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Hoverred UnVideo Button.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

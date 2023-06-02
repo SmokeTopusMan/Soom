@@ -10,6 +10,8 @@
         AlreadySentRequest,
         AlreadyFriends,
         AlreadyOnline,
+        MeetingNameTaken,
+        MeetingNotFound,
         None,
     }
 }

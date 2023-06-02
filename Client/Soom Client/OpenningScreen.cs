@@ -19,7 +19,7 @@ namespace Soom_Client
     {
         #region Properties
         private string _userInfo;
-        private Socket _socket;
+        private readonly Socket _socket;
         #endregion
 
         #region CTor
@@ -232,6 +232,8 @@ namespace Soom_Client
             else if (err == ServerErrors.AlreadySentRequest) MessageBox.Show("You Already Sent This User a Friend Request!");
             else if (err == ServerErrors.AlreadyFriends) MessageBox.Show("His Your Friend Already, JEEZ...");
             else if (err == ServerErrors.AlreadyOnline) MessageBox.Show("This User Is Already Online, Sorry!");
+            else if (err == ServerErrors.MeetingNameTaken) MessageBox.Show("This Name is Taken, Choose Other Name!");
+            else if (err == ServerErrors.MeetingNotFound) MessageBox.Show("Seems Like This Meeting Doesn't Exist!");
         }
         #endregion
 

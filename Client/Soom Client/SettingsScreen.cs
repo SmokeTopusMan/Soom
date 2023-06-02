@@ -18,8 +18,8 @@ namespace Soom_Client
     public partial class SettingsScreen : UserControl, IMainScreenComponents
     {
         #region Properties
-        private Socket _socket;
-        private int _id;
+        private readonly Socket _socket;
+        private readonly int _id;
         public bool IsFinished { get; private set; }
         public event FinishedEvent Event;
         #endregion
@@ -103,10 +103,7 @@ namespace Soom_Client
         public void Finished()
         {
             // Raise the event with custom EventArgs
-            if (Event != null)
-            {
-                Event(this, new ExitEventArgs(this, Name));
-            }
+            Event?.Invoke(this, new ExitEventArgs(this, Name));
         }
         #endregion
 
@@ -278,7 +275,7 @@ namespace Soom_Client
             try
             {
                 byte[] idbytes = SymmetricEncryption.EncryptStringToBytesAES(_id.ToString());
-                _socket.Send(Encoding.UTF8.GetBytes($"{command}{idbytes.Length.ToString("00")}").Concat(idbytes).ToArray()); //ToDo: Fix the exception, i close the socket and then try to access it again.
+                _socket.Send(Encoding.UTF8.GetBytes($"{command}{idbytes.Length:00}").Concat(idbytes).ToArray());
                 byte[] data = new byte[2];
                 _socket.Receive(data, 2, SocketFlags.None);
                 if (Encoding.UTF8.GetString(data) == "OK")
